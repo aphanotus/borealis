@@ -1,0 +1,7 @@
+specimen.ID , digitizer , treatment , stage , scale , sex , x   , y
+T330.5      , DA        , control   , adult , 1.23  , f   , 320 , 453
+            ,           ,           ,       ,       ,     , 303 , 468
+            ,           ,           ,       ,       ,     , 289 , 447
+T330.6      , DA        , control   , adult , 1.24  , m   , 319 , 490
+            ,           ,           ,       ,       ,     , 300 , 501
+            ,           ,           ,       ,       ,     , 294 , 480
