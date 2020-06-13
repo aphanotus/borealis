@@ -5,9 +5,17 @@ for use in a biology research lab.
 
 ## Installation
 
+The package can be installed in instance of R from GitHub using `devtools`.
+
 ``` r
 library(devtools)
 install_github("aphanotus/borealis")
+```
+
+Then just load the package like any other.
+
+``` r
+library(borealis)
 ```
 
 ## Functions
@@ -15,6 +23,10 @@ install_github("aphanotus/borealis")
 ### create.tps
 
 Reformats X and Y coordinate positions from a spreadsheet into the `tps` ("thin-plate spline") file format defined by [Rohlf (2015)](https://doi.org/10.4404/hystrix-26.1-11264).
+
+### pcvar
+ 
+A function that returns the proportion of variance explained by each axis in a principal component analysis (PCA).
 
 ### qPCR.plot
 

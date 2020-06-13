@@ -105,7 +105,7 @@ create.tps <- function (
   if (is.null(input.filename)) { input.filename <- file.choose() }
   ISxlsx <- grepl('.xlsx$',input.filename)
   IScsv <- grepl('.csv$',input.filename)
-  if (!ISxlsx & !IScsv) { return(paste("The input file",input.filename,"must be xlsx or csv format.")) }
+  if (!ISxlsx & !IScsv) { return(cat(paste("The input file",input.filename,"must be xlsx or csv format."))) }
 
   # Import the raw data
   if (ISxlsx) {
@@ -121,7 +121,7 @@ create.tps <- function (
     acceptable.ID.column.names <- c("id","ids","specimen","specimen.id","specimen_id","specimen.ids","specimen_ids")
     ID.col <- which(names(raw) %in% acceptable.ID.column.names)
     if (!(length(ID.col)==1)) {
-      return(paste("The input file",input.filename,"must have one column with specimen IDs using one of the following headings:",paste(acceptable.ID.column.names, collapse = ', ')))
+      return(cat(paste("The input file",input.filename,"must have one column with specimen IDs using one of the following headings:",paste(acceptable.ID.column.names, collapse = ', '))))
     }
     specimen.number <- sum(!grepl("^\\s*$", raw[,ID.col]))
   }
@@ -132,27 +132,27 @@ create.tps <- function (
     } else {
       landmark.number <- dim(raw)[1] / specimen.number
       if (landmark.number %% 1 != 0) {
-        return(paste("The input file",input.filename,"must have a consistent number of landmarks.",landmark.number,"landmarks detected."))
+        return(cat(paste("The input file",input.filename,"must have a consistent number of landmarks.",landmark.number,"landmarks detected.")))
       }
     }
   }
 
   # Check for formatting issues
   if (landmark.number < 3) {
-    return(paste('Error:',input.filename,"does not have at least 3 landmarks.\n") )
+    return(cat(paste('Error:',input.filename,"does not have at least 3 landmarks.\n") ))
   }
   if (!(any(grepl('x',names(raw), ignore.case = TRUE), na.rm = TRUE) &
         any(grepl('y',names(raw), ignore.case = TRUE), na.rm = TRUE) ) ) {
-    return(paste('Error:',input.filename,"does not contain one of the required column headings: 'X' and 'yY'.\n") )
+    return(cat(paste('Error:',input.filename,"does not contain one of the required column headings: 'X' and 'yY'.\n") ))
   }
   if (specimen.number != dim(raw)[1]/landmark.number) {
     if ((dim(raw)[1] %% landmark.number == 0) & (dim(raw)[1]/landmark.number > specimen.number)) {
       x <- dim(raw)[1]/landmark.number - specimen.number
       cat('Error:',input.filename,'contains',x,'duplicate specimen IDs. ')
       x <- raw$specimen.ID; x <- x[which(nchar(x)>1)]; x <- x[which(duplicated(x))]
-      return(paste(x,'\n'))
+      return(cat(paste(x,'\n')))
     } else {
-      return(paste('Error:',input.filename,'does not contain properly formatted landmark data.\n'))
+      return(cat(paste('Error:',input.filename,'does not contain properly formatted landmark data.\n')))
     }
   }
 
