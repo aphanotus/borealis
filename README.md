@@ -1,11 +1,9 @@
 # borealis
 
-This package gathers functions developed for commons activities in R 
+This package gathers functions developed for common activities in R 
 for use in a biology research lab. 
 
 ## Installation
-
-You can install the released version of borealis from [CRAN](https://CRAN.R-project.org) with:
 
 ``` r
 library(devtools)
