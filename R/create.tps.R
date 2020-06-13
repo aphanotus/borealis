@@ -86,7 +86,7 @@
 #' # 294 480
 #' # ID=T330n6__DRA__control__adult__m
 #' # SCALE=1.24
-#' #
+#'
 
 create.tps <- function (
   input.filename = NULL,
@@ -118,12 +118,12 @@ create.tps <- function (
 
   # Get the number of specimens and landmarks
   if (is.null(specimen.number)) {
-    acceptable.ID.column.names <- c("id","ids","specimen","specimen.id","specimen_id","specimen.ids","specimen_ids")
+    acceptable.ID.column.names <- c("id","ids","specimen","specimen id","specimen.id","specimen_id","specimen.ids","specimen_ids","sample","sample id","sample.id","sample_id","sample.ids","sample_ids")
     ID.col <- which(names(raw) %in% acceptable.ID.column.names)
     if (!(length(ID.col)==1)) {
       return(cat(paste("The input file",input.filename,"must have one column with specimen IDs using one of the following headings:",paste(acceptable.ID.column.names, collapse = ', '))))
     }
-    specimen.number <- sum(!grepl("^\\s*$", raw[,ID.col]))
+    specimen.number <- sum(!grepl("^\\s*$", na.omit(raw[,ID.col])))
   }
   if (is.null(landmark.number)) {
     acceptable.LM.column.names <- c("LM","lm","landmark","landmarks","landmark.number","landmark_number")
@@ -211,7 +211,7 @@ create.tps <- function (
     } # End nested loop for each landmark
 
     x <- landmark.number*(i-1) + 1
-    id.text <- paste0(sub('\\.','n',trimws(raw[x,ID.col])))
+    id.text <- paste0(sub('\\.','_',trimws(raw[x,ID.col])))
     if (length(id.factors)>0) {
       id.text <- paste0(id.text,seperator,paste(trimws(raw[x,id.factors]),collapse = seperator) )
     }
