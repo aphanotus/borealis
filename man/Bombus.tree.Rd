@@ -4,9 +4,7 @@
 \name{Bombus.tree}
 \alias{Bombus.tree}
 \title{A phylogeny of bumblebee species}
-\format{
-An object of class \code{phylo} of length 8.
-}
+\format{An object of class \code{phylo} of length 8.}
 \usage{
 Bombus.tree
 }

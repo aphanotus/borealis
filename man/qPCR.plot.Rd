@@ -7,16 +7,9 @@
 Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
 }
 \usage{
-qPCR.plot(
-  std.conc = NULL,
-  std.cq = NULL,
-  unk.cq = NULL,
-  nrt.cq = NULL,
-  ntc.cq = NULL,
-  main = NULL,
-  xlab = "log10 template / ul",
-  ylab = "Cq"
-)
+qPCR.plot(std.conc = NULL, std.cq = NULL, unk.cq = NULL,
+  nrt.cq = NULL, ntc.cq = NULL, main = NULL,
+  xlab = "log10 template / ul", ylab = "Cq")
 }
 \arguments{
 \item{std.conc}{A numeric vector providing the concentrations of the standards used.}
