@@ -20,6 +20,8 @@
 #' @param rounding The number of decimal places to return
 #' @param as.percent A logical factor specifying whether to report values as a percentage
 #'
+#' @export
+#'
 #' @examples
 #' # PCA
 #' iris.pca <- prcomp(iris[,1:4])

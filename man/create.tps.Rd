@@ -4,18 +4,11 @@
 \alias{create.tps}
 \title{Convert landmark data from xlsx or csv to tps format}
 \usage{
-create.tps(
-  input.filename = NULL,
-  output.filename = NULL,
-  id.factors = NULL,
-  seperator = "__",
-  include.scale = FALSE,
-  invert.scale = FALSE,
-  export.metadata = FALSE,
-  specimen.number = NULL,
-  landmark.number = NULL,
-  include.header = TRUE
-)
+create.tps(input.filename = NULL, output.filename = NULL,
+  id.factors = NULL, seperator = "__", include.scale = FALSE,
+  invert.scale = FALSE, export.metadata = FALSE,
+  specimen.number = NULL, landmark.number = NULL,
+  include.header = TRUE)
 }
 \arguments{
 \item{input.filename}{The file name to import.}
