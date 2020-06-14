@@ -79,16 +79,15 @@
 #' # 320 453
 #' # 303 468
 #' # 289 447
-#' # ID=T330n5__DRA__control__adult__f
+#' # ID=T330_5__DRA__control__adult__f
 #' # SCALE=1.23
 #' #
 #' # LM=3
 #' # 319 490
 #' # 300 501
 #' # 294 480
-#' # ID=T330n6__DRA__control__adult__m
+#' # ID=T330_6__DRA__control__adult__m
 #' # SCALE=1.24
-#'
 
 create.tps <- function (
   input.filename = NULL,
