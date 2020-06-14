@@ -4,7 +4,9 @@
 \name{East1916}
 \alias{East1916}
 \title{Quantative Genetics Data from East 1916}
-\format{An object of class \code{data.frame} with 173 rows and 6 columns.}
+\format{
+An object of class \code{data.frame} with 173 rows and 6 columns.
+}
 \source{
 East, E. 1916. Studies on Size Inheritance in \emph{Nicotiana}. \emph{Genetics} 1(2): 164-176
     \url{http://www.genetics.org/content/1/2/164/}

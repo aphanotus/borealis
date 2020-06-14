@@ -7,8 +7,7 @@
 Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
 }
 \usage{
-pcvar(x = NULL, sdev = NULL, dimensions = 5, rounding = 4,
-  as.percent = TRUE)
+pcvar(x = NULL, sdev = NULL, dimensions = 5, rounding = 4, as.percent = TRUE)
 }
 \arguments{
 \item{x}{An object of class \code{prcomp}}
@@ -37,31 +36,24 @@ functions, such various \code{geom}'s in \code{ggplot2}.
 }
 \examples{
 # PCA
-iris.pca <- prcomp(iris[,1:4])
+car.pca <- prcomp(mtcars[,-c(2,8:11)], center = TRUE, scale. = TRUE)
 
 # Report proprotional variance from each PC axis
-pcvar(iris.pca)
-pcvar(iris.pca, as.percent = FALSE)
-pcvar(iris.pca, rounding = 2, as.percent = FALSE)
+pcvar(car.pca)
+pcvar(car.pca, as.percent = FALSE)
+pcvar(car.pca, rounding = 2, as.percent = FALSE)
+pcvar(car.pca, dimensions = dim(car.pca$x)[2])
 
 # Standard deviations can be passed directly
-pcvar(sdev = iris.pca$sdev)
-
-
-# PCA
-mtcars.pca <- prcomp(mtcars, center = TRUE, scale. = TRUE)
-
-# Report proprotional variance from each PC axis
-pcvar(mtcars.pca)
-pcvar(mtcars.pca, dimensions = dim(mtcars)[2])
+pcvar(sdev = car.pca$sdev)
 
 # Use the pcvar output to annotate the axes of a PC-space
-mtcars.pcvar <- pcvar(mtcars.pca, dimensions = dim(mtcars)[2])
+car.pcvar <- pcvar(car.pca)
 dim1 <- 1
 dim2 <- 2
-plot(x = mtcars.pca$x[,dim1], y = mtcars.pca$x[,dim2],
+plot(x = car.pca$x[,dim1], y = car.pca$x[,dim2],
      xlab = paste0(names(mtcars.pcvar[dim1])," (",mtcars.pcvar[dim1],")"),
      ylab = paste0(names(mtcars.pcvar[dim2])," (",mtcars.pcvar[dim2],")"),
      col = as.factor(strtrim(rownames(mtcars),3))
-     )
+)
 }
