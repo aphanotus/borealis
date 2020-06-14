@@ -53,7 +53,9 @@
 #' @param specimen.number The number of specimens.
 #' @param landmark.number The number of landmarks for each specimen.
 #' @param include.header A logical value indicating whether to include a descriptive header in the \code{tps} file.
-
+#'
+#' @export
+#'
 #' @examples
 #' # As an example, an input CSV file might looks like this:
 #' #

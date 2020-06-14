@@ -25,7 +25,9 @@
 #' @param main An overall title for the plot.
 #' @param xlab A title for the x axis.
 #' @param ylab A title for the y axis.
-
+#'
+#' @export
+#'
 #' @examples
 #' std.conc <- c(rep(6,3),rep(5,3),rep(4,3),rep(3,3))
 #' std.cq <- c(26.74, 27.33, 25.83, 29.42, 29.90, 28.10, 33.15, 33.31, 31.41, 34.56, 34.64, 34.89)
