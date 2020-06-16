@@ -127,7 +127,6 @@ ggGMMplot <- function (
   require(geomorph)
   require(ggplot2)
   require(ggpubr)
-  require(magrittr)
   require(grid)
   require(ggplotify)
 

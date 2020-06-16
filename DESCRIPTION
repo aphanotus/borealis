@@ -1,13 +1,24 @@
 Package: borealis
 Type: Package
 Title: Tools For Integrative Research In Biology 
-Version: 2020.06.15
+Version: 2020.06.16
 Authors@R: person("Dave", "Angelini", email = "david.r.angelini@gmail.com",
                   role = c("aut", "cre"))
-Description: This package gathers functions developed in the lab of Dave Angelini.
-    These provide tools for commons activities in R involving geometric morphometrics,
-    qPCR etc. It also gathers some sample data.
+Description: This package gathers functions developed for commons activities in 
+    an integrative biology lab, including geometric morphometrics, qPCR etc. 
+    It also gathers some sample data.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.0
+Suggests:
+    dplyr,
+    ggplot2,
+    ggpubr,
+    openxlsx,
+    geomorph,
+    grid,
+    ggplotify,
+    grDevices,
+    viridis
+NeedsCompilation: no
