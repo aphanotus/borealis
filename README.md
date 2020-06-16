@@ -20,15 +20,32 @@ library(borealis)
 
 ## Functions
 
-### create.tps
+### Morphometrics
+
+#### create.tps
 
 Reformats X and Y coordinate positions from a spreadsheet into the `tps` ("thin-plate spline") file format defined by [Rohlf (2015)](https://doi.org/10.4404/hystrix-26.1-11264).
 
-### pcvar
+#### landmark.plot
+
+Plot the relative position of landmarks.
+
+#### orient
+
+Consistently orient specimens in an array of coordinate shape values.
+
+#### pcvar
  
 A function that returns the proportion of variance explained by each axis in a principal component analysis (PCA).
 
-### qPCR.plot
+#### ggGMMplot
+
+This function is designed to make pretty plots from geometric morphometric ordinations
+#' using the output of \code{geomorph::gm.prcomp} (Adams et al. 2020).
+
+### Molecular stuff
+
+#### qPCR.plot
 
 This function takes raw qPCR data and produces a convenient plot and table, which can be used to assess the data.
 
