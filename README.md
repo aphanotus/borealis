@@ -5,16 +5,10 @@ for use in a biology research lab.
 
 ## Installation
 
-The package can be installed in instance of R from GitHub using `devtools`.
+The package can be installed in instance of R from GitHub using the package `devtools`.
 
 ``` r
-library(devtools)
-install_github("aphanotus/borealis")
-```
-
-Then just load the package like any other.
-
-``` r
+devtools::install_github("aphanotus/borealis")
 library(borealis)
 ```
 
@@ -41,7 +35,7 @@ A function that returns the proportion of variance explained by each axis in a p
 #### ggGMMplot
 
 This function is designed to make pretty plots from geometric morphometric ordinations
-#' using the output of \code{geomorph::gm.prcomp} (Adams et al. 2020).
+#' using the output of `geomorph::gm.prcomp` (Adams et al. 2020).
 
 ### Molecular stuff
 
@@ -55,7 +49,7 @@ This function takes raw qPCR data and produces a convenient plot and table, whic
 
 A dataset reporting the corolla lengths of *Nicotiana* flowers of different breeds, after hybridization, and after several generations of artificial selection for longer or shorter corolla lengths. These data originally appeared in [East (1916)](http://www.genetics.org/content/1/2/164/). 
 
-This dataset is often used in genetics courses to present the effects of selection on quantitative traits. `East1916` organizes the data in a "tidy" long format. `East1916.wide` presents the data in a dateframe that most closely resembles the original Table 1 from East (1916).
+This dataset is often used in genetics courses to present the effects of selection on quantitative traits. `East1916` organizes the data in a "tidy" long format. `East1916.wide` presents the data in a data frame that most closely resembles the original Table 1 from East (1916).
 
 ### Bombus.tree
 
