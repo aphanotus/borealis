@@ -15,11 +15,13 @@ orient(
   rightLM = NULL,
   include.plot = TRUE,
   links = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  provenance = NULL
 )
 }
 \arguments{
-\item{A}{3-dimensional array containing XY shape corrdinates for multiple specimens.}
+\item{A}{A 3-dimensional array containing XY shape corrdinates for multiple specimens,
+or a list containing such as an array and data provenance.}
 
 \item{topLM}{The row number of the landmark that should be on top.}
 
@@ -34,6 +36,12 @@ orient(
 \item{links}{A matrix with two columns indicating landmarks to connect by lines in the plot. Or \code{"chull"} can be used to draw a convex hull.}
 
 \item{verbose}{A logical factor specifying whether to report out corrections to each specimen.}
+
+\item{provenance}{An object that should be retained for data provenance.}
+}
+\value{
+Returns a list with \code{coords}, \code{provenance}, and
+   any other potential list elements from the input.
 }
 \description{
 The input array should contain landmark coordinates with \emph{p}, 2, and \emph{n} dimensions,

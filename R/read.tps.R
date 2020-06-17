@@ -38,7 +38,7 @@
 #'
 #' shapes$specimen.number
 #'
-#' cat(shapes$header)
+#' cat(shapes$provenance)
 #'
 
 read.tps <- function (
@@ -103,7 +103,7 @@ read.tps <- function (
       header.text <- header.text[1:(x-1)]
       header.text <- sub("# ","",header.text)
       header.text <- paste0(header.text, collapse = "\n")
-      output[["header"]] <- header.text
+      output[["provenance"]][["tps.header"]] <- header.text
     }
   }
 

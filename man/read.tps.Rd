@@ -9,7 +9,7 @@ Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
 \usage{
 read.tps(
   file,
-  specID = c("None", "ID", "imageID"),
+  specID = "ID",
   negNA = FALSE,
   readcurves = FALSE,
   warnmsg = TRUE,
@@ -58,7 +58,7 @@ shapes$landmark.number
 
 shapes$specimen.number
 
-cat(shapes$header)
+cat(shapes$provenance)
 
 }
 \references{

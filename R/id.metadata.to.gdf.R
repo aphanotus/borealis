@@ -38,7 +38,7 @@
 #'     The function attempts to do this in a metadata column (named by one of the elements in \code{id.factors})
 #'     that has a name like "ID", "specimen", "Sample", etc. For best effect, set the first \code{id.factors}
 #'     value as "id". Default is \code{keep.original.ids = FALSE}.
-#' @param provenance Any object that should be retained for data provenance.
+#' @param provenance An object that should be retained for data provenance.
 #'
 #' @export
 #'
@@ -47,14 +47,14 @@
 #' data("Bombus.forewings", package = "borealis")
 #'
 #' names(Bombus.forewings)
-#' cat(Bombus.forewings$header)
+#' cat(Bombus.forewings$provenance)
 #'
 #' Y.gpa <- gpagen(Bombus.forewings$coords)
 #'
 #' Y.gdf <- id.metadata.to.gdf(
 #'   Y.gpa,
 #'   id.factors = c("id","species","caste","digitizer"),
-#'   provenance = Bombus.forewings$header
+#'   provenance = Bombus.forewings$provenance
 #' )
 #'
 #' names(Y.gdf)
@@ -86,6 +86,7 @@ id.metadata.to.gdf <- function (
       s <- dimnames(A$coords)[[3]]
       shape.data <- A$coords
       if (is.null(size.data) & any(grepl("Csize",names(A)))) { size.data <- A$Csize }
+      if (is.null(provenance) & any(grepl("provenance",names(A)))) { provenance <- A$provenance }
     } else {
       if ((class(A)[1] == "array") & (length(dim(A)) == 3)) {
         s <- dimnames(A)[[3]]
@@ -156,6 +157,7 @@ id.metadata.to.gdf <- function (
     if (!is.null(provenance)) {
       gdf$provenance <- provenance
     }
+    gdf[["provenance"]][["gdf.creation"]] <- paste0("GDF\nGeomorph data frame created by ",toupper(Sys.getenv("LOGNAME"))," on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n")
     return(gdf)
   } else {
     return(metadata)
