@@ -16,9 +16,20 @@ library(borealis)
 
 ### Morphometrics
 
+One of the goals of this package has become to provide a system to record data provenance in the objects
+produced through a GMM workflow, relying on the tools provided by the R package [geomorph](https://cran.r-project.org/web/packages/geomorph/index.html).
+
 #### create.tps
 
 Reformats X and Y coordinate positions from a spreadsheet into the `tps` ("thin-plate spline") file format defined by [Rohlf (2015)](https://doi.org/10.4404/hystrix-26.1-11264).
+
+#### ggGMMplot
+
+This function is designed to make pretty plots from geometric morphometric ordinations using the output of `geomorph::gm.prcomp`.
+
+#### id.metadata.to.gdf
+
+Extracts metadata from the specimen IDs in an array of coordinate shape data, producing a `geomorph.data.frame` or regular `data.frame`.
 
 #### landmark.plot
 
@@ -26,16 +37,16 @@ Plot the relative position of landmarks.
 
 #### orient
 
-Consistently orient specimens in an array of coordinate shape values.
+Consistently orient multiple specimens in an array of coordinate shape values.
 
 #### pcvar
  
 A function that returns the proportion of variance explained by each axis in a principal component analysis (PCA).
 
-#### ggGMMplot
+#### read.tps
 
-This function is designed to make pretty plots from geometric morphometric ordinations
-#' using the output of `geomorph::gm.prcomp` (Adams et al. 2020).
+A wrapper function for `geomorph::readland.tps`, which reads a `tps} file to obtain landmark coordinates and includes a few routine follow-up steps.
+
 
 ### Molecular stuff
 
@@ -43,7 +54,20 @@ This function is designed to make pretty plots from geometric morphometric ordin
 
 This function takes raw qPCR data and produces a convenient plot and table, which can be used to assess the data.
 
+
 ## Data
+
+### Bombus.forewings
+
+Preliminary shape data from bumblebee forewings. These data were imported from a
+`tps` file using `read.tps` . The `tps` file was created from raw data using
+`create.tps`. These data are very preliminary. They have not been curated and have not
+undergone Procrustes alginment. The main purpose of these data are for trouble shooting
+morphometric worlkflows.
+
+### Bombus.tree
+
+This phylogeny covers 26 bumblebee species (*Bombus*) focusing on those found in northeastern North America. The tree is based on sequence data from five genes, reported by [Cameron et al. (2007)](https://doi.org/10.1111/j.1095-8312.2007.00784.x). The taxa in that study were subset to the species included here. Sequences were realigned using ClustalW and the consensus tree was inferred using RAxML. The `phylo` list also includes data on taxonomy, node support, species names, and convenient short species codes.
 
 ### East1916
 
@@ -51,9 +75,6 @@ A dataset reporting the corolla lengths of *Nicotiana* flowers of different bree
 
 This dataset is often used in genetics courses to present the effects of selection on quantitative traits. `East1916` organizes the data in a "tidy" long format. `East1916.wide` presents the data in a data frame that most closely resembles the original Table 1 from East (1916).
 
-### Bombus.tree
-
-This phylogeny covers 26 bumblebee species (*Bombus*) focusing on those found in northeastern North America. The tree is based on sequence data from five genes, reported by [Cameron et al. (2007)](https://doi.org/10.1111/j.1095-8312.2007.00784.x). The taxa in that study were subset to the species included here. Sequences were realigned using ClustalW and the consensus tree was inferred using RAxML. The `phylo` list also includes data on taxonomy, node support, species names, and convenient short species codes.
 
 
 

@@ -30,9 +30,11 @@ landmark.plot(
 Plot the relative position of landmarks
 }
 \examples{
+data(plethodon, package = "geomorph")
+
 landmark.plot(plethodon$land[,,1])
 
-pletho.links <- matrix(c(4,5,5,6,6,7,7,8,8,9,9,10,10,11,2,4,12,4,3,5),
+pletho.links <- matrix(c(4,5,5,6,6,7,7,8,8,9,9,10,10,11,2,4,12,2,3,5),
                        ncol = 2, byrow = TRUE)
 landmark.plot(plethodon$land[,,1], links = pletho.links )
 

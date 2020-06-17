@@ -26,9 +26,9 @@ principal component analysis (PCA).
 }
 \details{
 This function outputs a named vetor with decimal (numeric) or percent (character)
-proportions of variance from a PCA. It will take either an object of class \code{prcomp}
+proportions of variance from a PCA. It will take either an object of class \code{\link[stats]{prcomp}}
 or standard deviations can be passed to \code{sdev}. The function also works with PCA
-objects created by \code{geomorph::gm.prcomp}.
+objects created by \code{\link[geomorph]{gm.prcomp}}.
 
 The same information can be found by running \code{summary} on a \code{prcomp} object
 but the simpler output of \code{pcvar} makes it convenient to be passes to plotting
@@ -52,8 +52,8 @@ car.pcvar <- pcvar(car.pca)
 dim1 <- 1
 dim2 <- 2
 plot(x = car.pca$x[,dim1], y = car.pca$x[,dim2],
-     xlab = paste0(names(mtcars.pcvar[dim1])," (",mtcars.pcvar[dim1],")"),
-     ylab = paste0(names(mtcars.pcvar[dim2])," (",mtcars.pcvar[dim2],")"),
+     xlab = paste0(names(car.pcvar[dim1])," (",car.pcvar[dim1],")"),
+     ylab = paste0(names(car.pcvar[dim2])," (",car.pcvar[dim2],")"),
      col = as.factor(strtrim(rownames(mtcars),3))
 )
 }

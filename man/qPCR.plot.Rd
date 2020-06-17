@@ -36,18 +36,19 @@ qPCR.plot(
 \item{ylab}{A title for the y axis.}
 }
 \description{
-This function takes raw qPCR data and produces a convenient plot and table,
-which can be used to assess the data.
+This function takes raw realtime PCR data and produces a convenient plot and table,
+which can be used to assess the quality of the data.
 }
 \details{
-The function take information on the standard concentrations (unitless) and Cq values measured by
-the realtime PCR instrument. A linear regression provides intercept and slope,
-from which PCR efficiency is calculated. The correlation coefficient is also displayed. \
+The function takes information on the standard concentrations (unitless) and Cq values
+measured by the realtime PCR instrument. A linear regression provides intercept and
+slope, from which PCR efficiency is calculated. The correlation coefficient is also
+displayed.
 
 Potential outlier values in the standard Cq values are highlighted on the plot in red.
 These are flagged as technical replicate more than 1.5 cycles from the median.
-Efficiency values outside the range of 1.8 to 2.2 (90% - 110%) are also highlighted, as are
-correlation coefficients (R^2) less than 0.9.
+Efficiency values outside the range of 1.8 to 2.2 (90% - 110%) are also highlighted,
+as are correlation coefficients (R^2) less than 0.9.
 
 If they are provided, the mean negative control values (NRT and NTC) are ploted as horizontal lines
 (gray and blue, respectively).
@@ -62,9 +63,11 @@ ntc.cq <- c(37.08, 36.56, 38.62)
 qPCR.plot(std.conc, std.cq, unk.cq, nrt.cq, ntc.cq, main="TFX (FAM)")
 
 # In practice, it's usually convenient to scan in values copied from a spreadsheet
-std.conc <- scan()
+# e.g.
+# std.conc <- scan()
 
-# If no inputs are provided, the function simulates data and analysis
+# If no inputs are provided, the function simulates data and analysis,
+# which can be useful when training people new to realtime PCR.
 qPCR.plot()
 
 }

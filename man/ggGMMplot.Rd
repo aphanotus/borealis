@@ -91,13 +91,15 @@ ggGMMplot(
 }
 \description{
 This function is designed to make pretty plots from geometric morphometric ordinations
-using the output of \code{geomorph::gm.prcomp} (Adams et al. 2020).
+using the output of \code{\link[geomorph]{gm.prcomp}} (Adams et al. 2020).
 }
 \details{
 Beware that right now, the \code{save.as} feature only works with
 \code{backtransform.examples = FALSE}.
 }
 \examples{
+data(plethodon, package = "geomorph")
+
 # GPA
 Y.gpa <- gpagen(plethodon$land)
 # Create a gm.prcomp object
@@ -119,11 +121,12 @@ ggGMMplot(PCA, group = plethodon$species, group.title = 'species', convex.hulls 
           ref.shape = Y.gpa$consensus)
 
 # Custom links on the example shapes
+pletho.links <- matrix(c(4,5,5,6,6,7,7,8,8,9,9,10,10,11,2,4,12,2,3,5),
+                       ncol = 2, byrow = TRUE)
 ggGMMplot(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE,
           backtransform.examples = TRUE,
           ref.shape = Y.gpa$consensus,
-          bt.links = matrix(c(4,5,5,6,6,7,7,8,8,9,9,10,10,11,2,4,12,4,3,5),
-                            ncol=2, byrow=TRUE))
+          bt.links = pletho.links)
 
 # No links on the example shapes
 ggGMMplot(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE,
@@ -131,7 +134,7 @@ ggGMMplot(PCA, group = plethodon$species, group.title = 'species', convex.hulls 
           ref.shape = Y.gpa$consensus,
           bt.links = "none")
 
-# Example shapes displaysed as thin-plate spline warp grids
+# Example shapes displaysed as thin-plate spline (TPS) warp grids
 ggGMMplot(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE,
           backtransform.examples = TRUE,
           ref.shape = Y.gpa$consensus,

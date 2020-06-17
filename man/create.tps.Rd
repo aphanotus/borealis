@@ -3,6 +3,9 @@
 \name{create.tps}
 \alias{create.tps}
 \title{Convert landmark data from xlsx or csv to tps format}
+\source{
+Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
+}
 \usage{
 create.tps(
   input.filename = NULL,
@@ -58,7 +61,7 @@ have a column headed "scale" to be included as a \code{SCALE=} line for each spe
 the \code{tps} file.
 
 The scale value can also be inverted, by setting \code{invert.scale = TRUE}.
-This may be useful, because \code{geomorph::readland.tps} applies scale values by multiplication.
+This may be useful, because \code{\link[geomorph]{readland.tps}} applies scale values by multiplication.
 Typically this is appropriate when scale is recorded as unit distance (e.g. mm) per pixel.
 However, if scale is recorded in pixels per unit distance (e.g. pixels/mm)
 it will be appropriate to first invert the scaling factor before importing coordinate data.

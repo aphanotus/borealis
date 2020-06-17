@@ -16,7 +16,7 @@
 #' the \code{tps} file.
 #'
 #' The scale value can also be inverted, by setting \code{invert.scale = TRUE}.
-#' This may be useful, because \code{geomorph::readland.tps} applies scale values by multiplication.
+#' This may be useful, because \code{\link[geomorph]{readland.tps}} applies scale values by multiplication.
 #' Typically this is appropriate when scale is recorded as unit distance (e.g. mm) per pixel.
 #' However, if scale is recorded in pixels per unit distance (e.g. pixels/mm)
 #' it will be appropriate to first invert the scaling factor before importing coordinate data.
@@ -37,6 +37,8 @@
 #' All metadata will be included in this file.
 #'
 #' Only the first sheet will be used from \code{xlsx} input files.
+#'
+#' @source   Dave Angelini \email{david.r.angelini@@gmail.com} [aut, cre]
 #'
 #' @references  Rohlf, FJ. 2015. The tps series of software. \emph{Hystrix} 26, 9–12.
 #' (\href{https://doi.org/10.4404/hystrix-26.1-11264}{Link})
@@ -190,6 +192,7 @@ create.tps <- function (
     cat("# Landmarks: ",landmark.number,"\n")
     if (length(id.factors)>0) {
       cat("# Metadata are encoded in specimen ID lines from the following factors:\n#   ",paste(id.factors, collapse = ', '),"\n")
+      cat("# Metadata seperator: ",seperator,"\n")
     }
     if (include.scale) {
       if (invert.scale) {

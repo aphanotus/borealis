@@ -14,7 +14,8 @@ orient(
   leftLM = NULL,
   rightLM = NULL,
   include.plot = TRUE,
-  links = NULL
+  links = NULL,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ orient(
 \item{include.plot}{A logical factor specifying whether to include a plot showing th first specimen in the array, after orientation.}
 
 \item{links}{A matrix with two columns indicating landmarks to connect by lines in the plot. Or \code{"chull"} can be used to draw a convex hull.}
+
+\item{verbose}{A logical factor specifying whether to report out corrections to each specimen.}
 }
 \description{
 The input array should contain landmark coordinates with \emph{p}, 2, and \emph{n} dimensions,
@@ -42,7 +45,9 @@ If no values are given for the top, bottom, left or right landmarks, then all sp
 will be oriented to match the first specimen in the array.
 }
 \examples{
-pletho.links <- matrix(c(4,5,5,6,6,7,7,8,8,9,9,10,10,11,2,4,12,4,3,5),
+data(plethodon, package = "geomorph")
+
+pletho.links <- matrix(c(4,5,5,6,6,7,7,8,8,9,9,10,10,11,2,4,12,2,3,5),
                        ncol = 2, byrow = TRUE)
 
 curated.coords <- orient(plethodon$land,
