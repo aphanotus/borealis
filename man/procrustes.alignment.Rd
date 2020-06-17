@@ -12,7 +12,7 @@ procrustes.alignment(A, provenance = NULL, ...)
 \arguments{
 \item{A}{3-dimensional array containing XY shape corrdinates for multiple specimens, or a character vector of specimen IDs.}
 
-\item{provenance}{Any object that should be retained for data provenance.}
+\item{provenance}{An object that should be retained for data provenance.}
 }
 \value{
 Returns an object of class \code{gpagen} with an added element for \code{provenance}.

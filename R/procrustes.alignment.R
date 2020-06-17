@@ -11,7 +11,7 @@
 #' (\href{https://doi.org/10.4404/hystrix-26.1-11264}{Link})
 #'
 #' @param A 3-dimensional array containing XY shape corrdinates for multiple specimens, or a character vector of specimen IDs.
-#' @param provenance Any object that should be retained for data provenance.
+#' @param provenance An object that should be retained for data provenance.
 #'
 #' @export
 #'
