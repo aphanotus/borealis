@@ -8,7 +8,8 @@ Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
 }
 \usage{
 landmark.plot(
-  xy,
+  landmarks,
+  specimen.number = 1,
   square = TRUE,
   links = NULL,
   text.color = "darkred",
@@ -16,7 +17,9 @@ landmark.plot(
 )
 }
 \arguments{
-\item{xy}{A 2D matrix of X and Y corrdinates.}
+\item{landmarks}{A 2D matrix of X and Y corrdinates, or a 3D array of multiple specimens.}
+
+\item{specimen.number}{If an array is provided, the specimen number to plot.}
 
 \item{square}{A logical factor specifying whether the aspect ratio of the plot should be equal.}
 

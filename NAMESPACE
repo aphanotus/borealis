@@ -2,6 +2,7 @@
 
 export(create.tps)
 export(ggGMMplot)
+export(id.metadata.to.gdf)
 export(landmark.plot)
 export(orient)
 export(pcvar)

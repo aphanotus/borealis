@@ -98,7 +98,8 @@ Beware that right now, the \code{save.as} feature only works with
 \code{backtransform.examples = FALSE}.
 }
 \examples{
-data(plethodon, package = "geomorph")
+library(geomorph)
+data(plethodon)
 
 # GPA
 Y.gpa <- gpagen(plethodon$land)

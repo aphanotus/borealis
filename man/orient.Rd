@@ -19,7 +19,7 @@ orient(
 )
 }
 \arguments{
-\item{A}{A 2D matrix of X and Y corrdinates.}
+\item{A}{3-dimensional array containing XY shape corrdinates for multiple specimens.}
 
 \item{topLM}{The row number of the landmark that should be on top.}
 

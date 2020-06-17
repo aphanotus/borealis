@@ -41,7 +41,8 @@
 #' @export
 #'
 #' @examples
-#' data(plethodon, package = "geomorph")
+#' library(geomorph)
+#' data(plethodon)
 #'
 #' # GPA
 #' Y.gpa <- gpagen(plethodon$land)

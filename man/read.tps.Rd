@@ -23,7 +23,8 @@ read.tps(
   bottomLM = NULL,
   leftLM = NULL,
   rightLM = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  include.header = TRUE
 )
 }
 \value{
@@ -51,9 +52,13 @@ shapes <- read.tps("sample.tps",
                    orient.specimens = TRUE,
                    verbose = FALSE)
 
+names(shapes)
+
 shapes$landmark.number
 
 shapes$specimen.number
+
+cat(shapes$header)
 
 }
 \references{
