@@ -43,7 +43,7 @@
 
 read.tps <- function (
   file,
-  specID = c("None", "ID", "imageID"),
+  specID = "ID",
   negNA = FALSE,
   readcurves = FALSE,
   warnmsg = TRUE,
