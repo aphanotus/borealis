@@ -43,6 +43,14 @@ Consistently orient multiple specimens in an array of coordinate shape values.
  
 A function that returns the proportion of variance explained by each axis in a principal component analysis (PCA).
 
+#### read.mmm
+
+A function to read in linear multivariate morphometric (MMM) data from a `csv` or `xlsx` file.
+The input spread sheet is assumed to be "long," in the sense that one column includes a list measurements made either by hand or in grpahics software such as [ImageJ](https://imagej.net).
+This organization is typically a convenient for rapid data entry.
+The function reformats the multiple measurements into a list containing the data in a traditional tabular format, with each measurement in a seperate column. It also returns several elements
+describing the data and providing data provenance.
+
 #### read.tps
 
 A wrapper function for `geomorph::readland.tps`, which reads a `tps} file to obtain landmark coordinates and includes a few routine follow-up steps.

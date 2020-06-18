@@ -2,7 +2,7 @@
 #'
 #' Reads in linear multivariate morphometric (MMM) data from a \code{csv} or \code{xlsx} file.
 #' (Only the first sheet will be used from \code{xlsx} input files.)
-#' The input sprad sheet is assumed to be "long," in the sense that one column includes a list measurements
+#' The input spread sheet is assumed to be "long," in the sense that one column includes a list measurements
 #' made either by hand or in grpahics software such as \href{https://imagej.net}{ImageJ}.
 #' This organization is typically a convenient for rapid data entry.
 #' The function reformats the multiple measurements into a traditional tabular format,
