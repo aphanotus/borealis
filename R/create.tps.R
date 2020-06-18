@@ -7,7 +7,7 @@
 #' There must be columns headed "x" and "y", although these are not case-sensitive
 #' and can occur in any order.
 #' There must be a column giving specimen IDs, using a name like "ID" or "specimen_IDs"
-#' Any other columns are optional and may be used to encode metadata. The optional parameter
+#' Any other columns are optional and may be used to encode metadata.
 #' Columns named by \code{id.factors} will be added to the \code{ID=} line
 #' in the resulting \code{tps} file, seperated by the character string in the \code{seperator} parameter.
 #'
@@ -22,7 +22,7 @@
 #' it will be appropriate to first invert the scaling factor before importing coordinate data.
 #'
 #' Each row must include X and Y coordinates for landmarks, in order.
-#' Each specimen should appear with a  consequtively block of rows, with landmarks in the same order.
+#' Each specimen should appear with a  consequtive block of rows, with landmarks in the same order.
 #' The number of landmarks must be consistent for all specimens. Specimen metadata must appear on the
 #' first row for each specimen. (That is, on the row for landmark 1.)
 #'
@@ -52,9 +52,6 @@
 #' @param invert.scale A logical value indicating whether to invert the scale value.
 #' @param export.metadata A logical value indicating whether or not metadata should be
 #'     exported to a seperate file.
-#' @param specimen.number The number of specimens.
-#' @param landmark.number The number of landmarks for each specimen.
-#' @param include.header A logical value indicating whether to include a descriptive header in the \code{tps} file.
 #'
 #' @export
 #'
@@ -152,7 +149,7 @@ create.tps <- function (
     if ((dim(raw)[1] %% landmark.number == 0) & (dim(raw)[1]/landmark.number > specimen.number)) {
       x <- dim(raw)[1]/landmark.number - specimen.number
       cat('Error:',input.filename,'contains',x,'duplicate specimen IDs. ')
-      x <- raw$specimen.ID; x <- x[which(nchar(x)>1)]; x <- x[which(duplicated(x))]
+      x <- raw[,ID.col]; x <- x[which(nchar(x)>1)]; x <- x[which(duplicated(x))]
       return(cat(paste(x,'\n')))
     } else {
       return(cat(paste('Error:',input.filename,'does not contain properly formatted landmark data.\n')))

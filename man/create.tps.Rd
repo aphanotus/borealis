@@ -36,12 +36,6 @@ includes a column with scale values.}
 
 \item{export.metadata}{A logical value indicating whether or not metadata should be
 exported to a seperate file.}
-
-\item{specimen.number}{The number of specimens.}
-
-\item{landmark.number}{The number of landmarks for each specimen.}
-
-\item{include.header}{A logical value indicating whether to include a descriptive header in the \code{tps} file.}
 }
 \description{
 Reformats X and Y coordinate positions from a spreadsheet into the \code{tps} ("thin-plate spline")
@@ -52,7 +46,7 @@ The first row of the input file must provide column names.
 There must be columns headed "x" and "y", although these are not case-sensitive
 and can occur in any order.
 There must be a column giving specimen IDs, using a name like "ID" or "specimen_IDs"
-Any other columns are optional and may be used to encode metadata. The optional parameter
+Any other columns are optional and may be used to encode metadata.
 Columns named by \code{id.factors} will be added to the \code{ID=} line
 in the resulting \code{tps} file, seperated by the character string in the \code{seperator} parameter.
 
@@ -67,7 +61,7 @@ However, if scale is recorded in pixels per unit distance (e.g. pixels/mm)
 it will be appropriate to first invert the scaling factor before importing coordinate data.
 
 Each row must include X and Y coordinates for landmarks, in order.
-Each specimen should appear with a  consequtively block of rows, with landmarks in the same order.
+Each specimen should appear with a  consequtive block of rows, with landmarks in the same order.
 The number of landmarks must be consistent for all specimens. Specimen metadata must appear on the
 first row for each specimen. (That is, on the row for landmark 1.)
 

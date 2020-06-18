@@ -28,9 +28,10 @@ read.tps(
 )
 }
 \value{
-Returns a list with 3 elements: \code{coords}, containing a 3-dimensional array
+Returns a list with several elements: \code{coords}, containing a 3-dimensional array
     of shape coordinates; and \code{landmark.number} and \code{specimen.number},
-    containing integer values.
+    containing integer values. If \code{include.header = TRUE}, the default, then the output
+    will also incluide an element \code{provenance}, which is itself a list recording data provenance.
 }
 \description{
 This function reads a \code{tps} file to obtain landmark coordinates, using

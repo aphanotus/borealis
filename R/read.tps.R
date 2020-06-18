@@ -8,9 +8,10 @@
 #'
 #' @source   Dave Angelini \email{david.r.angelini@@gmail.com} [aut, cre]
 #'
-#' @return Returns a list with 3 elements: \code{coords}, containing a 3-dimensional array
+#' @return Returns a list with several elements: \code{coords}, containing a 3-dimensional array
 #'     of shape coordinates; and \code{landmark.number} and \code{specimen.number},
-#'     containing integer values.
+#'     containing integer values. If \code{include.header = TRUE}, the default, then the output
+#'     will also incluide an element \code{provenance}, which is itself a list recording data provenance.
 #'
 #' @references  Rohlf, FJ. 2015. The tps series of software. \emph{Hystrix} 26, 9–12.
 #' (\href{https://doi.org/10.4404/hystrix-26.1-11264}{Link})
