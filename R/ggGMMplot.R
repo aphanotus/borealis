@@ -1,6 +1,6 @@
 #' Morphospace in the ggplot style
 #'
-#' This function is designed to make pretty plots from geometric morphometric ordinations
+#' Make pretty plots from geometric morphometric ordinations
 #' using the output of \code{\link[geomorph]{gm.prcomp}} (Adams et al. 2020).
 #'
 #' Beware that right now, the \code{save.as} feature only works with
@@ -9,6 +9,8 @@
 #' @references  Geomorph: Software for geometric morphometric analyses.
 #' R package version 3.2.1. D.C. Adams and M.L. Collyer and A. Kaliontzopoulou. 2020.
 #' (\href{https://cran.r-project.org/package=geomorph}{Link})
+#'
+#' @source   Dave Angelini \email{david.r.angelini@@gmail.com} [aut, cre]
 #'
 #' @param x An object of class \code{gm.prcomp}.
 #' @param axis1 The PC axis to plot on the horizontal.

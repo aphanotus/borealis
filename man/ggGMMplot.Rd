@@ -3,6 +3,9 @@
 \name{ggGMMplot}
 \alias{ggGMMplot}
 \title{Morphospace in the ggplot style}
+\source{
+Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
+}
 \usage{
 ggGMMplot(
   x,
@@ -90,7 +93,7 @@ ggGMMplot(
 \item{viridis.color.option}{The color pallette to use from the \code{viridis} package.}
 }
 \description{
-This function is designed to make pretty plots from geometric morphometric ordinations
+Make pretty plots from geometric morphometric ordinations
 using the output of \code{\link[geomorph]{gm.prcomp}} (Adams et al. 2020).
 }
 \details{

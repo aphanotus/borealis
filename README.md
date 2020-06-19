@@ -23,6 +23,11 @@ produced through a GMM workflow, relying on the tools provided by the R package 
 
 Reformats X and Y coordinate positions from a spreadsheet into the `tps` ("thin-plate spline") file format defined by [Rohlf (2015)](https://doi.org/10.4404/hystrix-26.1-11264).
 
+#### gg.scaling.plot
+
+Make pretty plots of the relationship between two variables, taylored for use in examinng
+allometric scaling relationships.
+
 #### ggGMMplot
 
 This function is designed to make pretty plots from geometric morphometric ordinations using the output of `geomorph::gm.prcomp`.
