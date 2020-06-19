@@ -7,18 +7,24 @@
 Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
 }
 \usage{
-pcvar(x = NULL, sdev = NULL, dimensions = 5, rounding = 4, as.percent = TRUE)
+pcvar(
+  x = NULL,
+  sdev = NULL,
+  dimensions = "all",
+  rounding = 4,
+  as.percent = TRUE
+)
 }
 \arguments{
-\item{x}{An object of class \code{prcomp}}
+\item{x}{An object of class \code{prcomp}.}
 
-\item{sdev}{An alternative way to input standard deviations, as a numeric vector}
+\item{sdev}{An alternative way to input standard deviations, as a numeric vector.}
 
-\item{dimensions}{The number of dimensions to return}
+\item{dimensions}{The number of dimensions to return, or (by default) "all".}
 
-\item{rounding}{The number of decimal places to return}
+\item{rounding}{The number of decimal places to return.}
 
-\item{as.percent}{A logical factor specifying whether to report values as a percentage}
+\item{as.percent}{A logical factor specifying whether to report values as a percentage.}
 }
 \description{
 The function returns the proportion of variance explained by each axis in a

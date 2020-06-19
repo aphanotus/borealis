@@ -14,11 +14,11 @@
 #'
 #' @source   Dave Angelini \email{david.r.angelini@@gmail.com} [aut, cre]
 #'
-#' @param x An object of class \code{prcomp}
-#' @param sdev An alternative way to input standard deviations, as a numeric vector
-#' @param dimensions The number of dimensions to return
-#' @param rounding The number of decimal places to return
-#' @param as.percent A logical factor specifying whether to report values as a percentage
+#' @param x An object of class \code{prcomp}.
+#' @param sdev An alternative way to input standard deviations, as a numeric vector.
+#' @param dimensions The number of dimensions to return, or (by default) "all".
+#' @param rounding The number of decimal places to return.
+#' @param as.percent A logical factor specifying whether to report values as a percentage.
 #'
 #' @export
 #'
@@ -45,7 +45,7 @@
 #'      col = as.factor(strtrim(rownames(mtcars),3))
 #' )
 
-pcvar <- function (x = NULL, sdev = NULL, dimensions = 5, rounding = 4, as.percent = TRUE )
+pcvar <- function (x = NULL, sdev = NULL, dimensions = "all", rounding = 4, as.percent = TRUE )
 {
   if (is.null(sdev) & is.null(x)) {
     return(cat("Error: 'x' must be an object of class 'prcomp', or standard deviations must be passed to 'sdev'."))
@@ -57,7 +57,11 @@ pcvar <- function (x = NULL, sdev = NULL, dimensions = 5, rounding = 4, as.perce
       return(cat("Error: 'x' must be an object of class 'prcomp', or standard deviations must be passed to 'sdev'."))
     }
   }
-  if (dimensions > length(sdev)) { dimensions <- length(sdev) }
+  if (dimensions == "all") {
+    dimensions <- length(sdev)
+  } else {
+    if (dimensions > length(sdev)) { dimensions <- length(sdev) }
+  }
   proportion.of.variance <- (sdev^2)/(sum(sdev^2))
   if (as.percent) { proportion.of.variance <- paste0(round(proportion.of.variance[1:dimensions]*100,rounding-2),'%') }
   else { proportion.of.variance <- round(proportion.of.variance[1:dimensions],rounding) }
