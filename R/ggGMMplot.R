@@ -18,6 +18,8 @@
 #' @param group A factor to group samples.
 #' @param group.title An optional title for the group legend.
 #' @param convex.hulls A logical factor specifying whether to plot convex hulls around groups.
+#' @param label.groups A logical factor specifying whether to label groups.
+#' @param include.legend A logical factor specifying whether to include a legend.
 #' @param color The color of points and hulls in each group.
 #' @param pt.size The size of individual points.
 #' @param pt.alpha The opacity of individual points.
@@ -95,6 +97,8 @@ ggGMMplot <- function (
   group = NULL,
   group.title = NULL,
   convex.hulls = FALSE,
+  label.groups = TRUE,
+  include.legend = FALSE,
   color = NULL,
   pt.size = 1.5,
   pt.alpha = 0.85,
@@ -186,7 +190,27 @@ ggGMMplot <- function (
     base.plot <- base.plot +
       stat_chull(alpha = hull.alpha, geom = "polygon", show.legend = FALSE) +
       scale_fill_manual(values=color)
-      # scale_fill_viridis(discrete=TRUE, option = viridis.color.option)
+
+    if (label.groups) {
+      if (require("ggrepel") & require("magrittr") & require("dplyr")) {
+        pcx$group <- group
+        options(warn=-1)
+        hull.labels <- pcx %>%
+          group_by(group) %>%
+          summarise(x = mean(comp1), y = mean(comp2) )
+        options(warn=0)
+        base.plot <- base.plot +
+          geom_text_repel(data=hull.labels,
+                          aes(x=x, y=y, group=group, label=group ),
+                          hjust=0, size = 2.5, lineheight=0.825, alpha=0.7,
+                          force = 1, max.iter = 10000)
+      }
+    } # End   if (label.groups)
+
+  } # End  if (convex.hulls)
+
+  if (!include.legend) {
+    base.plot <- base.plot + theme(legend.position="none")
   }
 
   # Exit scenario: no backtransform & an output file is requested

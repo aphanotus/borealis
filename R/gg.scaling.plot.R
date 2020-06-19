@@ -42,11 +42,13 @@
 #'   distance(xy[3,1],xy[3,2], xy[5,1],xy[5,2])
 #' } )
 #'
-#' gg.scaling.plot(x = log10(head.length), y = log10(jaw.length),
-#'                 group=plethodon$species, group.title = "species",
-#'                 xlab = "head length (log10 mm)", ylab = "jaw length (log10 mm)",
-#'                 include.legend = TRUE,
-#'                 isometry.line = TRUE)
+#' gg.scaling.plot(
+#'   x = log10(head.length), y = log10(jaw.length),
+#'   group=plethodon$species, group.title = "species",
+#'   xlab = "head length (log10 mm)", ylab = "jaw length (log10 mm)",
+#'   include.legend = TRUE,
+#'   isometry.line = TRUE
+#' )
 #'
 
 gg.scaling.plot <- function(
@@ -115,7 +117,6 @@ gg.scaling.plot <- function(
       }
     }
   }
-
 
   base.plot <- ggplot(df, aes(x=x, y=y, group=group, color=group, fill=group)) +
     theme_minimal() +
