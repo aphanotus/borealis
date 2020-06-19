@@ -150,6 +150,8 @@ read.mmm <- function (
   if (is.null(measurement.names)) {
     measurement.names <- default.measurement.names
   } else {
+    # Replace space characters with "."
+    measurement.names <- gsub("\\s",".",measurement.names)
     # Check that measurement.names are not too many
     if (length(measurement.names) > measurement.number) {
       s <- paste("Warning: The number of measurement.names provided exceeds the number of detected measurements. Using only",measurement.number,"names.\n")
