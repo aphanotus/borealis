@@ -121,3 +121,32 @@
 #'
 "Bombus.forewings"
 
+#' @title Pixel-to-metric distance conversions for the dissecting scope in Arey 301A
+#'
+#' @description Ideally, micrpgraphs are taken with a ruler or other scale in the image.
+#'     However, if that's not the case, metric distances can be infered from pixel distances
+#'     based on this conversion table. These data are based on measurements made
+#'     from a high-quality stage micrometer on the VWR VistaVision dissecting microscope
+#'     in Arey 301A at Colby College. Digital photomicrographs were taken with a
+#'     Moticam 5 digital camera. Values apply to the camera's high resolution (2592 × 1944)
+#'     setting. However, a value for pixels per mm are also included for the
+#'     low resolution (1296 × 972) setting. (Try to always save images at high resolution!)
+#'
+#' @details
+#' \describe{
+#'   \item{\code{mag}}{Total magnification}
+#'   \item{\code{setting}}{Zoom setting}
+#'   \item{\code{umpx}}{Microns per pixel}
+#'   \item{\code{umpx_sd}}{Standard deviation for the micron/pixel values, based on triplicate measurements}
+#'   \item{\code{pxmm}}{Pixels per millimeter at high resolution}
+#'   \item{\code{pxmm_lores}}{Pixels per millimeter at low resolution}
+#' }
+#'
+#' @examples
+#' # Load the dataset
+#' data("Arey301A.scope", package = "borealis")
+#'
+#' Arey301A.scope
+#'
+"Arey301A.scope"
+
