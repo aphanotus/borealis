@@ -2,23 +2,56 @@
 % Please edit documentation in R/procrustes.alignment.R
 \name{procrustes.alignment}
 \alias{procrustes.alignment}
-\title{A wrapper for geomorph::gpagen that includes provenance}
+\title{A wrapper for geomorph::gpagen that includes interactive outlier detection and removal}
 \source{
 Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
 }
 \usage{
-procrustes.alignment(A, provenance = NULL, ...)
+procrustes.alignment(
+  A,
+  show.plot.gpa = TRUE,
+  outlier.analysis = FALSE,
+  display.outliers = 4,
+  provenance = NULL,
+  ...
+)
 }
 \arguments{
-\item{A}{3-dimensional array containing XY shape corrdinates for multiple specimens, or a character vector of specimen IDs.}
+\item{A}{A list or 3-dimensional array containing XY shape corrdinates for multiple specimens.}
 
-\item{provenance}{An object that should be retained for data provenance.}
+\item{show.plot.gpa}{A logical value specifying whether to plot the Procrustes-aligned landmarks.}
+
+\item{outlier.analysis}{A logical value specifying whether to poerform interactive outlier analysis.}
+
+\item{display.outliers}{The number of outlier shapes to display.}
+
+\item{provenance}{An object that should be retained for data provenance.
+Unnecessary if \code{A} is a list that already contains a \code{provenance} element.}
 }
 \value{
 Returns an object of class \code{gpagen} with an added element for \code{provenance}.
 }
 \description{
-A wrapper for geomorph::gpagen that includes provenance
+If \code{outlier.analysis = TRUE} then the function will display the results of
+\code{\link[geomorph]{plotOutliers}}, then warp grids for the most extreme shapes.
+The user is then prompted to select a cetain number of extreme shapes to exclude from
+a repeated Procrustes alignment. This processes is iterative, until the user indicates that
+it should stop or no shapes are requested for removal.
+}
+\examples{
+data("Bombus.forewings", package = "borealis")
+
+names(Bombus.forewings)
+cat(Bombus.forewings$provenance[[1]])
+
+fw.gpa <- procrustes.alignment(Bombus.forewings, show.plot.gpa = FALSE)
+plot(fw.gpa)
+
+fw.gpa <- procrustes.alignment(Bombus.forewings, outlier.analysis = TRUE)
+
+names(fw.gpa$provenance)
+cat(fw.gpa$provenance$GPA)
+
 }
 \references{
 Geomorph: Software for geometric morphometric analyses.

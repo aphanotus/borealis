@@ -14,6 +14,8 @@ ggGMMplot(
   group = NULL,
   group.title = NULL,
   convex.hulls = FALSE,
+  label.groups = TRUE,
+  include.legend = FALSE,
   color = NULL,
   pt.size = 1.5,
   pt.alpha = 0.85,
@@ -49,6 +51,10 @@ ggGMMplot(
 \item{group.title}{An optional title for the group legend.}
 
 \item{convex.hulls}{A logical factor specifying whether to plot convex hulls around groups.}
+
+\item{label.groups}{A logical factor specifying whether to label groups.}
+
+\item{include.legend}{A logical factor specifying whether to include a legend.}
 
 \item{color}{The color of points and hulls in each group.}
 

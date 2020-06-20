@@ -64,6 +64,10 @@ describing the data and providing data provenance.
 
 A wrapper function for `geomorph::readland.tps`, which reads a `tps} file to obtain landmark coordinates and includes a few routine follow-up steps.
 
+#### procrustes.analysis
+
+A wrapper for `geomorph::gpagen` that includes interactive outlier detection and removal. 
+The funcrtion will also record and pass data provenance as a list element.
 
 ### Molecular stuff
 
