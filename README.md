@@ -16,8 +16,12 @@ library(borealis)
 
 ### Morphometrics
 
-One of the goals of this package has become to provide a system to record data provenance in the objects
-produced through a GMM workflow, relying on the tools provided by the R package [geomorph](https://cran.r-project.org/web/packages/geomorph/index.html).
+One of the goals of this package has become to provide a system to record [data provenance](https://en.wikipedia.org/wiki/Data_lineage#Data_provenance) in the objects
+produced through a morphometry workflow, relying on tools provided by the R package [geomorph](https://cran.r-project.org/web/packages/geomorph/index.html).
+
+#### AIC.adonis
+
+A simple function to calculate generalized [AIC](https://en.wikipedia.org/wiki/Akaike_information_criterion) for models created by [`vegan::adonis`](https://www.rdocumentation.org/packages/vegan/versions/2.4-2/topics/adonis).
 
 #### create.tps
 
@@ -25,12 +29,12 @@ Reformats X and Y coordinate positions from a spreadsheet into the `tps` ("thin-
 
 #### distance
 
-A simple function to find the Euclidean distance between two points in 2D space.
+A simple function to find the [Euclidean distance](https://en.wikipedia.org/wiki/Euclidean_distance) between two points in 2D space.
 
 #### gg.scaling.plot
 
 Make pretty plots of the relationship between two variables, taylored for use in examinng
-allometric scaling relationships.
+[allometric scaling](https://en.wikipedia.org/wiki/Allometry#Allometric_scaling) relationships.
 
 #### ggGMMplot
 
