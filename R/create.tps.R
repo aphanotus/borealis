@@ -183,19 +183,20 @@ create.tps <- function (
 
   # File header
   if (include.header) {
-    cat("# TPS file created by ",toupper(Sys.getenv("LOGNAME"))," on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n")
-    cat("# Input file: ",input.filename,"\n")
-    cat("# Specimens: ",specimen.number,"\n")
-    cat("# Landmarks: ",landmark.number,"\n")
+    cat("# ## TPS file generation\n\n")
+    cat("# Created by ",toupper(Sys.getenv("LOGNAME"))," on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n")
+    cat("# Input file: ",input.filename,"\n\n")
+    cat("# Specimens: ",specimen.number,"\n\n")
+    cat("# Landmarks: ",landmark.number,"\n\n")
     if (length(id.factors)>0) {
-      cat("# Metadata are encoded in specimen ID lines from the following factors:\n#   ",paste(id.factors, collapse = ', '),"\n")
-      cat("# Metadata seperator: ",seperator,"\n")
+      cat("# Metadata are encoded in specimen ID lines from the following factors:\n# - ",paste(id.factors, collapse = ', '),"\n")
+      cat("# Metadata seperator: ",seperator,"\n\n")
     }
     if (include.scale) {
       if (invert.scale) {
-        cat("# SCALE included and INVERTED from the original dataset.\n")
+        cat("# **Scale** included and **inverted** from the original dataset.\n\n")
       } else {
-        cat("# SCALE included directly from the original dataset.\n")
+        cat("# **Scale** included directly from the original dataset.\n\n")
       }
     }
     cat("\n")

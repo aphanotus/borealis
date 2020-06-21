@@ -100,11 +100,11 @@ orient <- function(A, topLM = NULL, bottomLM = NULL, leftLM = NULL, rightLM = NU
       output[["provenance"]] <- provenance
     }
   output[["provenance"]][["reorientation"]] <- paste0(
-    paste0("Specimen Re-orientation\nSpecimens re-orient by ",toupper(Sys.getenv("LOGNAME"))," on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n"),
-    paste0("  topLM = ",topLM,"\n"),
-    paste0("  bottomLM = ",bottomLM,"\n"),
-    paste0("  leftLM = ",leftLM,"\n"),
-    paste0("  rightLM = ",rightLM,"\n")
+    paste0("## Specimen Re-orientation\n\nSpecimens re-orient by ",toupper(Sys.getenv("LOGNAME"))," on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n"),
+    paste0("- topLM = ",topLM,"\n"),
+    paste0("- bottomLM = ",bottomLM,"\n"),
+    paste0("- leftLM = ",leftLM,"\n"),
+    paste0("- rightLM = ",rightLM,"\n")
   )
 
   return(output)

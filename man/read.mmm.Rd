@@ -14,8 +14,7 @@ read.mmm(
   metadata.cols = NULL,
   measurement.col = NULL,
   apply.scale = FALSE,
-  invert.scale = FALSE,
-  export.provenance = FALSE
+  invert.scale = FALSE
 )
 }
 \arguments{
@@ -32,9 +31,6 @@ The function can make an educated guess at this, recognizing names like "Measure
 \item{apply.scale}{A string naming the column containing scale values to multiple measurement values.}
 
 \item{invert.scale}{A logical value indicating whether to invert the scale value before applying it.}
-
-\item{export.provenance}{A logical value indicating whether or not data provenance should be exported
-to a seperate file. This file's name will follows the \code{output.filename} and appended \code{.provenance.txt}.}
 }
 \value{
 Returns a list with several elements.
@@ -46,9 +42,6 @@ Returns a list with several elements.
     The element \code{provenance} is a list recording data provenance.
     If an \code{output.filename} is specified, then the data frame in \code{x} will be written to the
     file in \code{csv} or \code{tsv} format.
-
-    If \code{export.provenance. = TRUE} then a seperate text
-    output file will be created that contains data provenance.
 }
 \description{
 Reads in linear multivariate morphometric (MMM) data from a \code{csv} or \code{xlsx} file.

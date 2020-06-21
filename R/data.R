@@ -14,7 +14,9 @@
 #'     \code{East1916} organizes the data in a "tidy" long format. \code{East1916.wide} presents the data in
 #'     a dateframe that most closely resembles the original Table 1 from East (1916).
 #'
-#' @source East, E. 1916. Studies on Size Inheritance in \emph{Nicotiana}. \emph{Genetics} 1(2): 164-176
+#' @source   Dave Angelini \email{david.r.angelini@@gmail.com} [aut]
+#'
+#' @references East, E. 1916. Studies on Size Inheritance in \emph{Nicotiana}. \emph{Genetics} 1(2): 164-176
 #'     \url{http://www.genetics.org/content/1/2/164/}
 #'
 "East1916"
@@ -35,7 +37,9 @@
 #'     \code{East1916} organizes the data in a "tidy" long format. \code{East1916.wide} presents the data in
 #'     a dateframe that most closely resembles the original Table 1 from East (1916).
 #'
-#' @source East, E. 1916. Studies on Size Inheritance in \emph{Nicotiana}. \emph{Genetics} 1(2): 164-176
+#' @source   Dave Angelini \email{david.r.angelini@@gmail.com} [aut]
+#'
+#' @references East, E. 1916. Studies on Size Inheritance in \emph{Nicotiana}. \emph{Genetics} 1(2): 164-176
 #'     \url{http://www.genetics.org/content/1/2/164/}
 #'
 "East1916.wide"
@@ -64,6 +68,8 @@
 #'
 #' For more information on manipulating phylogenies in R, refer to the \href{https://cran.r-project.org/web/packages/phytools/phytools.pdf}{phytools documentation}.
 #'
+#'
+#' @source   Dave Angelini \email{david.r.angelini@@gmail.com} [aut]
 #'
 #' @references
 #' Cameron SA, Hines HM, and Williams PH. 2007. A comprehensive phylogeny of the bumble bees (\emph{Bombus}). \emph{Biological Journal of the Linnean Society} 91: 161-188. \url{https://doi.org/10.1111/j.1095-8312.2007.00784.x}
@@ -111,6 +117,9 @@
 #'   \item{\code{specimen.number}}{The number of specimens in the shape data.}
 #' }
 #'
+#' @source   Dave Angelini \email{david.r.angelini@@gmail.com} [aut]
+#' @source   Ye Jin "Jane" Lee \email{yjlee21@@colby.edu} [cre]
+#'
 #' @examples
 #' # Load the dataset
 #' data(Bombus.forewings)
@@ -141,6 +150,8 @@
 #'   \item{\code{pxmm}}{Pixels per millimeter at high resolution}
 #'   \item{\code{pxmm_lores}}{Pixels per millimeter at low resolution}
 #' }
+#'
+#' @source   Dave Angelini \email{david.r.angelini@@gmail.com} [aut, cre]
 #'
 #' @examples
 #' # Load the dataset

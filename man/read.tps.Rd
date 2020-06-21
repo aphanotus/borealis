@@ -23,8 +23,7 @@ read.tps(
   bottomLM = NULL,
   leftLM = NULL,
   rightLM = NULL,
-  verbose = TRUE,
-  include.header = TRUE
+  verbose = TRUE
 )
 }
 \value{

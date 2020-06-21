@@ -7,6 +7,9 @@
 \format{
 An object of class \code{phylo} of length 8.
 }
+\source{
+Dave Angelini \email{david.r.angelini@gmail.com} [aut]
+}
 \usage{
 Bombus.tree
 }

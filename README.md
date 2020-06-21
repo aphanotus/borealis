@@ -5,7 +5,7 @@ for use in a biology research lab.
 
 ## Installation
 
-The package can be installed in instance of R from GitHub using the package `devtools`.
+The package can be installed in an instance of R from Git Hub using the package `devtools`.
 
 ``` r
 devtools::install_github("aphanotus/borealis")
@@ -16,8 +16,8 @@ library(borealis)
 
 ### Morphometrics
 
-One of the goals of this package has become to provide a system to record [data provenance](https://en.wikipedia.org/wiki/Data_lineage#Data_provenance) in the objects
-produced through a morphometry workflow, relying on tools provided by the R package [geomorph](https://cran.r-project.org/web/packages/geomorph/index.html).
+One of the goals of this package is to provide a system to record [data provenance](https://en.wikipedia.org/wiki/Data_lineage#Data_provenance) in the objects
+produced through a morphometry workflow. Many of the major GMM step employ functions from the R package [geomorph](https://cran.r-project.org/web/packages/geomorph/index.html).
 
 #### AIC.adonis
 
@@ -33,7 +33,7 @@ A simple function to find the [Euclidean distance](https://en.wikipedia.org/wiki
 
 #### gg.scaling.plot
 
-Make pretty plots of the relationship between two variables, taylored for use in examinng
+Make pretty plots of the relationship between two variables, tailored for use in examining
 [allometric scaling](https://en.wikipedia.org/wiki/Allometry#Allometric_scaling) relationships.
 
 #### ggGMMplot
@@ -59,9 +59,9 @@ A function that returns the proportion of variance explained by each axis in a p
 #### read.mmm
 
 A function to read in linear multivariate morphometric (MMM) data from a `csv` or `xlsx` file.
-The input spread sheet is assumed to be "long," in the sense that one column includes a list measurements made either by hand or in grpahics software such as [ImageJ](https://imagej.net).
+The input spread sheet is assumed to be "long," in the sense that one column includes a list measurements made either by hand or in graphics software such as [ImageJ](https://imagej.net).
 This organization is typically a convenient for rapid data entry.
-The function reformats the multiple measurements into a list containing the data in a traditional tabular format, with each measurement in a seperate column. It also returns several elements
+The function re-formats the multiple measurements into a list containing the data in a traditional tabular format, with each measurement in a separate column. It also returns several elements
 describing the data and providing data provenance.
 
 #### read.tps
@@ -71,7 +71,11 @@ A wrapper function for `geomorph::readland.tps`, which reads a `tps} file to obt
 #### procrustes.analysis
 
 A wrapper for `geomorph::gpagen` that includes interactive outlier detection and removal. 
-The funcrtion will also record and pass data provenance as a list element.
+The function will also record and pass data provenance as a list element.
+
+#### write.provenace
+
+Data provenance from the \code{provenance} element of the input list will be written to file in [markdown](https://www.markdownguide.org/getting-started/) format.
 
 ### Molecular stuff
 
@@ -87,8 +91,8 @@ This function takes raw qPCR data and produces a convenient plot and table, whic
 Preliminary shape data from bumblebee forewings. These data were imported from a
 `tps` file using `read.tps` . The `tps` file was created from raw data using
 `create.tps`. These data are very preliminary. They have not been curated and have not
-undergone Procrustes alginment. The main purpose of these data are for trouble shooting
-morphometric worlkflows.
+undergone Procrustes alignment. The main purpose of these data are for trouble shooting
+morphometric workflows.
 
 ### Bombus.tree
 

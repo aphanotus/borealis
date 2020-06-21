@@ -70,7 +70,7 @@ procrustes.alignment <- function (
 
     # Do the GPA
     GPA <- gpagen(shape.data, ...)
-    new.prov.details <- paste0("GPA\nGeneralized Procrustes analysis performed by ",toupper(Sys.getenv("LOGNAME"))," on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n")
+    new.prov.details <- paste0("## Generalized Procrustes analysis\n\nGPA performed by ",toupper(Sys.getenv("LOGNAME"))," on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n")
 
     # GPA Plot
     if (show.plot.gpa) {
@@ -148,7 +148,7 @@ procrustes.alignment <- function (
       } # End while-loop
 
       if (!is.null(names.of.outliers.removed)) {
-        new.prov.details <- paste0(new.prov.details,"The following ",length(names.of.outliers.removed)," specimens were removed after ",rounds.of.outlier.analysis," rounds of outlier analysis: \n  ",paste0(names.of.outliers.removed, collapse = "\n  "),"\n")
+        new.prov.details <- paste0(new.prov.details,"The following ",length(names.of.outliers.removed)," specimens were removed after ",rounds.of.outlier.analysis," rounds of outlier analysis: \n  ",paste0(names.of.outliers.removed, collapse = "\n- "),"\n")
       }
 
     } # End outlier analysis

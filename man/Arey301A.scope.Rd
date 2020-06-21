@@ -7,6 +7,9 @@
 \format{
 An object of class \code{data.frame} with 9 rows and 6 columns.
 }
+\source{
+Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
+}
 \usage{
 Arey301A.scope
 }

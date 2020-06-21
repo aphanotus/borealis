@@ -157,7 +157,7 @@ id.metadata.to.gdf <- function (
     if (!is.null(provenance)) {
       gdf$provenance <- provenance
     }
-    gdf[["provenance"]][["gdf.creation"]] <- paste0("GDF\nGeomorph data frame created by ",toupper(Sys.getenv("LOGNAME"))," on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n")
+    gdf[["provenance"]][["gdf.creation"]] <- paste0("## GDF creation\n\nGeomorph data frame created by ",toupper(Sys.getenv("LOGNAME"))," on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n")
     return(gdf)
   } else {
     return(metadata)

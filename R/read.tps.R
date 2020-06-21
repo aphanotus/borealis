@@ -58,8 +58,7 @@ read.tps <- function (
   bottomLM = NULL,
   leftLM = NULL,
   rightLM = NULL,
-  verbose = TRUE,
-  include.header = TRUE
+  verbose = TRUE
 ) {
   coords <- readland.tps(
     file = file,
@@ -97,16 +96,20 @@ read.tps <- function (
   )
 
   # Include header information
-  if (include.header) {
-    header.text <- read.delim(file, header = FALSE, sep = "\n", stringsAsFactors = FALSE)[,1]
-    x <- grep("LM=",header.text)[1]
-    if (x > 1) {
-      header.text <- header.text[1:(x-1)]
-      header.text <- sub("# ","",header.text)
-      header.text <- paste0(header.text, collapse = "\n")
-      output[["provenance"]][["tps.header"]] <- header.text
-    }
+  header.text <- read.delim(file, header = FALSE, sep = "\n", stringsAsFactors = FALSE)[,1]
+  x <- grep("LM=",header.text)[1]
+  if (x > 1) {
+    header.text <- header.text[1:(x-1)]
+    header.text <- sub("^# ","",header.text)
+    header.text <- paste0(header.text, collapse = "\n")
+    output[["provenance"]][["tps.header"]] <- header.text
   }
+
+  # Add current data provenance
+  output[["provenance"]][["read.tps"]] <- paste0(
+    paste0("## Import TPS data\n\n"),
+    paste0("Data imported using `borealis::read.tps` by ",toupper(Sys.getenv("LOGNAME"))," on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n"),
+  )
 
   return(output)
 }

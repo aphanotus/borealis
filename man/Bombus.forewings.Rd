@@ -7,6 +7,11 @@
 \format{
 An object of class \code{list} of length 4.
 }
+\source{
+Dave Angelini \email{david.r.angelini@gmail.com} [aut]
+
+Ye Jin "Jane" Lee \email{yjlee21@colby.edu} [cre]
+}
 \usage{
 Bombus.forewings
 }

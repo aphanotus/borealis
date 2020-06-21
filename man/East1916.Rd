@@ -8,8 +8,7 @@
 An object of class \code{data.frame} with 173 rows and 6 columns.
 }
 \source{
-East, E. 1916. Studies on Size Inheritance in \emph{Nicotiana}. \emph{Genetics} 1(2): 164-176
-    \url{http://www.genetics.org/content/1/2/164/}
+Dave Angelini \email{david.r.angelini@gmail.com} [aut]
 }
 \usage{
 East1916
@@ -26,5 +25,9 @@ These data originally appeared in East (1916). This daatset is often used in gen
 
     \code{East1916} organizes the data in a "tidy" long format. \code{East1916.wide} presents the data in
     a dateframe that most closely resembles the original Table 1 from East (1916).
+}
+\references{
+East, E. 1916. Studies on Size Inheritance in \emph{Nicotiana}. \emph{Genetics} 1(2): 164-176
+    \url{http://www.genetics.org/content/1/2/164/}
 }
 \keyword{datasets}

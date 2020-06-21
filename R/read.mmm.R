@@ -43,9 +43,6 @@
 #'     If an \code{output.filename} is specified, then the data frame in \code{x} will be written to the
 #'     file in \code{csv} or \code{tsv} format.
 #'
-#'     If \code{export.provenance. = TRUE} then a seperate text
-#'     output file will be created that contains data provenance.
-#'
 #' @source   Dave Angelini \email{david.r.angelini@@gmail.com} [aut, cre]
 #'
 #' @param input.filename The file name to import.
@@ -56,8 +53,6 @@
 #'     The function can make an educated guess at this, recognizing names like "Measurement", "distance" or "pixels".
 #' @param apply.scale A string naming the column containing scale values to multiple measurement values.
 #' @param invert.scale A logical value indicating whether to invert the scale value before applying it.
-#' @param export.provenance A logical value indicating whether or not data provenance should be exported
-#'     to a seperate file. This file's name will follows the \code{output.filename} and appended \code{.provenance.txt}.
 #'
 #' @export
 #'
@@ -89,8 +84,7 @@ read.mmm <- function (
   metadata.cols = NULL,
   measurement.col = NULL,
   apply.scale = FALSE,
-  invert.scale = FALSE,
-  export.provenance = FALSE
+  invert.scale = FALSE
 )
 {
   # Determine the input file name and format
@@ -326,40 +320,29 @@ read.mmm <- function (
 
   # Create provenance entry
   provenance <- paste0(
-    paste0("read.mmm\n"),
-    paste0("Data imported by ",toupper(Sys.getenv("LOGNAME"))," on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n"),
-    paste0("Input file: ",input.filename,"\n"),
-    paste0("Specimens:    ",specimen.number,"\n"),
-    paste0("Measurements: ",measurement.number,"\n")
+    paste0("## Import multivariate morphometric data\n\n"),
+    paste0("Data imported using `borealis::read.mmm` by ",toupper(Sys.getenv("LOGNAME"))," on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n"),
+    paste0("Input file: ",input.filename,"\n\n"),
+    paste0("Specimens:    ",specimen.number,"\n\n"),
+    paste0("Measurements: ",measurement.number,"\n\n")
   )
-  s <- paste0("  ",measurement.names,"\n", collapse = "")
-  provenance <- paste0(provenance, s, collapse = "")
+  s <- paste0("- ",measurement.names,"\n", collapse = "")
+  provenance <- paste0(provenance, s, "\n", collapse = "")
   if (length(metadata.cols)>0) {
     provenance <- paste0(provenance,"Includes ",length(df.md.cols)," metadata columns with the names:\n", collapse = "")
-    s <- paste0("  ",names(df)[df.md.cols],"\n", collapse = "")
-    provenance <- paste0(provenance, s, collapse = "")
+    s <- paste0("- ",names(df)[df.md.cols],"\n", collapse = "")
+    provenance <- paste0(provenance, s, "\n", collapse = "")
   }
   if (apply.scale) {
     if (invert.scale) {
-      s <- "SCALE included and INVERTED from the original dataset.\n"
+      s <- "**Scale** included and **inverted** from the original dataset.\n\n"
       provenance <- paste0(provenance, s, collapse = "")
     } else {
-      s <- "SCALE included directly from the original dataset.\n"
+      s <- "*Scale** included directly from the original dataset.\n\n"
       provenance <- paste0(provenance, s, collapse = "")
     }
   }
   provenance <- paste0(provenance, warning.text, collapse = "")
-
-  # Export provenance
-  if (export.provenance) {
-    if (!is.null(output.filename)) {
-      prov.filename <- output.filename
-    } else {
-      prov.filename <- default.output.filename
-    }
-    prov.filename <- paste0(prov.filename,".provenance.txt")
-    write(provenance, prov.filename)
-  }
 
   # Prep the final output
   output <- list(
