@@ -8,7 +8,7 @@ Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
 }
 \usage{
 landmark.plot(
-  landmarks,
+  A,
   specimen.number = 1,
   square = TRUE,
   links = NULL,
@@ -17,7 +17,9 @@ landmark.plot(
 )
 }
 \arguments{
-\item{landmarks}{A 2D matrix of X and Y corrdinates, or a 3D array of multiple specimens.}
+\item{A}{A 2D matrix of X and Y shape corrdinates,
+a 3-dimensional array containing XY corrdinates for multiple specimens, or
+a list containing such as an array.}
 
 \item{specimen.number}{If an array is provided, the specimen number to plot.}
 

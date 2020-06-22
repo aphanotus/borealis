@@ -276,10 +276,10 @@ read.mmm <- function (
     specimens.without.scale <- which(is.na(scale.values))
     if (length(specimens.without.scale) > 0) {
       s <- paste("Warning: The following specimens have no scale values. Using a scale factor of 1.\n")
-      x <- paste0("  ",df[,df.ID.col][specimens.without.scale],"\n", collapse = "")
-      s <- paste(s, x, collapse = "")
+      x <- paste0("-  ",df[,df.ID.col][specimens.without.scale],"\n", collapse = "\n- ")
+      s <- paste(s, x, "\n", collapse = "")
       cat(s)
-      warning.text <- paste0(warning.text, s, collapse = "")
+      warning.text <- paste0(warning.text, s, "\n", collapse = "")
       scale.values[specimens.without.scale] <- 1
       names(specimens.without.scale) <- df[,df.ID.col][specimens.without.scale]
     }
@@ -291,7 +291,8 @@ read.mmm <- function (
   }
 
   # Automatic output filename creation
-  default.output.filename <- paste(input.filename,"wide",format(Sys.time(), "%y%m%d"),sep='.')
+  default.output.filename <- sub(".csv$","",input.filename)
+  default.output.filename <- paste(default.output.filename,"wide",format(Sys.time(), "%y%m%d"),sep='.')
 
   if (is.logical(output.filename)) {
     if (output.filename) {
@@ -307,7 +308,7 @@ read.mmm <- function (
       else {
         s <- paste("Warning:",output.filename,"format not recognized from file name. Writing as",paste0(output.filename,'.csv'),"\n")
         cat(s)
-        warning.text <- paste0(warning.text, s, collapse = "")
+        warning.text <- paste0(warning.text, s, "\n", collapse = "")
         seperator <- ","
         output.filename <- paste0(output.filename,".csv")
       }
@@ -320,11 +321,11 @@ read.mmm <- function (
 
   # Create provenance entry
   provenance <- paste0(
-    paste0("## Import multivariate morphometric data\n\n"),
-    paste0("Data imported using `borealis::read.mmm` by ",toupper(Sys.getenv("LOGNAME"))," on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n"),
+    paste0("## Multivariate morphometric data import\n\n"),
+    paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::read.mmm` on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n"),
     paste0("Input file: ",input.filename,"\n\n"),
-    paste0("Specimens:    ",specimen.number,"\n\n"),
-    paste0("Measurements: ",measurement.number,"\n\n")
+    paste0("Measurements: ",measurement.number,"\n\n"),
+    paste0("Specimens:    ",specimen.number,"\n\n")
   )
   s <- paste0("- ",measurement.names,"\n", collapse = "")
   provenance <- paste0(provenance, s, "\n", collapse = "")
@@ -352,9 +353,9 @@ read.mmm <- function (
     scaled = !is.null(apply.scale)
   )
   if (!is.null(specimens.without.scale)) {
-    output[["specimens.missing.scale"]] <- specimens.without.scale
+    output$specimens.missing.scale <- specimens.without.scale
   }
-  output[["provenance"]] <- list(read.mmm = provenance)
+  output$provenance <- list(read.mmm = provenance)
 
   return(output)
 

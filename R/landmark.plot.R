@@ -2,7 +2,9 @@
 #'
 #' @source   Dave Angelini \email{david.r.angelini@@gmail.com} [aut, cre]
 #'
-#' @param landmarks A 2D matrix of X and Y corrdinates, or a 3D array of multiple specimens.
+#' @param A A 2D matrix of X and Y shape corrdinates,
+#'     a 3-dimensional array containing XY corrdinates for multiple specimens, or
+#'     a list containing such as an array.
 #' @param specimen.number If an array is provided, the specimen number to plot.
 #' @param square A logical factor specifying whether the aspect ratio of the plot should be equal.
 #' @param links A matrix with two columns indicating landmarks to connect by lines. Or \code{"chull"} can be used to draw a convex hull.
@@ -23,12 +25,33 @@
 #' landmark.plot(plethodon$land[,,1], links = "chull")
 #'
 
-landmark.plot <- function (landmarks, specimen.number = 1, square = TRUE, links = NULL, text.color = "darkred", line.color = "darkgray")
+landmark.plot <- function (A, specimen.number = 1, square = TRUE, links = NULL, text.color = "darkred", line.color = "darkgray")
 {
+
+  # Vet the input
+  if (class(A)[1] %in% c("gpagen","list")) {
+    landmarks <- A$coords[,,specimen.number]
+    # If the input is already a list, then keep all other list elements in the output
+    output <- A[-grep("coords",names(A))]
+  } else {
+    if ((class(A)[1] == "array") & (length(dim(A)) == 3)) {
+      landmarks <- A[,,specimen.number]
+    } else {
+      if ((class(A)[1] == "matrix") & (dim(A)[2] == 2)) {
+        landmarks <- A
+      } else {
+        return(cat("Error: Input is not a recognized type. (See the help entry: '?landmark.plot'.)"))
+      }
+    }
+  }
+
+  # Fail safes
   if (length(dim(landmarks)) == 3) { landmarks <- landmarks[,,specimen.number] }
   if (dim(landmarks)[2] != 2) {
     return(cat("Error: requires a matrix of X and Y corrdinates."))
   }
+
+  # Plot
   plot(landmarks, type='n', asp = square, xlab = 'x', ylab = 'y')
   if (!is.null(links)) {
     if (links[[1]] == "chull") {
@@ -46,7 +69,10 @@ landmark.plot <- function (landmarks, specimen.number = 1, square = TRUE, links 
         }
       }
     }
-  }
+  } # End  if (!is.null(links))
+
+  # Landmark labels
   for (i in 1:(dim(landmarks)[1])) { text(landmarks[i,1], landmarks[i,2], labels=i, col = text.color) }
+
 } # End of function
 

@@ -10,14 +10,18 @@ Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
 write.provenance(x, output.filename = NULL, title = NULL)
 }
 \arguments{
-\item{x}{List containing an element for data provenance.}
+\item{x}{A list of data provenance elements, or an object containing a list element called \code{provenance}.}
 
 \item{output.filename}{The file name to export. If done is supplied, defaults to
 \code{data.provenance.YYMMDD.md}, where \code{YYMMDD} is the date.}
+
+\item{title}{An optional title for the data provenance report.}
 }
 \description{
 Data provenance from the \code{provenance} element of the input list will be
 written to file in \href{https://www.markdownguide.org/getting-started/}{markdown} format.
+The \code{output.filename} may be specified, or by default it will be the input object name with the
+addition of \code{provenance.YYMMDD.md}, where \code{YYMMDD} is the date.
 }
 \examples{
 

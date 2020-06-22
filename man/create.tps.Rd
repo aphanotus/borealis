@@ -11,7 +11,7 @@ create.tps(
   input.filename = NULL,
   output.filename = NULL,
   id.factors = NULL,
-  seperator = "__",
+  separator = "__",
   include.scale = FALSE,
   invert.scale = FALSE,
   export.metadata = FALSE,
@@ -27,7 +27,7 @@ create.tps(
 
 \item{id.factors}{Metadata column names to be encoded in the specimen IDs.}
 
-\item{seperator}{A character string to separate the terms used in the ID line.}
+\item{separator}{A character string to separate the terms used in the ID line.}
 
 \item{include.scale}{A logical value indicating whether or not the imported data
 includes a column with scale values.}
@@ -48,7 +48,7 @@ and can occur in any order.
 There must be a column giving specimen IDs, using a name like "ID" or "specimen_IDs"
 Any other columns are optional and may be used to encode metadata.
 Columns named by \code{id.factors} will be added to the \code{ID=} line
-in the resulting \code{tps} file, seperated by the character string in the \code{seperator} parameter.
+in the resulting \code{tps} file, seperated by the character string in the \code{separator} parameter.
 
 If \code{include.scale = TRUE}, then you must
 have a column headed "scale" to be included as a \code{SCALE=} line for each specimen in
@@ -69,8 +69,8 @@ By default, the number of specimens and landmarks will be determined by the func
 by using the number of cells in the specimen ID column with non-whitespace characters. It will be assumed
 that all other metadata appears in the same rows, and any information in other rows will be ignored.
 
-The \code{output.filename} may be specified, or by default it will be \code{landmarks.YYMMDD.tps}, where
-\code{YYMMDD} is the date.
+The \code{output.filename} may be specified, or by default it will be the input filename with the
+addition of \code{.YYMMDD.tps}, where \code{YYMMDD} is the date.
 
 If \code{export.metadata = TRUE} then a seperate output file will be created that contains only the metadata.
 All metadata will be included in this file.

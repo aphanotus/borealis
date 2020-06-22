@@ -42,9 +42,10 @@ orient <- function(A, topLM = NULL, bottomLM = NULL, leftLM = NULL, rightLM = NU
   shape.data <- NULL
   output <- NULL
 
+  # Vet the input
   if (class(A)[1] %in% c("gpagen","list")) {
     shape.data <- A$coords
-    # if (is.null(provenance) & any(grepl("provenance",names(A)))) { provenance <- A$provenance }
+    # If the input is already a list, then keep all other list elements in the output
     output <- A[-grep("coords",names(A))]
   } else {
     if ((class(A)[1] == "array") & (length(dim(A)) == 3)) {
@@ -57,13 +58,39 @@ orient <- function(A, topLM = NULL, bottomLM = NULL, leftLM = NULL, rightLM = NU
     return(cat("Error: requires a matrix of X and Y corrdinates."))
   }
 
-  if (is.null(topLM)) { topLM <- which.max(shape.data[,2,1]) }
-  if (is.null(bottomLM)) { bottomLM <- which.min(shape.data[,2,1]) }
-  if (is.null(leftLM)) { leftLM <- which.min(shape.data[,1,1]) }
-  if (is.null(rightLM)) { rightLM <- which.max(shape.data[,1,1]) }
+  # If no landmark extremes are given, default to the marginal landmarks in specimen 1
+  if (is.null(topLM) & is.null(bottomLM)) {
+    topLM <- which.max(shape.data[,2,1])
+    bottomLM <- which.min(shape.data[,2,1])
+  } else {
+    # If only one of the vertical landmarks is supplied, find another at the opposite extreme
+    x <- order(shape.data[,2,1])
+    if (is.null(topLM)) {
+      topLM <- ifelse( (shape.data[bottomLM,2,1] > median(shape.data[,2,1])), x[length(x)], x[1] )
+    } else {
+      if (is.null(bottomLM)) {
+        bottomLM <- ifelse( (shape.data[topLM,2,1] > median(shape.data[,2,1])), x[1], x[length(x)] )
+      }
+    }
+  }
+  if (is.null(rightLM) & is.null(leftLM)) {
+    leftLM <- which.min(shape.data[,1,1])
+    rightLM <- which.max(shape.data[,1,1])
+  } else {
+    # If only one of the horizontal landmarks is supplied, find another at the opposite extreme
+    x <- order(shape.data[,1,1])
+    if (is.null(rightLM)) {
+      rightLM <- ifelse( (shape.data[leftLM,1,1] > median(shape.data[,1,1])), x[1], x[length(x)] )
+    } else {
+      if (is.null(leftLM)) {
+        leftLM <- ifelse( (shape.data[rightLM,1,1] > median(shape.data[,1,1])), x[length(x)], x[1] )
+      }
+    }
+  }
 
   landmark.number <- dim(shape.data)[1]
   total.number.flipped <- 0
+  report.string <- NULL
   for (i in 1:(dim(shape.data)[3])) {
     OKright <- (shape.data[rightLM,1,i] > shape.data[leftLM,1,i])
     OKup    <- (shape.data[topLM,2,i] > shape.data[bottomLM,2,i])
@@ -77,7 +104,7 @@ orient <- function(A, topLM = NULL, bottomLM = NULL, leftLM = NULL, rightLM = NU
                                        rep(1,landmark.number))
       shape.data[,,i] <- centered.x + cbind(rep(mean.x,landmark.number),
                                             rep(0,landmark.number))
-      if (verbose) { cat(dimnames(shape.data)[[3]][i],' X-flipped\n') }
+      report.string <- c(report.string, paste0(dimnames(shape.data)[[3]][i],' X-flipped\n') )
     }
     if (!OKup) { # If not, mirror the top to the bottom.)
       mean.y <- mean(shape.data[,2,i])
@@ -87,25 +114,37 @@ orient <- function(A, topLM = NULL, bottomLM = NULL, leftLM = NULL, rightLM = NU
                                        rep(-1,landmark.number))
       shape.data[,,i] <- centered.y + cbind(rep(0,landmark.number),
                                             rep(mean.y,landmark.number))
-      if (verbose) { cat(dimnames(shape.data)[[3]][i],' Y-flipped\n') }
+      report.string <- c(report.string, paste0(dimnames(shape.data)[[3]][i],' Y-flipped\n') )
     }
+  }
+  if (verbose) {
+    cat(paste0(report.string, collapse = ""))
   }
   cat ("\n",total.number.flipped,"specimens re-oriented.")
   if (include.plot) {
     landmark.plot(shape.data[,,1], links = links)
   }
 
-  output <- list(output, coords = shape.data)
+  # Prep the output
+  output$coords <- shape.data
   if (!is.null(provenance) & !any(grepl("provenance",names(output)))) {
-      output[["provenance"]] <- provenance
+      output$provenance <- provenance
     }
-  output[["provenance"]][["reorientation"]] <- paste0(
-    paste0("## Specimen Re-orientation\n\nSpecimens re-orient by ",toupper(Sys.getenv("LOGNAME"))," on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n"),
+  s <- paste0(
+    paste0("## Specimen re-orientation\n\n"),
+    paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::orient` on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n"),
     paste0("- topLM = ",topLM,"\n"),
     paste0("- bottomLM = ",bottomLM,"\n"),
     paste0("- leftLM = ",leftLM,"\n"),
-    paste0("- rightLM = ",rightLM,"\n")
+    paste0("- rightLM = ",rightLM,"\n"),
+    paste0("\nSpecimens re-oriented: ",total.number.flipped,"\n\n")
   )
+
+  if (!is.null(report.string)) {
+    s <- paste0(s, "- ", paste0(report.string, collapse = "- "), "\n")
+  }
+
+  output$provenance$reorientation <- s
 
   return(output)
 } # End of function

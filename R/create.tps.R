@@ -9,7 +9,7 @@
 #' There must be a column giving specimen IDs, using a name like "ID" or "specimen_IDs"
 #' Any other columns are optional and may be used to encode metadata.
 #' Columns named by \code{id.factors} will be added to the \code{ID=} line
-#' in the resulting \code{tps} file, seperated by the character string in the \code{seperator} parameter.
+#' in the resulting \code{tps} file, seperated by the character string in the \code{separator} parameter.
 #'
 #' If \code{include.scale = TRUE}, then you must
 #' have a column headed "scale" to be included as a \code{SCALE=} line for each specimen in
@@ -30,8 +30,8 @@
 #' by using the number of cells in the specimen ID column with non-whitespace characters. It will be assumed
 #' that all other metadata appears in the same rows, and any information in other rows will be ignored.
 #'
-#' The \code{output.filename} may be specified, or by default it will be \code{landmarks.YYMMDD.tps}, where
-#' \code{YYMMDD} is the date.
+#' The \code{output.filename} may be specified, or by default it will be the input filename with the
+#' addition of \code{.YYMMDD.tps}, where \code{YYMMDD} is the date.
 #'
 #' If \code{export.metadata = TRUE} then a seperate output file will be created that contains only the metadata.
 #' All metadata will be included in this file.
@@ -46,7 +46,7 @@
 #' @param input.filename The file name to import.
 #' @param output.filename The file name to export.
 #' @param id.factors Metadata column names to be encoded in the specimen IDs.
-#' @param seperator A character string to separate the terms used in the ID line.
+#' @param separator A character string to separate the terms used in the ID line.
 #' @param include.scale A logical value indicating whether or not the imported data
 #'     includes a column with scale values.
 #' @param invert.scale A logical value indicating whether to invert the scale value.
@@ -92,7 +92,7 @@ create.tps <- function (
   input.filename = NULL,
   output.filename = NULL,
   id.factors = NULL,
-  seperator = "__",
+  separator = "__",
   include.scale = FALSE,
   invert.scale = FALSE,
   export.metadata = FALSE,
@@ -175,7 +175,9 @@ create.tps <- function (
   # The data are okay to proceed
 
   if (is.null(output.filename)) {
-    output.filename <- paste('landmarks',format(Sys.time(), "%y%m%d"),'tps',sep='.')
+    output.filename <- sub(".csv$","",input.filename)
+    output.filename <- sub(".xlsx$","",output.filename)
+    output.filename <- paste(output.filename,format(Sys.time(), "%y%m%d"),'tps',sep='.')
   }
 
   # Send output to the output file
@@ -183,20 +185,19 @@ create.tps <- function (
 
   # File header
   if (include.header) {
-    cat("# ## TPS file generation\n\n")
-    cat("# Created by ",toupper(Sys.getenv("LOGNAME"))," on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n")
-    cat("# Input file: ",input.filename,"\n\n")
-    cat("# Specimens: ",specimen.number,"\n\n")
-    cat("# Landmarks: ",landmark.number,"\n\n")
+    cat("# ## TPS file creation \n# \n")
+    cat(paste0("# Created by user `",(Sys.getenv("LOGNAME")),"` with `borealis::create.tps` on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n# \n"))
+    cat("# Input file: ",input.filename,"\n# \n")
+    cat(paste0("# The dataset is ",landmark.number," x 2 x ",specimen.number," (*p* landmarks x *k* dimensions x *n* specimens)\n# \n"))
     if (length(id.factors)>0) {
-      cat("# Metadata are encoded in specimen ID lines from the following factors:\n# - ",paste(id.factors, collapse = ', '),"\n")
-      cat("# Metadata seperator: ",seperator,"\n\n")
+      cat(paste0("# Metadata are encoded in specimen ID lines from the following factors:\n# - ",paste0(id.factors, collapse = '\n# - '),"\n# \n"))
+      cat(paste0("# Metadata separator: ",separator,"\n# \n"))
     }
     if (include.scale) {
       if (invert.scale) {
-        cat("# **Scale** included and **inverted** from the original dataset.\n\n")
+        cat("# **Scale** included and **inverted** from the original dataset.\n# \n")
       } else {
-        cat("# **Scale** included directly from the original dataset.\n\n")
+        cat("# **Scale** included directly from the original dataset.\n# \n")
       }
     }
     cat("\n")
@@ -215,7 +216,7 @@ create.tps <- function (
     x <- landmark.number*(i-1) + 1
     id.text <- paste0(sub('\\.','_',trimws(raw[x,ID.col])))
     if (length(id.factors)>0) {
-      id.text <- paste0(id.text,seperator,paste(trimws(raw[x,id.factors]),collapse = seperator) )
+      id.text <- paste0(id.text,separator,paste(trimws(raw[x,id.factors]),collapse = separator) )
     }
     cat(paste0('ID=',id.text,'\n'))
     if (include.scale) {

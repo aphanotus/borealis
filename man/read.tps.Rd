@@ -2,7 +2,7 @@
 % Please edit documentation in R/read.tps.R
 \name{read.tps}
 \alias{read.tps}
-\title{A wrapper function for geomorph::readland.tps}
+\title{Read shape data from a TPS file}
 \source{
 Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
 }
@@ -13,6 +13,8 @@ read.tps(
   negNA = FALSE,
   readcurves = FALSE,
   warnmsg = TRUE,
+  extract.id.metadata = TRUE,
+  keep.original.ids = FALSE,
   show.landmark.plot = TRUE,
   square = TRUE,
   links = NULL,
@@ -29,16 +31,21 @@ read.tps(
 \value{
 Returns a list with several elements: \code{coords}, containing a 3-dimensional array
     of shape coordinates; and \code{landmark.number} and \code{specimen.number},
-    containing integer values. If \code{include.header = TRUE}, the default, then the output
-    will also incluide an element \code{provenance}, which is itself a list recording data provenance.
+    containing integer values.
+    \code{scaled} is a logical flag for whether scaling has been applied to shape coordinates.
+    Data provenance is incluided in an element, \code{provenance},
+    which is itself a list recording data manipulations made by functions in the
+    \code{\href{https://github.com/aphanotus/borealis}{borealis}} package.
 }
 \description{
-This function reads a \code{tps} file to obtain landmark coordinates, using
-\code{\link[geomorph]{readland.tps}} and includes a few routine follow-up steps.
+A wrapper function for \code{\link[geomorph]{readland.tps}}, which reads a \code{tps} file to
+obtain landmark coordinates.
 }
 \details{
-If \code{orient.specimens = TRUE} then the function will also re-orient specimens
-using \code{\link{orient}}.
+If \code{extract.id.metadata = TRUE} (the default) then the function will extracts
+metadata embedded in the ID lines based on the separator and metadata factor names
+described in the header of the \code{tps} file. If \code{orient.specimens = TRUE}
+then the function will also re-orient specimens using \code{\link{orient}}.
 }
 \examples{
 shapes <- read.tps("sample.tps", show.landmark.plot = FALSE)

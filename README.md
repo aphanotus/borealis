@@ -1,7 +1,6 @@
 # borealis
 
-This package gathers functions developed for common activities in R 
-for use in a biology research lab. 
+An R package for common activities in an integrative biology lab.
 
 ## Installation
 
@@ -60,13 +59,13 @@ A function that returns the proportion of variance explained by each axis in a p
 
 A function to read in linear multivariate morphometric (MMM) data from a `csv` or `xlsx` file.
 The input spread sheet is assumed to be "long," in the sense that one column includes a list measurements made either by hand or in graphics software such as [ImageJ](https://imagej.net).
-This organization is typically a convenient for rapid data entry.
-The function re-formats the multiple measurements into a list containing the data in a traditional tabular format, with each measurement in a separate column. It also returns several elements
+This organization is typically convenient for rapid data entry.
+The function re-formats the multiple measurements into a list containing the data in a traditional "wide" tabular format, with each measurement in a separate column. It also returns several elements
 describing the data and providing data provenance.
 
 #### read.tps
 
-A wrapper function for `geomorph::readland.tps`, which reads a `tps} file to obtain landmark coordinates and includes a few routine follow-up steps.
+Read shape data from a `tps` file, and extract any metadata embedded in the ID lines.
 
 #### procrustes.analysis
 
@@ -75,7 +74,7 @@ The function will also record and pass data provenance as a list element.
 
 #### write.provenace
 
-Data provenance from the \code{provenance} element of the input list will be written to file in [markdown](https://www.markdownguide.org/getting-started/) format.
+Data provenance from the `provenance` element of the input list will be written to file in [markdown](https://www.markdownguide.org/getting-started/) format.
 
 ### Molecular stuff
 
@@ -89,8 +88,8 @@ This function takes raw qPCR data and produces a convenient plot and table, whic
 ### Bombus.forewings
 
 Preliminary shape data from bumblebee forewings. These data were imported from a
-`tps` file using `read.tps` . The `tps` file was created from raw data using
-`create.tps`. These data are very preliminary. They have not been curated and have not
+`tps` file using `read.tps` . (The file was created from raw data using
+`create.tps`.) These data are very preliminary. They have not been curated and have not
 undergone Procrustes alignment. The main purpose of these data are for trouble shooting
 morphometric workflows.
 
