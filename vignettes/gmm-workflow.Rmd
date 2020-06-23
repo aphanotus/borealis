@@ -165,15 +165,14 @@ SCALE=0.00702814773166532
 ```
 
 ### Import `tps` data into R
+
+
+```{r}
+shapes <- read.tps("wings.tps")
 fw.links <- matrix(c(1,2, 1,5, 5,4, 4,3, 3,2, 5,6, 6,7, 7,8, 8,9, 9,4, 3,11, 11,12, 11,10, 9,10, 10,14, 14,15, 15,16, 16,18, 18,20, 16,17, 17,8, 12,13, 13,19, 14,13, 18,19, 2,12),
                    ncol = 2, byrow = TRUE)
 
-shapes <- read.tps("~/Documents/3.research/2.Bombus.mouthparts/Bombus wing GMM/Bombus.forewings.200622.tps",
-                   links = fw.links,
-                   orient.specimens = TRUE,
-                   topLM=2, leftLM=1,
-                   verbose = FALSE)
-
+```
 names(shapes)
 
 shapes$metadata
