@@ -21,5 +21,8 @@ Suggests:
     openxlsx,
     grid,
     ggplotify,
-    viridis
+    viridis,
+    knitr,
+    rmarkdown
 NeedsCompilation: no
+VignetteBuilder: knitr

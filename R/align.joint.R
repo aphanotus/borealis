@@ -38,7 +38,6 @@
 #' @param pivot.LM The number of the landmark that should be used as the joint.
 #' @param reference.specimen The index number of the reference specimen.
 #' @param include.plot A logical factor specifying whether to include a plot showing the alginment of each specimen relative to the reference.
-#' @param links A matrix with two columns indicating landmarks to connect by lines in the plot. Or \code{"chull"} can be used to draw a convex hull.
 #' @param provenance An object that should be retained for data provenance.
 #'
 #' @export

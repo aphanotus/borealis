@@ -1,0 +1,44 @@
+---
+title: "borealis for GMM"
+author: "Dave Angelini"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{borealis for GMM}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Morphometry is a the study of shape and its variations.
+It allows comparisons of shape between different groups. 
+This is a subtle way to analyze phenotypes. Shape analysis typically also includes a consideration of size, since shape typically varies with size (allometry).
+Therefore morphometrics can be a good way to examine growth and scaling.
+
+A typical workflow for geometric morphometrics (GMM) looks this this:
+
+1. **Image** specimens - For 2D morphomeytrics, this typically involves photography
+2. **Digitize** anatomical position of landmarks
+3. **Data curation** - Are the specimens all roughly facing the same direction? Are there jointed structures whose position may interfer with downstream steps?
+4. **Generalized Procrustes Analysis (GPA)** aligns specimens to one another, minimizing variance due to relative position, rotation and size. Size is typicall retained as a separate variable that can be included in the analysis later. 
+5. **Data curation** - Are there obvious outliers that should be removed?
+6. **Ordination** by tangent-space projection (similar to PCA) highlights differences among individuals and groups
+7. **Modularity tests**
+8. **Disparity comparisons** among groups
+9. **Model** influences on size and shape  (e.g. due to allometric scaling, evolutionary relationships, environmental factors)
+
+GMM and morphometry in general is a rich discipline where people have developed a number of excellent analytical tools.
+However, some of these can be difficult to use.
+The main goal of the `borealis` package is to provide R users with a set of relatively simple tools to perform GMM analysis (and some other biology related activities). 
+
+Importantly, GMM typically involves a number of data processing steps. 
+The `borealis` package embraces the concept of [data provenance](https://en.wikipedia.org/wiki/Data_lineage#Data_provenance). Each time a dataset is modified, functions in the package add (or add to) a list element recording important details about the execution and results of that step. This information can then be written to a [markdown](https://www.markdownguide.org/getting-started/) file as a report of the data's history and handling throughout the workflow. 
+
+`borealis` also includes functions that produce publication-ready figures with minimal user effort.
+

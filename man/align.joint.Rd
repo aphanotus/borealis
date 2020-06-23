@@ -30,15 +30,13 @@ or a list containing such as an array and data provenance.}
 \item{include.plot}{A logical factor specifying whether to include a plot showing the alginment of each specimen relative to the reference.}
 
 \item{provenance}{An object that should be retained for data provenance.}
-
-\item{links}{A matrix with two columns indicating landmarks to connect by lines in the plot. Or \code{"chull"} can be used to draw a convex hull.}
 }
 \value{
 Returns a list with \code{coords}, \code{provenance}, and
    any other potential list elements from the input.
 }
 \description{
-Joints can introduce nusance variation in landmark-based geometric morphometrics.
+Joints can introduce nuisance variation in landmark-based geometric morphometrics.
 This function rotates a subset of landmarks about a pivot point, such that all specimens
 will align to a designated reference specimen.
 This step should be run before Procrustes alignment, and it is robust to differences
