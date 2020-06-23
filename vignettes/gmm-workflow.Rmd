@@ -16,6 +16,8 @@ knitr::opts_chunk$set(
 )
 ```
 
+![](https://live.staticflickr.com/65535/49112559173_96cfbd9d2a_w_d.jpg)
+
 Morphometry is a the study of shape and its variations.
 It allows comparisons of shape between different groups. 
 This is a subtle way to analyze phenotypes. Shape analysis typically also includes a consideration of size, since shape typically varies with size (allometry).
@@ -42,3 +44,180 @@ The `borealis` package embraces the concept of [data provenance](https://en.wiki
 
 `borealis` also includes functions that produce publication-ready figures with minimal user effort.
 
+## Installing the R package
+
+If you've previously loaded the package, it is helpful to "unload" it before installing a newer version.
+
+```{r eval=FALSE, include=TRUE}
+detach("package:borealis", unload = TRUE)
+```
+
+If you've never installed a package from GitHib before, it may be necessary for you to install the package `devtools`.
+
+```{r eval=FALSE, include=TRUE}
+install.packages("devtools")
+
+devtools::install_github("aphanotus/borealis")
+```
+
+Once that's all sorted out, you can load the package 
+
+```{r}
+library(borealis)
+```
+
+## Managing raw coordinate data
+
+For landmark-based geometric morphometrics, the first step is to "digitize" coordinate positions in digital images of each specimen.
+[ImageJ](https://imagej.net/) provides the easiest way to do this.
+
+### Digitizing specimens in ImageJ
+
+Before you begin, think carefully about the landmarks you should use to represent the shape
+of the the structure you're interested in. Areas with a greater density of landmarks will
+capture more shape variation among specimens. However, you don't necessarily need dozens of
+landmarks. Important insights can still be obtained from a simple set of landmarks. 
+
+Often, it's helpful to try a number of different landmark configurations on a small group of
+diverse specimens to see how well they perform. Importantly, you want landmarks that are present in all specimens and that can be placed with good confidence by everyone involved in the digitizing effort. 
+I suggest writing up a good map of all the landmarks before proceeding with the digitization.
+
+![](https://i.imgur.com/uAzTg29.jpg)
+
+1. **Open a specimen image** in ImageJ. Be sure metadatam, such as sex, species, etc., are recorded somewhere. Be sure a scale bar is present in the image. If needed flip or rotate images so they are relatively consistent. Omit specimens with missing anatomical features.
+2. Use the **line tool** to measure the scale and trace any linear anatomical features. 
+3. Use the **multi-point tool** to place landmarks. Place each landmark, in order. Consult your anatomy guide until you’re familiar with everything!
+4. **Press `[cmnd]` `M`** to record data in a table in ImageJ.
+5. **Select and Copy** the measured data from ImageJ.
+6. **Paste** the values into Google Sheets (or Excel). Be sure to keep the data in a consistent format.
+
+The first row of the spread sheet should provide column names. 
+Enter the X and Y values under columns named "x" and "y". 
+There must be a column giving specimen IDs, such as "specimen.ID", and one for scale.
+Add other columns to record relevant metadata. 
+The ID names, scale and other metadata, should be entered on the row for the first landmark of the specimen. 
+Any linear measurements accompanying the specimen should be treated as metadata.
+Coordinate positions and metadata for each specimen should appear in a consequtive block of rows. In other words, in you have 3 landmarks: row 1 is the header, rows 2-4 are the data for specimen 1, rows 5-7 are the data for specimen 2, etc. 
+This spreadsheet format is convenient, since it allows rapid copy-and-paste of data from ImageJ with minimal formating. It will also fasciliate converting the coordinate positions and encoding the metadata into the `tps` format in the next step.
+
+### Convert raw landmark coordinates into the `tps` file format
+
+The `tps` ("thin-plate spline") file format is one of the most commonly used formats among different GMM software ([Rohlf 2015](https://doi.org/10.4404/hystrix-26.1-11264)). 
+Creating a large `tps` file manually can be difficult. A stray space or tab can prevent downstream software from handling it properly, and those issues can be very hard to tackle down.
+For that reason, `borealis` includes a simple function `create.tps` to convert spreadsheet data, as described above, into a `tps` file. It will also begin recording data provenance and embed metadata for each specimen.
+
+The scale value can also be inverted, by setting `invert.scale = TRUE`. The default for downstream functions is to apply scale values by multiplication. Typically this is appropriate when scale is recorded as unit distance (e.g. mm) per pixel. However, if scale is recorded in pixels per unit distance (e.g. pixels/mm) it will be appropriate to first invert the scaling factor before importing coordinate data.
+
+```{r eval=FALSE, include=TRUE}
+create.tps(
+  input.filename = "wings.csv",
+  output.filename = "wings.tps",
+  id.factors = c('species','caste','digitizer','bodysize'),
+  include.scale = TRUE,
+  invert.scale = TRUE)
+```
+
+The file that's created will looks like this.
+
+```{tps}
+# ## TPS file creation 
+# 
+# Created by user `drangeli` with `borealis::create.tps` on Monday, 22 June 2020, 15:11:47
+# 
+# Input file:  ~/Documents/3.research/2.Bombus.mouthparts/Bombus wing GMM/Bombus Wings - forewings.csv 
+# 
+# The dataset is 20 x 2 x 99 (*p* landmarks x *k* dimensions x *n* specimens)
+# 
+# Metadata are encoded in specimen ID lines from the following factors:
+# - species
+# - caste
+# - digitizer
+# - bodysize
+# 
+# Metadata separator: __
+# 
+# **Scale** included and **inverted** from the original dataset.
+# 
+
+LM=20
+1942 354.667
+1650 336
+1690 361.333
+1747.333 377.333
+1851.333 400
+1867.333 440.667
+1832.667 503.333
+1819.333 507.333
+1743.333 479.333
+1674 486
+1608.667 419.333
+1488.667 387.333
+1231.333 467.333
+1471.333 518
+1478 584.667
+1478 594
+1724.667 590
+1447.333 650
+1192.667 539.333
+1479.333 679
+ID=DRA190718-001__vag__W__JL__NA
+SCALE=0.00702814773166532
+```
+
+### Import `tps` data into R
+fw.links <- matrix(c(1,2, 1,5, 5,4, 4,3, 3,2, 5,6, 6,7, 7,8, 8,9, 9,4, 3,11, 11,12, 11,10, 9,10, 10,14, 14,15, 15,16, 16,18, 18,20, 16,17, 17,8, 12,13, 13,19, 14,13, 18,19, 2,12),
+                   ncol = 2, byrow = TRUE)
+
+shapes <- read.tps("~/Documents/3.research/2.Bombus.mouthparts/Bombus wing GMM/Bombus.forewings.200622.tps",
+                   links = fw.links,
+                   orient.specimens = TRUE,
+                   topLM=2, leftLM=1,
+                   verbose = FALSE)
+
+names(shapes)
+
+shapes$metadata
+
+names(shapes$provenance)
+cat(unlist(shapes$provenance))
+
+write.provenance(shapes)
+
+
+A <- shapes
+A[-grep("coords",names(A))]
+
+# Import linear multivariate morphometric (MMM) data
+mmm.data <- read.mmm(
+  input.filename = "raw.measurements.csv",
+  output.filename = TRUE,
+  metadata.cols = "all",
+  apply.scale = TRUE,
+  invert.scale = TRUE
+)
+
+# Re-orient shapes
+shapes <- orient(shapes, topLM = 2, bottomLM = 20,
+                 leftLM = 1, rightLM = 19,
+                 links = fw.links )
+
+names(shapes$provenance)
+
+landmark.plot(shapes, links = fw.links)
+landmark.plot(shapes$coords, links = fw.links)
+landmark.plot(shapes$coords[,,1], links = fw.links)
+
+# Procrustes alignment
+fw.gpa <- procrustes.alignment(shapes, outlier.analysis = TRUE)
+
+names(fw.gpa$provenance)
+cat(fw.gpa$provenance[["GPA"]])
+
+# Extract ID metadata
+fw.gdf <- id.metadata.to.gdf(
+  fw.gpa,
+  id.factors = c("id","species","caste","digitizer","bodysize")
+)
+
+names(fw.gdf$provenance)
+cat(fw.gdf$provenance[["gdf.creation"]])
