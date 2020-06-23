@@ -13,7 +13,8 @@ landmark.plot(
   square = TRUE,
   links = NULL,
   text.color = "darkred",
-  line.color = "darkgray"
+  line.color = "darkgray",
+  ...
 )
 }
 \arguments{
@@ -37,12 +38,19 @@ Plot the relative position of landmarks
 \examples{
 data(plethodon, package = "geomorph")
 
+# The function will detect whether the input object is
+# a 2D set of coordinates or a 3D array
+# The following are all equivalant
+landmark.plot(plethodon$land)
+landmark.plot(plethodon$land, specimen.number = 1)
 landmark.plot(plethodon$land[,,1])
 
+# Convex hull
+landmark.plot(plethodon$land, links = "chull")
+
+# Custom landmark connections
 pletho.links <- matrix(c(4,5,5,6,6,7,7,8,8,9,9,10,10,11,2,4,12,2,3,5),
                        ncol = 2, byrow = TRUE)
-landmark.plot(plethodon$land[,,1], links = pletho.links )
-
-landmark.plot(plethodon$land[,,1], links = "chull")
+landmark.plot(plethodon$land, links = pletho.links )
 
 }

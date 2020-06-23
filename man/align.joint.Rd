@@ -13,15 +13,77 @@ align.joint(
   pivot.LM = NULL,
   reference.specimen = 1,
   include.plot = TRUE,
-  verbose = TRUE,
-  max.iter = 10,
-  provenance = NULL
+  provenance = NULL,
+  ...
 )
+}
+\arguments{
+\item{A}{A 3-dimensional array containing XY shape corrdinates for multiple specimens,
+or a list containing such as an array and data provenance.}
+
+\item{substructure.LMs}{A numerical vector giving the landmark numbers of the substructure to be algined.}
+
+\item{pivot.LM}{The number of the landmark that should be used as the joint.}
+
+\item{reference.specimen}{The index number of the reference specimen.}
+
+\item{include.plot}{A logical factor specifying whether to include a plot showing the alginment of each specimen relative to the reference.}
+
+\item{provenance}{An object that should be retained for data provenance.}
+
+\item{links}{A matrix with two columns indicating landmarks to connect by lines in the plot. Or \code{"chull"} can be used to draw a convex hull.}
 }
 \value{
 Returns a list with \code{coords}, \code{provenance}, and
    any other potential list elements from the input.
 }
 \description{
-Align a subset of landmarks by rotation from one point
+Joints can introduce nusance variation in landmark-based geometric morphometrics.
+This function rotates a subset of landmarks about a pivot point, such that all specimens
+will align to a designated reference specimen.
+This step should be run before Procrustes alignment, and it is robust to differences
+in the relative position, orientation and size of specimens.
+}
+\details{
+Alignment is based on linear regression of X and Y positions for landmarks in a
+substructure (such as a limb or jaw) and in the rest of the specimen.
+The angular difference in slopes is used to rotate substructure points relative to the
+designated pivot point.
+
+The input array should contain landmark coordinates with \emph{p}, 2, and \emph{n} dimensions,
+where \emph{n} is the number of specimens and \emph{p} is the number of landmarks).
+Dimension 2 must have two columns that contain X and Y locations of the landmark.
+
+If \code{include.plot = TRUE}, then landmarks from each specimen will be displayed.
+Gray points indicate main structure (body) landmarks, which are not moved.
+The original location of subsructure (limb / jaw) landmarks are shown with open red circles;
+the adjusted location of these landmarks are shown with black points.
+The function will pass extra arguments to \code{\link[borealis]{landmark.plot}},
+including \code{links}. Plotting the landmarks can be useful to ensure that the reference
+specimen and pivot point result in sensible alignments for the other specimens.
+
+If the input is a \code{list}, all elements will be retained in the output.
+If a \code{provenance} element is present, then it will be expanded to include an entry
+for this processing step.
+}
+\examples{
+data(plethodon, package = "geomorph")
+
+pletho.links <- matrix(c(4,5,5,6,6,7,7,8,8,9,9,10,10,11,2,4,12,2,3,5),
+                       ncol = 2, byrow = TRUE)
+landmark.plot(plethodon$land, links = pletho.links)
+
+# Allow alignment of the jaw landmarks, pivoting at the jaw joint
+plethodon <- align.joint(
+  plethodon,
+  substructure.LMs = c(1,2,3,4,5),
+  pivot.LM = 1,
+  include.plot = TRUE,
+  links = pletho.links
+)
+
+names(plethodon)
+names(plethodon$provenance)
+cat(plethodon$provenance$align.joint)
+
 }

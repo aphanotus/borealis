@@ -22,6 +22,15 @@ produced through a morphometry workflow. Many of the major GMM step employ funct
 
 A simple function to calculate generalized [AIC](https://en.wikipedia.org/wiki/Akaike_information_criterion) for models created by [`vegan::adonis`](https://www.rdocumentation.org/packages/vegan/versions/2.4-2/topics/adonis).
 
+#### align.joint
+
+Align a subset of landmarks by rotation from one point.
+Joints can introduce nuisance variation in landmark-based geometric morphometrics.
+This function rotates a subset of landmarks about a pivot point, such that all specimens
+will align to a designated reference specimen.
+This step should be run before Procrustes alignment, and it is robust to differences
+in the relative position, orientation and size of specimens.
+
 #### create.tps
 
 Reformats X and Y coordinate positions from a spreadsheet into the `tps` ("thin-plate spline") file format defined by [Rohlf (2015)](https://doi.org/10.4404/hystrix-26.1-11264).

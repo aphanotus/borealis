@@ -16,23 +16,36 @@
 #' @examples
 #' data(plethodon, package = "geomorph")
 #'
+#' # The function will detect whether the input object is
+#' # a 2D set of coordinates or a 3D array
+#' # The following are all equivalant
+#' landmark.plot(plethodon$land)
+#' landmark.plot(plethodon$land, specimen.number = 1)
 #' landmark.plot(plethodon$land[,,1])
 #'
+#' # Convex hull
+#' landmark.plot(plethodon$land, links = "chull")
+#'
+#' # Custom landmark connections
 #' pletho.links <- matrix(c(4,5,5,6,6,7,7,8,8,9,9,10,10,11,2,4,12,2,3,5),
 #'                        ncol = 2, byrow = TRUE)
-#' landmark.plot(plethodon$land[,,1], links = pletho.links )
-#'
-#' landmark.plot(plethodon$land[,,1], links = "chull")
+#' landmark.plot(plethodon$land, links = pletho.links )
 #'
 
-landmark.plot <- function (A, specimen.number = 1, square = TRUE, links = NULL, text.color = "darkred", line.color = "darkgray")
+landmark.plot <- function (A, specimen.number = 1, square = TRUE, links = NULL, text.color = "darkred", line.color = "darkgray", ...)
 {
 
   # Vet the input
   if (class(A)[1] %in% c("gpagen","list")) {
-    landmarks <- A$coords[,,specimen.number]
-    # If the input is already a list, then keep all other list elements in the output
-    output <- A[-grep("coords",names(A))]
+    if (any(grepl("coords",names(A)))) {
+      landmarks <- A$coords[,,specimen.number]
+    } else {
+      if (any(grepl("land",names(A)))) {
+        landmarks <- A$land[,,specimen.number]
+      } else {
+        return(cat("Error: Input is not a recognized type. (See the help entry: '?landmark.plot'.)"))
+      }
+    }
   } else {
     if ((class(A)[1] == "array") & (length(dim(A)) == 3)) {
       landmarks <- A[,,specimen.number]
@@ -52,7 +65,7 @@ landmark.plot <- function (A, specimen.number = 1, square = TRUE, links = NULL, 
   }
 
   # Plot
-  plot(landmarks, type='n', asp = square, xlab = 'x', ylab = 'y')
+  plot(landmarks, type='n', asp = square, xlab = 'x', ylab = 'y', ...)
   if (!is.null(links)) {
     if (links[[1]] == "chull") {
       links <- grDevices::chull(landmarks)

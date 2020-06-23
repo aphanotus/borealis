@@ -57,7 +57,15 @@ procrustes.alignment <- function (
   shape.data <- NULL
 
   if (class(A)[1] %in% c("gpagen","list")) {
-    shape.data <- A$coords
+    if (any(grepl("coords",names(A)))) {
+      shape.data <- A$coords
+    } else {
+      if (any(grepl("land",names(A)))) {
+        shape.data <- A$land
+      } else {
+        return(cat("Error: Input is not a recognized type. (See the help entry: '?procrustes.alignment'.)"))
+      }
+    }
     if (is.null(provenance) & any(grepl("provenance",names(A)))) { provenance <- A$provenance }
   } else {
     if ((class(A)[1] == "array") & (length(dim(A)) == 3)) {
@@ -143,7 +151,8 @@ procrustes.alignment <- function (
 
         # Ask to continue
         if (continue.loop) {
-          continue.loop <- askYesNo("Would you like to perform another round of outlier analysis?")
+          x <- readline("Would you like to perform another round of outlier analysis? (y/n)")
+          continue.loop <- (tolower(x) %in% c("","y","yes","ya","yep"))
         }
 
       } else {

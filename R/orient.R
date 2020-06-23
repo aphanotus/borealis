@@ -44,14 +44,22 @@ orient <- function(A, topLM = NULL, bottomLM = NULL, leftLM = NULL, rightLM = NU
 
   # Vet the input
   if (class(A)[1] %in% c("gpagen","list")) {
-    shape.data <- A$coords
-    # If the input is already a list, then keep all other list elements in the output
-    output <- A[-grep("coords",names(A))]
+    if (any(grepl("coords",names(A)))) {
+      shape.data <- A$coords
+      output <- A[-grep("coords",names(A))]
+    } else {
+      if (any(grepl("land",names(A)))) {
+        shape.data <- A$land
+        output <- A[-grep("land",names(A))]
+      } else {
+        return(cat("Error: Input is not a recognized type. (See the help entry: '?orient'.)"))
+      }
+    }
   } else {
     if ((class(A)[1] == "array") & (length(dim(A)) == 3)) {
       shape.data <- A
     } else {
-      return(cat("Error: Input is not a recognized type. (See the help entry: '?procrustes.alignment'.)"))
+      return(cat("Error: Input is not a recognized type. (See the help entry: '?orient'.)"))
     }
   }
   if (dim(shape.data)[2] != 2) {
