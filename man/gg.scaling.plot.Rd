@@ -26,6 +26,7 @@ gg.scaling.plot(
   width = 7,
   fixed.aspect = TRUE,
   label.groups = TRUE,
+  groups.trendlines = FALSE,
   include.legend = FALSE,
   isometry.line = FALSE,
   isometry.line.color = "gray35",
@@ -62,6 +63,8 @@ gg.scaling.plot(
 \item{fixed.aspect}{A logical factor specifying whether to enforce an equal aspect ratio.}
 
 \item{label.groups}{A logical factor specifying whether to label groups.}
+
+\item{groups.trendlines}{A logical factor specifying whether to include trendlines for each group.}
 
 \item{include.legend}{A logical factor specifying whether to include a legend.}
 

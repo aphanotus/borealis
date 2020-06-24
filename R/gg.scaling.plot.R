@@ -20,6 +20,7 @@
 #' @param width The width of the exported plot.
 #' @param fixed.aspect A logical factor specifying whether to enforce an equal aspect ratio.
 #' @param label.groups A logical factor specifying whether to label groups.
+#' @param groups.trendlines A logical factor specifying whether to include trendlines for each group.
 #' @param include.legend A logical factor specifying whether to include a legend.
 #' @param isometry.line A logical factor specifying whether to include a slope illustrating slope of 1.
 #' @param isometry.line.color The color of isomnetry line.
@@ -70,6 +71,7 @@ gg.scaling.plot <- function(
   width = 7,
   fixed.aspect = TRUE,
   label.groups = TRUE,
+  groups.trendlines = FALSE,
   include.legend = FALSE,
   isometry.line = FALSE,
   isometry.line.color = "gray35",
@@ -150,6 +152,10 @@ gg.scaling.plot <- function(
                         hjust=0, size = 2.5, lineheight=0.825, alpha=0.7,
                         force = 1, max.iter = 10000)
     }
+  }
+
+  if (groups.trendlines) {
+    base.plot <- base.plot + geom_smooth(method = lm, se = FALSE)
   }
 
   if (fixed.aspect) {

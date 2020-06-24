@@ -767,13 +767,31 @@ Size and shape are often correlated. This means that as specimens get larger, th
 
 ```{r eval=FALSE, include=TRUE}
 species.unique.model <- procD.lm(coords ~ log(Csize) * species, data=wing.gpa$gdf, iter=i) 
-plotAllometry(fit = species.unique.model, size = wing.gpa$gdf$Csize, 
+plotAllometry(fit = species.unique.model, size = log10(wing.gpa$gdf$Csize), 
               col = as.factor(wing.gpa$gdf$species), xlab = "log10 centroid size")
 ```
 
-![](https://i.imgur.com/yVNF5JN.jpg)
+![](https://i.imgur.com/Lu9F1NG.jpg)
 
-The differences in slopes among different species indicate that there might be some variation in allometries, but we can test that hypothesis statistically, by comparing models.
+We can also use the `borealis` function `gg.scaling.plot` to look at the relationship between size and wing shape (represented by PC1 values)
+
+```{r eval=FALSE, include=TRUE}
+gg.scaling.plot(
+  x = log10(wing.gpa$gdf$Csize), y = wing.pca$x[,1],
+  group=wing.gpa$gdf$species, group.title = "species",
+  xlab = "log10 wing centroid size", ylab = "wing shape PC1",
+  include.legend = TRUE,
+  groups.trendlines = TRUE,
+  fixed.aspect = FALSE
+)
+```
+
+![](https://i.imgur.com/OR4dnnH.jpg)
+
+Note that the two plots above are fairly different. This is because we used PC1 values in the `gg.scaling.plot`, while `plotAllometry` is displaying fitted values based on the model of unique allometries.
+
+Regardless of which plot we focus on, the differences in slopes among different species indicate that there might be some variation in allometries. 
+We can test that hypothesis statistically, by comparing models.
 
 ```{r eval=FALSE, include=TRUE}
 anova(species.model, species.unique.model)
@@ -807,7 +825,7 @@ After this correction, we see more separation of the groups in the center, which
 
 ## Disparity comparisons
 
-Organisms vary. The extent of that variation may also be different among different groups. Are these differences greater than expected by chance? That can be tested, as shown below.
+Organisms vary. The extent of that variation (disparity) may also be different among different groups. Are these differences greater than expected by chance? That can be tested, as shown below.
 
 ```{r eval=FALSE, include=TRUE}
 morphol.disparity(coords ~ Csize, groups = ~ species, data = wing.gpa$gdf)
