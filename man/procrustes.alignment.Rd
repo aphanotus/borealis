@@ -2,7 +2,7 @@
 % Please edit documentation in R/procrustes.alignment.R
 \name{procrustes.alignment}
 \alias{procrustes.alignment}
-\title{A wrapper for geomorph::gpagen that includes interactive outlier detection and removal}
+\title{Generalized Prorustes alignment with interactive outlier detection and removal}
 \source{
 Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
 }
@@ -29,12 +29,16 @@ procrustes.alignment(
 Unnecessary if \code{A} is a list that already contains a \code{provenance} element.}
 }
 \value{
-Returns a list with Procrustes-aligned coordinates in \code{gpagen} with an added element for \code{provenance}.
+Returns a list with Procrustes-aligned coordinates in \code{coords}, centroid size in \code{Csize}.
+    All other elements from \code{\link[geomorph]{gpagen}} are in the the element \code{gpagen}.
+    Any other list elements in the input are retained.
+    Data proveance is also retained in \code{provenance} and updated with details of the GPA..
 }
 \description{
+GPA is performed by a call to \code{\link[geomorph]{gpagen}}.
 If \code{outlier.analysis = TRUE} then the function will display the results of
 \code{\link[geomorph]{plotOutliers}}, then warp grids for the most extreme shapes.
-The user is then prompted to select a cetain number of extreme shapes to exclude from
+The user is prompted to select a cetain number of extreme shapes to exclude from
 a repeated Procrustes alignment. This processes is iterative, until the user indicates that
 it should stop or no shapes are requested for removal.
 }

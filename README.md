@@ -64,6 +64,15 @@ Consistently orient multiple specimens in an array of coordinate shape values.
  
 A function that returns the proportion of variance explained by each axis in a principal component analysis (PCA).
 
+#### procrustes.analysis
+
+Generalized Prorustes alignment with interactive outlier detection and removal.
+GPA is performed by a call to `geomorph::gpagen`. If specified, the function will display the results of
+`geomorph::plotOutliers`, then warp grids for the most extreme shapes.
+The user is prompted to select a cetain number of extreme shapes to exclude from
+a repeated Procrustes alignment. This processes is iterative, until the user indicates that
+it should stop or no shapes are requested for removal.
+
 #### read.mmm
 
 A function to read in linear multivariate morphometric (MMM) data from a `csv` or `xlsx` file.
@@ -75,11 +84,6 @@ describing the data and providing data provenance.
 #### read.tps
 
 Read shape data from a `tps` file, and extract any metadata embedded in the ID lines.
-
-#### procrustes.analysis
-
-A wrapper for `geomorph::gpagen` that includes interactive outlier detection and removal. 
-The function will also record and pass data provenance as a list element.
 
 #### write.provenace
 
