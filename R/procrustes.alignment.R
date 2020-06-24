@@ -19,6 +19,7 @@
 #' (\href{https://cran.r-project.org/package=geomorph}{Link})
 #'
 #' @param A A list or 3-dimensional array containing XY shape corrdinates for multiple specimens.
+#' @param curves An optional matrix defining which landmarks should be treated as semilandmarks by \code{gpagen}.
 #' @param show.plot.gpa A logical value specifying whether to plot the Procrustes-aligned landmarks.
 #' @param outlier.analysis A logical value specifying whether to poerform interactive outlier analysis.
 #' @param display.outliers The number of outlier shapes to display.
@@ -44,6 +45,7 @@
 
 procrustes.alignment <- function (
   A,
+  curves = NULL,
   show.plot.gpa = TRUE,
   outlier.analysis = FALSE,
   display.outliers = 4,
@@ -87,11 +89,20 @@ procrustes.alignment <- function (
   }
 
   # Do the GPA
-  GPA <- gpagen(shape.data, ...)
+  GPA <- gpagen(shape.data, curves = curves, ...)
   new.prov.details <- paste0(
     paste0("## Generalized Procrustes analysis\n\n"),
     paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::procrustes.alignment` on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n")
   )
+
+  if(!is.null(curves)) {
+    new.prov.details <- paste0(
+      new.prov.details,
+      paste0("The follow matrix was used to define semilandmarks:\n\n|     |  LM |     |\n|:---:|:---:|:---:|\n| "),
+      paste0(apply(semiLMs,1,function(x) {paste0(sprintf("% 3d",x), collapse = " | ")}), collapse = " |\n| "),
+      " |\n\n"
+    )
+  }
 
   # GPA Plot
   if (show.plot.gpa) {
@@ -99,12 +110,11 @@ procrustes.alignment <- function (
   }
 
   # Outlier analysis
+  names.of.outliers.removed <- NULL
   if (outlier.analysis) {
 
     # Pause if the user requests both the GPA plot and outlier analysis
     if (show.plot.gpa) { invisible(readline(prompt="Press any key to continue.")) }
-
-    names.of.outliers.removed <- NULL
 
     # Outlier Procrustes distances
     rounds.of.outlier.analysis <- 0

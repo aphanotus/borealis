@@ -9,6 +9,7 @@ Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
 \usage{
 procrustes.alignment(
   A,
+  curves = NULL,
   show.plot.gpa = TRUE,
   outlier.analysis = FALSE,
   display.outliers = 4,
@@ -18,6 +19,8 @@ procrustes.alignment(
 }
 \arguments{
 \item{A}{A list or 3-dimensional array containing XY shape corrdinates for multiple specimens.}
+
+\item{curves}{An optional matrix defining which landmarks should be treated as semilandmarks by \code{gpagen}.}
 
 \item{show.plot.gpa}{A logical value specifying whether to plot the Procrustes-aligned landmarks.}
 
