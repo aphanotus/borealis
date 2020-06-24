@@ -137,7 +137,7 @@ orient <- function(A, topLM = NULL, bottomLM = NULL, leftLM = NULL, rightLM = NU
   output$coords <- shape.data
   if (!is.null(provenance) & !any(grepl("provenance",names(output)))) {
       output$provenance <- provenance
-    }
+  }
   s <- paste0(
     paste0("## Specimen re-orientation\n\n"),
     paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::orient` on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n"),

@@ -6,7 +6,7 @@
 #' a repeated Procrustes alignment. This processes is iterative, until the user indicates that
 #' it should stop or no shapes are requested for removal.
 #'
-#' @return Returns an object of class \code{gpagen} with an added element for \code{provenance}.
+#' @return Returns a list with Procrustes-aligned coordinates in \code{gpagen} with an added element for \code{provenance}.
 #'
 #' @source   Dave Angelini \email{david.r.angelini@@gmail.com} [aut, cre]
 #'
@@ -55,13 +55,17 @@ procrustes.alignment <- function (
   }
 
   shape.data <- NULL
+  output <- NULL
 
+  # Vet the input
   if (class(A)[1] %in% c("gpagen","list")) {
     if (any(grepl("coords",names(A)))) {
       shape.data <- A$coords
+      output <- A[-grep("coords",names(A))]
     } else {
       if (any(grepl("land",names(A)))) {
         shape.data <- A$land
+        output <- A[-grep("land",names(A))]
       } else {
         return(cat("Error: Input is not a recognized type. (See the help entry: '?procrustes.alignment'.)"))
       }
@@ -72,6 +76,8 @@ procrustes.alignment <- function (
       shape.data <- A
       if (is.null(provenance)) {
         cat("Warning: No data provenance provided.\n")
+      } else {
+        output$provenance <- provenance
       }
     } else {
       return(cat("Error: Input is not a recognized type. (See the help entry: '?procrustes.alignment'.)"))
@@ -167,10 +173,16 @@ procrustes.alignment <- function (
 
   } # End outlier analysis
 
-  # Add provenance
-  GPA$provenance <- provenance
-  GPA$provenance$procrustes.alignment <- new.prov.details
+  # Prep the output
+  output$coords <- GPA$coords
+  output$Csize <- GPA$Csize
+  output$gpagen <- GPA
+  output$gpagen <- output$gpagen[-c(1:2)]
+  if (!is.null(provenance) & !any(grepl("provenance",names(output)))) {
+    output$provenance <- provenance
+  }
+  output$provenance$procrustes.alignment <- new.prov.details
 
-  return(GPA)
+  return(output)
 
 } # End of function

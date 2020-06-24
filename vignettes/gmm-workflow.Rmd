@@ -82,7 +82,7 @@ Often, it's helpful to try a number of different landmark configurations on a sm
 diverse specimens to see how well they perform. Importantly, you want landmarks that are present in all specimens and that can be placed with good confidence by everyone involved in the digitizing effort. 
 I suggest writing up a good map of all the landmarks before proceeding with the digitization.
 
-![](https://i.imgur.com/uAzTg29.jpg)
+![](https://i.imgur.com/QDTUaFK.jpg)
 
 1. **Open a specimen image** in ImageJ. Be sure metadatam, such as sex, species, etc., are recorded somewhere. Be sure a scale bar is present in the image. If needed flip or rotate images so they are relatively consistent. Omit specimens with missing anatomical features.
 2. Use the **line tool** to measure the scale and trace any linear anatomical features. 
@@ -164,59 +164,172 @@ ID=DRA190718-001__vag__W__JL__NA
 SCALE=0.00702814773166532
 ```
 
-### Import `tps` data into R
+## Import `tps` data into R
 
+To start a workflow, you will typically begin from a `tps` file. 
+The function `read.tps` can do several early steps, but let's start by looking at a simple usage.
 
-```{r}
+```{r eval=FALSE, include=TRUE}
 shapes <- read.tps("wings.tps")
+```
+
+This creates the object `shapes`. 
+It is what R knows as a `list`, a type of data object that can include many different elements, all accessible together. 
+You ccan reveal the components of the list using the `names` function.
+
+```{r eval=FALSE, include=TRUE}
+names(shapes) 
+```
+
+```
+[1] "coords"          "landmark.number" "specimen.number" "scaled"
+[5] "metadata"        "provenance"     
+```
+
+The `coords` element is a 3-dimensional array of the coordinated positions. `landmark.number` and `specimen.number` are obvious. 
+The element `scaled` is a logical value stating whether the coordinates
+have already been scaled. If this is true (it is here), then you should
+avoid applying any scale a second time! 
+The element `metadata` is a data frame with metadata. 
+Each specimen is a row in this table, and ID names are the same in the `metadata` row and `coords` element. Specimens are also in the same order in those two elements. Finally the `provenance` element contains data provenance, which will be added to as the workflow continues.
+
+```{r eval=FALSE, include=TRUE}
+names(shapes$provenance)
+```
+
+```
+[1] "create.tps" "read.tps"
+```
+
+You can look at the contents of the data provance elements this way. 
+
+```{r eval=FALSE, include=TRUE}
+cat(unlist(shapes$provenance$read.tps))
+```
+
+```
+## TPS data import
+
+Performed by user `drangeli` with `borealis::read.tps` on Tuesday, 23 June 2020, 17:40:40
+
+Metadata were extracted from specimen ID lines for the following factors:
+- specimen.id
+- species
+- caste
+- digitizer
+- bodysize
+```
+
+### View the shape data
+
+The `borealis` package has a simple function for viewing the relative positions of landmarks. 
+The function is designed to user-friendly. 
+It will automatically detect whether you're giving it coordinates for one specimen, a 3D array with coordinates for multiple specimens, or 
+a `list` object with such an array as one component. 
+So all of the commands below will produce the same plot.
+
+```{r eval=FALSE, include=TRUE}
+landmark.plot(shapes$coords[,,1])
+landmark.plot(shapes$coords)
+landmark.plot(shapes)
+```
+
+![](https://i.imgur.com/SQpXxcG.jpg)
+
+The function defaults to looking at the first specimen in the array, but you can also specify others.
+
+```{r eval=FALSE, include=TRUE}
+landmark.plot(shapes, specimen.number = 2)
+```
+
+### Viewing shapes with landmark connections
+
+Often it's convenient to look at shape data with the landmarks connected in a way that reflects their biological meaning. 
+You can ask `landmark.plot` to include these connections if you first define them as a matrix. In the example below, each connections is indicated by adjacent landmark numbers.
+
+```{r eval=FALSE, include=TRUE}
 fw.links <- matrix(c(1,2, 1,5, 5,4, 4,3, 3,2, 5,6, 6,7, 7,8, 8,9, 9,4, 3,11, 11,12, 11,10, 9,10, 10,14, 14,15, 15,16, 16,18, 18,20, 16,17, 17,8, 12,13, 13,19, 14,13, 18,19, 2,12),
                    ncol = 2, byrow = TRUE)
 
-```
-names(shapes)
-
-shapes$metadata
-
-names(shapes$provenance)
-cat(unlist(shapes$provenance))
-
-write.provenance(shapes)
-
-
-A <- shapes
-A[-grep("coords",names(A))]
-
-# Import linear multivariate morphometric (MMM) data
-mmm.data <- read.mmm(
-  input.filename = "raw.measurements.csv",
-  output.filename = TRUE,
-  metadata.cols = "all",
-  apply.scale = TRUE,
-  invert.scale = TRUE
-)
-
-# Re-orient shapes
-shapes <- orient(shapes, topLM = 2, bottomLM = 20,
-                 leftLM = 1, rightLM = 19,
-                 links = fw.links )
-
-names(shapes$provenance)
-
 landmark.plot(shapes, links = fw.links)
-landmark.plot(shapes$coords, links = fw.links)
-landmark.plot(shapes$coords[,,1], links = fw.links)
+```
 
-# Procrustes alignment
-fw.gpa <- procrustes.alignment(shapes, outlier.analysis = TRUE)
+![](https://i.imgur.com/KYVXHzN.jpg)
 
-names(fw.gpa$provenance)
-cat(fw.gpa$provenance[["GPA"]])
+### Bombus forewing data
 
-# Extract ID metadata
-fw.gdf <- id.metadata.to.gdf(
-  fw.gpa,
-  id.factors = c("id","species","caste","digitizer","bodysize")
-)
+The data as they exist in our `shape` object right now are included in the `borealis` package. You could choose to start the tutorial at this point using the following command.
+
+```{r eval=FALSE, include=TRUE}
+shapes <- data("Bombus.forewings", package = "borealis")
+```
+
+## Re-orient specimens
+
+Occatinoally, a few specimens in a dataset are entered upside-down or "reflected" relative to the others. Or perhaps ImageJ recorded XY coordinates with the origin at the lower left, instead of the upper left. In these instances, it's helpful to go through all the specimens and "orient" them to have certain landmarks up or to the left.
+
+The function `orient` will accomplish this, and update the data provenance to list all the reorientiations that are made.
+
+```{r eval=FALSE, include=TRUE}
+shapes <- orient(shapes, topLM = 2, leftLM = 1, links = fw.links )
+```
+
+![](https://i.imgur.com/EZdEwYv.jpg)
+
+To save time, the re-orientation step can be included in the initial `read.tps` statement.
+
+```{r eval=FALSE, include=TRUE}
+shapes <- read.tps("wings.tps", 
+                   orient.specimens = TRUE,
+                   topLM = 2, leftLM = 1, links = fw.links)
+```
+
+## Joint alignment
+
+Joints can introduce nuisance variation in landmark-based geometric morphometrics. The `borealis` function `align.jopint` rotates a subset of landmarks about a pivot point. 
+You need to designate a reference specimen, and other specimens will be aligned so that the angle of the main set of landmarks and the substructure always have the same angle. 
+
+This step should be run before Procrustes alignment, and it is robust to differences in the relative position, orientation and size of specimens.
+
+However, it's not always necessary to do this. If the structure you're analyzing isn't jointed, then there's no need for it. 
+
+For this vignette, I'm going to stretch the utility of our example dataset. The shape data we've been working with are from bumblebee wings. They are not jointed. However, for the sake of the example, let's imagine we have reason to suspect that landmarks 13 and 19, hinge relative to the rest of the wing's landmarks. The specimens we've been looking at (number 1, by default) will be used as the specimen to define the reference angle.
+
+```{r eval=FALSE, include=TRUE}
+shapes <- align.joint(shapes, 
+                      substructure.LMs = c(13,19),
+                      pivot.LM = 14,
+                      reference.specimen = 1,
+                      include.plot = TRUE)
+```
+
+![](https://i.imgur.com/qagHjnu.jpg)
+
+By default, the function will not show a plot. However, if (as in this example) you include the arguyement `include.plot = TRUE`, then each specimen is plotted as above. The gray dots show the location of the landmarks in the main structure. The red dot is the pivot point. The open red circles are the old positions of landmarks in the substructure that's been aligned; the black dots are their new locations.
+
+## Procrustes alignment
+
+[Generalized Procrustes analysis](https://en.wikipedia.org/wiki/Procrustes_analysis#Generalized_Procrustes_analysis_(GPA)) minimizes the variance in distances between the landmarks of different specimens. It does this by translating, rotating and re-sizing each specimen's coordinates, but not changing their relative distances to one another. 
+In this way, GPA makes shapes comparable and removes trivial issues introduced by their original imaging. 
+GPA also retains size information as [centroid size](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4896994/#:~:text=Centroid%20size%20is%20the%20measure,y%20coordinates%20of%20all%20landmarks).). 
+
+```{r eval=FALSE, include=TRUE}
+wing.gpa <- procrustes.alignment(shapes)
+```
+
+![](https://i.imgur.com/AXVWXFV.jpg)
+
+What's happening behind the scenes is that `borealis` relies heabily on the function in the R package `geomorph`. The output of the `procrustes.alignment` function is similar to the object type produced by `geomorph::gpagen`. However it also includes data provenance.
+
+### Outlier detection
+
+After inital GPA, it's typically important to remove any obvious outliers. These may be specimens where coordinate positions were recorded incorrectly. `procrustes.alignment` fasciliates interactive outlier detection and removal. Just include the arguement `outlier.analysis = TRUE`.
+
+The function 
+
+```{r eval=FALSE, include=TRUE}
+wing.gpa <- procrustes.alignment(shapes, outlier.analysis = TRUE)
+```
 
 names(fw.gdf$provenance)
 cat(fw.gdf$provenance[["gdf.creation"]])

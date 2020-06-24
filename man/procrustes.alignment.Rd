@@ -29,7 +29,7 @@ procrustes.alignment(
 Unnecessary if \code{A} is a list that already contains a \code{provenance} element.}
 }
 \value{
-Returns an object of class \code{gpagen} with an added element for \code{provenance}.
+Returns a list with Procrustes-aligned coordinates in \code{gpagen} with an added element for \code{provenance}.
 }
 \description{
 If \code{outlier.analysis = TRUE} then the function will display the results of
