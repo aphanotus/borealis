@@ -112,7 +112,7 @@ The scale value can also be inverted, by setting `invert.scale = TRUE`. The defa
 create.tps(
   input.filename = "wings.csv",
   output.filename = "wings.tps",
-  id.factors = c('species','caste','digitizer','bodysize'),
+  id.factors = c('species','caste','digitizer'),
   include.scale = TRUE,
   invert.scale = TRUE)
 ```
@@ -132,7 +132,6 @@ The file that's created will looks like this.
 # - species
 # - caste
 # - digitizer
-# - bodysize
 # 
 # Metadata separator: __
 # 
@@ -160,7 +159,7 @@ LM=20
 1447.333 650
 1192.667 539.333
 1479.333 679
-ID=DRA190718-001__vag__W__JL__NA
+ID=DRA190718-001__vag__W__JL
 SCALE=0.00702814773166532
 ```
 
@@ -217,7 +216,6 @@ Metadata were extracted from specimen ID lines for the following factors:
 - species
 - caste
 - digitizer
-- bodysize
 ```
 
 ### View the shape data
@@ -319,17 +317,154 @@ wing.gpa <- procrustes.alignment(shapes)
 
 ![](https://i.imgur.com/AXVWXFV.jpg)
 
-What's happening behind the scenes is that `borealis` relies heabily on the function in the R package `geomorph`. The output of the `procrustes.alignment` function is similar to the object type produced by `geomorph::gpagen`. However it also includes data provenance.
+What's happening behind the scenes is that `borealis` relies on the function `gpagen` in the R package `geomorph`. The output of the `procrustes.alignment` contains the same list elements produced by `geomorph::gpagen`. However it also retains any list elements from the input and add to the data provenance element.
 
 ### Outlier detection
 
-After inital GPA, it's typically important to remove any obvious outliers. These may be specimens where coordinate positions were recorded incorrectly. `procrustes.alignment` fasciliates interactive outlier detection and removal. Just include the arguement `outlier.analysis = TRUE`.
+After inital GPA, it's typically important to remove any obvious outliers. These may be specimens where coordinate positions were recorded incorrectly. 
+There presences in the dataset can skew signals that are actually of interest. 
 
-The function 
+`procrustes.alignment` fasciliates interactive outlier detection and removal. Just include the arguement `outlier.analysis = TRUE`. The function will run `geomorph::plotOutliers`, then display
+warp grids for the most extreme shapes and prompt the user to remove some number of them. This can be done iteratively.
 
 ```{r eval=FALSE, include=TRUE}
 wing.gpa <- procrustes.alignment(shapes, outlier.analysis = TRUE)
 ```
 
-names(fw.gdf$provenance)
-cat(fw.gdf$provenance[["gdf.creation"]])
+![](https://i.imgur.com/VwKtdq3.jpg)
+
+![](https://i.imgur.com/DHZkZZ7.jpg)
+
+In this case, removing the two most extreme outliers looks prudent.
+
+### Convert data into a geomorph data frame
+
+The `geomorph` package ([Adams et al. 2020](https://cran.r-project.org/package=geomorph)) provides a powerful set of tools for GMM analysis. 
+Many functions require shape, size and metadata to be in a data structure called a `geomorph.data.frame`. 
+In order to retain data provenance and other elements of our data object, we can use the function `listed.gdf` to convert the `gpagen` and `metadata` elements of our list into a `geomorph.data.frame` while still keeping it within a list with the other elements.
+
+```{r eval=FALSE, include=TRUE}
+wing.gpa <- listed.gdf(wing.gpa)
+```
+
+We can then take a look at the new data structure.
+
+```{r eval=FALSE, include=TRUE}
+names(wing.gpa)
+```
+
+```
+[1] "gdf"             "landmark.number" "specimen.number" "scaled"          "provenance"     
+```
+
+```{r eval=FALSE, include=TRUE}
+names(wing.gpa$gdf)
+```
+
+```
+[1] "specimen.id" "species"     "caste"       "digitizer"   "coords"      "Csize"      
+```
+
+```{r eval=FALSE, include=TRUE}
+names(wing.gpa$provenance)
+```
+
+```
+[1] "create.tps"           "read.tps"             "reorientation"        "align.joint"         
+[5] "procrustes.alignment" "listed.gdf"          
+```
+
+The data structure is actually described in the provenance report for this step.
+
+```{r eval=FALSE, include=TRUE}
+cat(wing.gpa$provenance$listed.gdf)
+```
+
+```
+## Geomorph data frame conversion
+
+Performed by user `drangeli` with `borealis::listed.gdf` on Wednesday, 24 June 2020, 00:12:10
+
+Current data structure:
+- gdf
+  - specimen.id
+  - species
+  - caste
+  - digitizer
+  - coords
+  - Csize
+- landmark.number
+- specimen.number
+- scaled
+- provenance
+```
+
+## Ordination (PCA)
+
+To visualize variance in shapes, we perform a form of [ordination](https://en.wikipedia.org/wiki/Ordination_(statistics)) known as [Kendall's tangent space projection](https://books.google.com/books?id=5DLZ4lALRTEC&pg=PA98&lpg=PA98&dq=kendall%27s+tangent+space+projection&source=bl&ots=rUkeUb03p4&sig=ACfU3U1VPanhRZUBdXtZm_4_dw5RBUGBTA&hl=en&sa=X&ved=2ahUKEwj9qdLdzJnqAhUdknIEHXO2DV8Q6AEwEHoECAoQAQ#v=onepage&q=kendall's%20tangent%20space%20projection&f=false). Mathematically, this is similar to [principal component analysis (PCA)](https://en.wikipedia.org/wiki/Principal_component_analysis). 
+
+```{r eval=FALSE, include=TRUE}
+wing.pca <- gm.prcomp(wing.gpa$gdf$coords)
+```
+
+To examine the eigenvalues and proportionl variance for each dimension in the analysis, run `summary`.
+
+```{r eval=FALSE, include=TRUE}
+summary(wing.pca)
+```
+
+```
+Ordination type: Principal Component Analysis 
+Centering and projection: OLS 
+Number of observations 97 
+Number of vectors 40 
+
+Importance of Components:
+                              Comp1        Comp2        Comp3        Comp4        Comp5
+Eigenvalues            0.0002302972 0.0001681885 8.952373e-05 6.013661e-05 4.486361e-05
+Proportion of Variance 0.2694561165 0.1967867258 1.047460e-01 7.036203e-02 5.249206e-02
+Cumulative Proportion  0.2694561165 0.4662428423 5.709889e-01 6.413509e-01 6.938430e-01
+```
+
+While it can be useful to know how to work with the raw output from PCA analysis, often people are most interested in plotting the first two PC axes. PCA is particularly helpful for understanding differences in shapes among groups. And group membership can be mapped onto the shape-shape plot.
+
+```{r eval=FALSE, include=TRUE}
+plot(wing.pca, col = as.factor(wing.gpa$gdf$species))
+```
+
+![](https://i.imgur.com/bduPIp4.jpg)
+
+This is okay, but it's not very pretty. The `borealis` package has a function to plot these values using `ggplot2` with colorblind-friendly palletes.
+
+```{r eval=FALSE, include=TRUE}
+ggGMMplot(wing.pca, group = wing.gpa$gdf$species, 
+          group.title = 'species', 
+          convex.hulls = TRUE, include.legend = TRUE)
+```
+
+![](https://i.imgur.com/uNanxMW.jpg)
+
+It can also be helpful to examine a version of the morphospace plot that provides example shapes. This is possible too, using `ggGMMplot` with the arguement `backtransform.examples = TRUE`. 
+It then requires a reference shape, which can be supplied with the `geomorph` function `mshape`, which calculates a mean shape. 
+Since shape differences can be subtle, it can be helpful to apply a magnificatino factort using the `bt.shape.mag` arguement.
+
+```{r eval=FALSE, include=TRUE}
+ggGMMplot(wing.pca, group = wing.gpa$gdf$species, 
+          group.title = 'species', convex.hulls = TRUE,
+          backtransform.examples = TRUE,
+          ref.shape = mshape(wing.gpa$gdf$coords),
+          shape.method = "TPS",
+          bt.shape.mag = 3,
+          bt.links = fw.links)
+```
+
+![](https://i.imgur.com/EYGK3aQ.jpg)
+
+**Coming soon**
+- Phylogenetic PCA
+- Model testing
+  - Allometry tests
+- Allometry-corrected PCA
+- Disparity comparisons
+- Modularity testing
+

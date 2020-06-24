@@ -5,7 +5,7 @@
 \alias{Bombus.forewings}
 \title{Bumblebee forewing shaoe data}
 \format{
-An object of class \code{list} of length 4.
+An object of class \code{list} of length 6.
 }
 \source{
 Dave Angelini \email{david.r.angelini@gmail.com} [aut]

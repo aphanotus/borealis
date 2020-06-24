@@ -17,8 +17,6 @@
 #' @references  Geomorph: Software for geometric morphometric analyses.
 #' R package version 3.2.1. D.C. Adams and M.L. Collyer and A. Kaliontzopoulou. 2020.
 #' (\href{https://cran.r-project.org/package=geomorph}{Link})
-#' @references  Rohlf, FJ. 2015. The tps series of software. \emph{Hystrix} 26, 9–12.
-#' (\href{https://doi.org/10.4404/hystrix-26.1-11264}{Link})
 #'
 #' @param A A list or 3-dimensional array containing XY shape corrdinates for multiple specimens.
 #' @param show.plot.gpa A logical value specifying whether to plot the Procrustes-aligned landmarks.
@@ -181,11 +179,18 @@ procrustes.alignment <- function (
   output$coords <- GPA$coords
   output$Csize <- GPA$Csize
   output$gpagen <- GPA
-  output$gpagen <- output$gpagen[-c(1:2)]
+  # output$gpagen <- output$gpagen[-c(1:2)]
   if (!is.null(provenance) & !any(grepl("provenance",names(output)))) {
     output$provenance <- provenance
   }
   output$provenance$procrustes.alignment <- new.prov.details
+
+  if (any(grepl("specimen.number",names(output))) & (!is.null(names.of.outliers.removed))) {
+    output$specimen.number <- dim(output$coords)[3]
+    if (any(grepl("metadata",names(output)))) {
+      output$metadata <- output$metadata[-which(output$metadata[,1] %in% names.of.outliers.removed),]
+    }
+  }
 
   return(output)
 

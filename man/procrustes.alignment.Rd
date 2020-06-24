@@ -61,7 +61,4 @@ cat(fw.gpa$provenance$GPA)
 Geomorph: Software for geometric morphometric analyses.
 R package version 3.2.1. D.C. Adams and M.L. Collyer and A. Kaliontzopoulou. 2020.
 (\href{https://cran.r-project.org/package=geomorph}{Link})
-
-Rohlf, FJ. 2015. The tps series of software. \emph{Hystrix} 26, 9–12.
-(\href{https://doi.org/10.4404/hystrix-26.1-11264}{Link})
 }
