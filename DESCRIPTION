@@ -1,7 +1,7 @@
 Package: borealis
 Type: Package
 Title: Tools for Integrative Biology Research 
-Version: 2020.06.23
+Version: 2020.06.24
 Authors@R: person("Dave", "Angelini", email = "david.r.angelini@gmail.com",
                   role = c("aut", "cre"))
 Description: An R package for common activities in an integrative biology lab. 
