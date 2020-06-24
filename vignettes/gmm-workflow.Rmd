@@ -119,7 +119,7 @@ create.tps(
 
 The file that's created will looks like this.
 
-```{tps}
+```
 # ## TPS file creation 
 # 
 # Created by user `drangeli` with `borealis::create.tps` on Monday, 22 June 2020, 15:11:47
