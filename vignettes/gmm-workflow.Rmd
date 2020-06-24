@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-![](https://live.staticflickr.com/65535/49112559173_96cfbd9d2a_w_d.jpg)
+![](https://i.imgur.com/9bNCaKZ.jpg)
 
 Morphometry is a the study of shape and its variations.
 It allows comparisons of shape between different groups. 
@@ -35,9 +35,9 @@ A typical workflow for geometric morphometrics (GMM) looks this this:
 4. **Generalized Procrustes Analysis (GPA)** aligns specimens to one another, minimizing variance due to relative position, rotation and size. Size is typically retained as a separate variable that can be included in the analysis later. 
 5. **Data curation** - Are there obvious outliers that should be removed?
 6. **Ordination** by tangent-space projection (similar to PCA) highlights differences among individuals and groups
-7. **Modularity tests**
-8. **Disparity comparisons** among groups
-9. **Model** influences on size and shape  (e.g. due to allometric scaling, evolutionary relationships, environmental factors)
+7. **Model** influences on size and shape (e.g. due to allometric scaling, evolutionary relationships, environmental factors)
+8. **Disparity comparisons** among groups of specimens
+9. **Modularity tests** among landmarks
 
 GMM and morphometry in general is a rich discipline where people have developed a number of excellent analytical tools.
 However, some of these can be difficult to use.
@@ -268,7 +268,7 @@ shapes <- data("Bombus.forewings", package = "borealis")
 
 ## Re-orient specimens
 
-Occationally, a few specimens in a dataset are entered upside-down or "reflected" relative to the others. Or perhaps ImageJ recorded XY coordinates with the origin at the lower left, instead of the upper left. In these instances, it's helpful to go through all the specimens and "orient" them to have certain landmarks up or to the left.
+Occasionally, a few specimens in a dataset are entered upside-down or "reflected" relative to the others. Or perhaps ImageJ recorded XY coordinates with the origin at the lower left, instead of the upper left. In these instances, it's helpful to go through all the specimens and "orient" them to have certain landmarks up or to the left.
 
 The function `orient` will accomplish this, and update the data provenance to list all the reorientations that are made.
 
@@ -326,12 +326,12 @@ What's happening behind the scenes is that `borealis` relies on the function `gp
 ### GPA with semilandmarks
 
 True landmarks are based on reliable anatomical features with unambiguous positions ([Zelditch et al. 2012](https://www.sciencedirect.com/science/article/pii/B9780123869036000022)). 
-However, it's also posible to include "semilandmarks", positions that are defined by a line or curve. 
+However, it's also possible to include "semilandmarks", positions that are defined by a line or curve. 
 For example, the edge of a limb does not have any true, fixed anatomical landmarks, but one or more semilandmarks can be defined along the edge to capture its shape. 
 Semilandmarks are defined relative to their neighbors (which can also be semilandmarks). 
-During GPA, semilandmarks are allowed to "slide" in the axis determined by their defining neighbors, so that they are positions eqidistant from those neighbors in that axis. 
-But their deviation from that axis is retained, in order to capture that shape variation. Ideally, semilandmarks are initally placed very close to their ultimate position. 
-But sliding them during GPA helps optimize the alginment of specimens, and reduces variance in shapes that is not biologically meaningful ([Zelditch et al. 2012](https://www.sciencedirect.com/science/article/pii/B9780123869036000022)).
+During GPA, semilandmarks are allowed to "slide" in the axis determined by their defining neighbors, so that they are positions equidistant from those neighbors in that axis. 
+But their deviation from that axis is retained, in order to capture that shape variation. Ideally, semilandmarks are initially placed very close to their ultimate position. 
+But sliding them during GPA helps optimize the alignment of specimens, and reduces variance in shapes that is not biologically meaningful ([Zelditch et al. 2012](https://www.sciencedirect.com/science/article/pii/B9780123869036000022)).
 
 In the bumblebee wing dataset, all landmarks are true landmarks, defined by the intersections of veins. 
 However, to provide an example, let's consider landmarks 6 and 15 to be sliding semilandmarks. To define the landmarks, `gpagen` and `procrustes.alignment` will take a matrix with 3 columns. Each row defines one semilandmark. The semilandmark itself is in the middle column. The flanking neighbors, which define the axis for sliding, are in columns 1 and 3. 
@@ -440,7 +440,7 @@ Current data structure:
 
 ## Reporting data provenance
 
-After creation of a `geomorph.data.frame`, a dataset is usually done with pre-processing and is ready for analysis. That means that the data will not change from this point forward. If so, then a final report on data provenace can be generated from the records kept in our data object.
+After creation of a `geomorph.data.frame`, a dataset is usually done with pre-processing and is ready for analysis. That means that the data will not change from this point forward. If so, then a final report on data provenance can be generated from the records kept in our data object.
 
 ```{r eval=FALSE, include=TRUE}
 write.provenance(wing.gpa, 
@@ -470,7 +470,7 @@ Metadata are encoded in specimen ID lines from the following factors:
 
 Several free markdown viewers and editors also exist, such as [Typora](https://typora.io/).
 
-![](https://i.imgur.com/WKyVfGo.png)
+![](https://i.imgur.com/pFYgjr3.png)
 
 ## Ordination (PCA)
 
@@ -540,7 +540,7 @@ If different groups occupy similar areas of morphospace, an important follow-up 
 We have a good phylogeny for species of bumblebees in our sample dataset. 
 The tree is the consensus from a RAxML analysis of five genes, sequenced by [Cameron et al. (2007)](https://doi.org/10.1111/j.1095-8312.2007.00784.x), for 26 species found in northeastern North America. This tree is includes as data in the `borealis` package.
 
-First, it's necessary for us to find mean shapes for each species. If you have a tree with tips thta represent each specimen in your shape dataset, then this step won't be necessary.
+First, it's necessary for us to find mean shapes for each species. If you have a tree with tips that represent each specimen in your shape dataset, then this step won't be necessary.
 
 Start by using the function `coords.subset` to split the coordinate shape data into species groups.
 
@@ -581,7 +581,7 @@ mshape.by.species <- array(
 )
 ```
 
-Now that the shape data is ready, we need to prepare the phylogeny. Start by maing a copy of the tree object that's included with `borealis`, and plotting it out.
+Now that the shape data is ready, we need to prepare the phylogeny. Start by making a copy of the tree object that's included with `borealis`, and plotting it out.
 
 ```{r eval=FALSE, include=TRUE}
 data("Bombus.tree", package = "borealis")
@@ -619,12 +619,12 @@ plot(pca.w.phylo, phylo = TRUE, main = "PCA with phylogeny")
 
 ![](https://i.imgur.com/Oc7x3xZ.jpg)
 
-The shape that's plotted here is the first two principal component axes. 
-It's different the plot we saw above, because each species is represented by only one point. 
+The space plotted here is the first two principal component axes. 
+It's different from the plot we saw above, because each species is represented by only one point. 
 The points are connected by branches that reflect their evolutionary history, as described by the phylogenetic tree above. 
 Based on this result, we might conclude that "bor" and "ferv" (*Bombus borealis* and *B. fervidus*) have wing shapes different from the other species in the dataset, and that those shape differences are coincident with a shared ancestry of those two species. In contrast, while "imp" and "terri" (*B. impatiens* and *B. terricola*) have similar wing shapes, they are relatively distant in their relatedness. 
 
-`geomorph` provides a more sophisticated may be represent shape and relatedness in a plot like this. As described by its authors, phylogenetically-aligned PCA (PaCA) "...provides an ordination that aligns phenotypic data with phylogenetic signal, by maximizing variation in directions that describe phylogenetic signal, while simultaneously preserving the Euclidean distances among observations in the data space." (Kaliontzopoulou 2020)[https://cran.r-project.org/web/packages/geomorph/vignettes/geomorph.PCA.html]
+`geomorph` provides a more sophisticated may be represent shape and relatedness in a plot like this. As described by its authors, phylogenetically-aligned PCA (PaCA) "...provides an ordination that aligns phenotypic data with phylogenetic signal, by maximizing variation in directions that describe phylogenetic signal, while simultaneously preserving the Euclidean distances among observations in the data space." ([Kaliontzopoulou 2020](https://cran.r-project.org/web/packages/geomorph/vignettes/geomorph.PCA.html))
 
 ```{r eval=FALSE, include=TRUE}
 paca <- gm.prcomp(mshape.by.species, phy = btree, align.to.phy = TRUE)
@@ -638,12 +638,12 @@ However, it will be wise to try both and compare the results.
 
 ## Modeling
 
-Before we discuss modeling, I want to offer a disclaimer. This subject is complex. I urge everyone to take a good statistics course; perferably several. That said, let's brefily review what modeling is and then discuss how it can be done with GMM data. 
+Before we discuss modeling, I want to offer a disclaimer. This subject is complex. I urge everyone to take a good statistics course; preferably several. That said, let's briefly review what modeling is and then discuss how it can be done with GMM data. 
 
 All statistical models ask some version of a simple question: 
 If a set of measurements has some variance, to what degree do certain factors explain that variance? Many different statistical methods exist to ask this question with different kinds of data.
 
-Morphometric datasets are multivariate. In a traditional ANOVA, one dependent variable is measured and modeled based on one or more factors. The analysis of shape data however is complicated by the fact that the dependent variable (shape) consists of a constellation of coordinate positions and their relative distances from one another. Therefore, specialized multivariate analysis methods are necessary. 
+Morphometric data sets are multivariate. In a traditional ANOVA, one dependent variable is measured and modeled based on one or more factors. The analysis of shape data however is complicated by the fact that the dependent variable (shape) consists of a constellation of coordinate positions and their relative distances from one another. Therefore, specialized multivariate analysis methods are necessary. 
 
 `geomorph` provides functions for model construction and comparison ([Collyer 2020](https://cran.r-project.org/web/packages/geomorph/vignettes/geomorph.assistance.html)). 
 In arguments to the function `procD.lm`, you describe a model using the `~` (tilda) character. I think of this as meaning "*y* is a function of *x*".
@@ -738,9 +738,9 @@ Estimation method: Ordinary Least Squares
 Effect sizes (Z) based on F distributions
 
                                       ResDf Df      RSS       SS        MS     Rsq      F      Z     P Pr(>F)
-coords ~ log(Csize) (Null)               95  1 0.076855                    0.00000                           
-coords ~ log(Csize) + species            88  7 0.042853 0.034002 0.0048575 0.41442 9.9750 10.679 0.001       
-coords ~ log(Csize) + species + caste    87  8 0.041835 0.035021 0.0043776 0.42683 9.1036 10.899 0.001       
+coords ~ log(Csize) (Null)               95  1 0.076855                    0.00000    
+coords ~ log(Csize) + species            88  7 0.042853 0.034002 0.0048575 0.41442 9.9750 10.679 0.001
+coords ~ log(Csize) + species + caste    87  8 0.041835 0.035021 0.0043776 0.42683 9.1036 10.899 0.001
 Total                                    96    0.082049    
 ```
 
@@ -752,8 +752,8 @@ anova(species.model, sp.caste.model)
 
 ```
                                       ResDf Df      RSS        SS        MS      Rsq      F    Z     P Pr(>F)
-coords ~ log(Csize) + species (Null)     88  1 0.042853                     0.000000                         
-coords ~ log(Csize) + species + caste    87  1 0.041835 0.0010181 0.0010181 0.012409 2.1173 2.14 0.025       
+coords ~ log(Csize) + species (Null)     88  1 0.042853                     0.000000
+coords ~ log(Csize) + species + caste    87  1 0.041835 0.0010181 0.0010181 0.012409 2.1173 2.14 0.025
 Total                                    96    0.082049        
 ```
 
@@ -763,7 +763,7 @@ In this case, the model that adds "caste" as a predictive factor does not appear
 
 ### Testing for common allometry
 
-Size and shape are often correlated. This means that as specimens get larger, their shape changes in a predictable way. However, we may want to ask if that relationship is consistent about all the groups in our dataset. Do species all share a common allometry or do some species have unique allometries? The way to approach this statistically is to compare our model where size and species indepenently influence shape, to one that allows for an interaction between those two terms. The function `plotAllometry` also provides a way to visualize these relationships.
+Size and shape are often correlated. This means that as specimens get larger, their shape changes in a predictable way. However, we may want to ask if that relationship is consistent about all the groups in our dataset. Do species all share a common allometry or do some species have unique allometries? The way to approach this statistically is to compare our model where size and species independently influence shape, to one that allows for an interaction between those two terms. The function `plotAllometry` also provides a way to visualize these relationships.
 
 ```{r eval=FALSE, include=TRUE}
 species.unique.model <- procD.lm(coords ~ log(Csize) * species, data=wing.gpa$gdf, iter=i) 
@@ -781,18 +781,18 @@ anova(species.model, species.unique.model)
 
 ```
                                      ResDf Df      RSS        SS         MS      Rsq      F      Z     P Pr(>F)
-coords ~ log(Csize) + species (Null)    88  1 0.042853                      0.000000                           
-coords ~ log(Csize) * species           82  6 0.038875 0.0039784 0.00066307 0.048489 1.3987 1.7219 0.043       
+coords ~ log(Csize) + species (Null)    88  1 0.042853                      0.000000
+coords ~ log(Csize) * species           82  6 0.038875 0.0039784 0.00066307 0.048489 1.3987 1.7219 0.043
 Total                                   96    0.082049
 ```
 
-The results here are inconclusive. The benefit in model fit gained by adding unique influences of size for each sepcies produce only a marginal difference. 
+The results here are inconclusive. The benefit in model fit gained by adding unique influences of size for each species produce only a marginal difference. 
 
 However, it's worth noting that this dataset is not ideal to answer this question. The sampling is very uneven across species. Ideally, equal numbers of species would be included and represent similar sizes.
 
 ### Allometry-corrected PCA
 
-Size often has a dominant effect on shape. Therefore it can be helpful to examine aspects of shape that remain when the effecys of allometry are substracted out.
+Size often has a dominant effect on shape. Therefore it can be helpful to examine aspects of shape that remain when the effects of allometry are subtracted out.
 
 ```{r eval=FALSE, include=TRUE}
 allometry.corrected.pca <- gm.prcomp(size.model$residuals)
@@ -803,7 +803,7 @@ ggGMMplot(allometry.corrected.pca, group = wing.gpa$gdf$species,
 
 ![](https://i.imgur.com/4iWMppB.jpg)
 
-After this correction, we see more seperation of the groups in the center, which may reveal aspects of their shape that are different, indepenedent of differences in their size.
+After this correction, we see more separation of the groups in the center, which may reveal aspects of their shape that are different, independent of differences in their size.
 
 ## Disparity comparisons
 
@@ -815,7 +815,7 @@ morphol.disparity(coords ~ Csize, groups = ~ species, data = wing.gpa$gdf)
 
 The output is a table of pairwise mean Procrustes distances and p-values. 
 
-We don't have balanced sampling among species in this dataset, making this a rather inappropriate compaison. We could either increasing sampling for underrepresented species, or we could subset the data to only those speecies with good sample sizes.
+We don't have balanced sampling among species in this dataset, making this a rather inappropriate comparison. We could either increasing sampling for underrepresented species, or we could subset the data to only those species with good sample sizes.
 
 ```{r eval=FALSE, include=TRUE}
 c(with(wing.gpa$gdf, by(species,species, length)))
@@ -859,11 +859,11 @@ From these results we can see that `tern` (*B. ternarius*) has marginally less s
 
 ## Modularity testing
 
-An anatomical module is a group of structures, such as landmarks, that vary less amongst one another within the module, than they do relative to structures outside the module. In other words, if we were to examine the variance in distances between all landmarks in our dataset, if we consider some group of landmarks to be a module, then within-group variance should be low (and between group varianbce should be higher) than predicted by chance ([Adams & Collyer 2019](https://onlinelibrary.wiley.com/doi/full/10.1111/evo.13867)). 
+An anatomical module is a group of structures, such as landmarks, that vary less among one another within the module, than they do relative to structures outside the module. In other words, if we were to examine the variance in distances between all landmarks in our dataset, if we consider some group of landmarks to be a module, then within-group variance should be low (and between group variance should be higher) than predicted by chance ([Adams & Collyer 2019](https://onlinelibrary.wiley.com/doi/full/10.1111/evo.13867)). 
 
 The `geomorph` function `modularity.test` implements such a test for two or module modules. Modules are defined by a character vector describing the membership of landmarks in each module. 
 
-The most sensible modularity hypotheses will be suggested by anatomical or developmental evidence of greater independence among the hypothetical modules. There are often separate devleopment mechanisms governing the proximal and distal regions of appendages, such as the wing. So as an example, we'll test the hypothesis that the wing exhibits modularity in  proximal and distal regions, defined by a division just distal of the pterostigma.
+The most sensible modularity hypotheses will be suggested by anatomical or developmental evidence of greater independence among the hypothetical modules. There are often separate developmental mechanisms governing the proximal and distal regions of appendages, such as the wing. So as an example, we'll test the hypothesis that the wing exhibits modularity in  proximal and distal regions, defined by a division just distal of the pterostigma.
 
 ![](https://i.imgur.com/xByJcth.jpg)
 
@@ -884,6 +884,6 @@ Confidence Intervals 0.8171
 Confidence Intervals 0.9708
 ```
 
-These results support for this modularity hypothesis. However, testing several variations on the hypothesis can be helpful to identify the bounds of a module. 
+These results support this modularity hypothesis. However, testing several variations on the hypothesis can be helpful to identify the bounds of a module. 
 
 
