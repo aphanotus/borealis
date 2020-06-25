@@ -131,12 +131,16 @@ read.tps <- function (
     id.factors <- header.text[grep("^- ",header.text)]
     id.factors <- sub("^- ","",id.factors)
 
-    # Extract ID metadata
-    if (extract.id.metadata) {
-      if (!is.null(id.lines)) {
-        separator <- header.text[grep("^Metadata separator: ",header.text)]
-        separator <- sub("^Metadata separator: ","",separator[[1]])
+    separator <- header.text[grep("^Metadata separator: ",header.text)]
+    if (length(separator) >0) {
+      separator <- sub("^Metadata separator: ","",separator[[1]])
+    } else {
+      separator <- NULL
+    }
 
+    # Extract ID metadata
+    if (extract.id.metadata & !is.null(separator)) {
+      if (!is.null(id.lines)) {
         # Make sure the separator appears in the ID names!
         if (!any(grepl(separator,id.lines))) {
           s <- paste0("Warning: The separator ",paste0("'",separator,"'")," does not appear in the ID information. e.g. ",paste0("'",id.lines[1],"'"),".\n")

@@ -1,6 +1,8 @@
 # borealis
 
-An R package for common activities in an integrative biology lab.
+**Tools for Integrative Biology**
+
+[GMM workflow vignette](https://www.bugsinourbackyard.org/wp-content/uploads/2020/06/gmm-workflow.html)
 
 ## Installation
 

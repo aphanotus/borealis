@@ -1,10 +1,10 @@
 ---
-title: "borealis for GMM"
+title: "GMM workflow with borealis"
 author: "Dave Angelini"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{borealis for GMM}
+  %\VignetteIndexEntry{GMM workflow with borealis}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -288,7 +288,7 @@ shapes <- read.tps("wings.tps",
 
 ## Joint alignment
 
-Joints can introduce nuisance variation in landmark-based geometric morphometrics. The `borealis` function `align.jopint` rotates a subset of landmarks about a pivot point. 
+Joints can introduce nuisance variation in landmark-based geometric morphometrics. The `borealis` function `align.joint` rotates a subset of landmarks about a pivot point. 
 You need to designate a reference specimen, and other specimens will be aligned so that the angle of the main set of landmarks and the substructure always have the same angle. 
 
 This step should be run before Procrustes alignment, and it is robust to differences in the relative position, orientation and size of specimens.
@@ -301,6 +301,7 @@ For this vignette, I'm going to stretch the utility of our example dataset. The 
 shapes <- align.joint(shapes, 
                       substructure.LMs = c(13,19),
                       pivot.LM = 14,
+                      swing.LM = 18,
                       reference.specimen = 1,
                       include.plot = TRUE)
 ```

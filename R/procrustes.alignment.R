@@ -99,7 +99,7 @@ procrustes.alignment <- function (
     new.prov.details <- paste0(
       new.prov.details,
       paste0("The follow matrix was used to define semilandmarks:\n\n|     |  LM |     |\n|:---:|:---:|:---:|\n| "),
-      paste0(apply(semiLMs,1,function(x) {paste0(sprintf("% 3d",x), collapse = " | ")}), collapse = " |\n| "),
+      paste0(apply(curves,1,function(x) {paste0(sprintf("% 3d",x), collapse = " | ")}), collapse = " |\n| "),
       " |\n\n"
     )
   }

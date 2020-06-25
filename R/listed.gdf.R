@@ -61,7 +61,11 @@ listed.gdf <- function (x, ...)
 
   # Create the inital geomorph.data.frame
   if (any(grepl("metadata",names(x)))) {
-    gdf <- geomorph.data.frame(gpa, x$metadata)
+    if (!is.null(x$metadata)) {
+      gdf <- geomorph.data.frame(gpa, x$metadata)
+    } else {
+      gdf <- geomorph.data.frame(gpa)
+    }
   } else {
     gdf <- geomorph.data.frame(gpa)
   }

@@ -35,7 +35,9 @@
 #' @param A A 3-dimensional array containing XY shape corrdinates for multiple specimens,
 #'     or a list containing such as an array and data provenance.
 #' @param substructure.LMs A numerical vector giving the landmark numbers of the substructure to be algined.
+#' @param main.structure.LMs A numerical vector giving the landmark numbers of the main structure.
 #' @param pivot.LM The number of the landmark that should be used as the joint.
+#' @param swing.LM The number of the landmark that should be used as the most distal swing point.
 #' @param reference.specimen The index number of the reference specimen.
 #' @param include.plot A logical factor specifying whether to include a plot showing the alginment of each specimen relative to the reference.
 #' @param provenance An object that should be retained for data provenance.
@@ -66,7 +68,9 @@
 align.joint <- function(
   A,
   substructure.LMs = NULL,
+  main.structure.LMs = NULL,
   pivot.LM = NULL,
+  swing.LM = NULL,
   reference.specimen = 1,
   include.plot = TRUE,
   provenance = NULL,
@@ -107,14 +111,19 @@ align.joint <- function(
   if (is.null(pivot.LM) | !is.numeric(pivot.LM) | (pivot.LM > dim(shape.data)[1]) | (pivot.LM < 0)) {
     return(cat("Error: pivot.LM is invalid. See '?align.joint' for usage.\n "))
   }
+  if (is.null(swing.LM) | !is.numeric(swing.LM) | (swing.LM > dim(shape.data)[1]) | (swing.LM < 0)) {
+    return(cat("Error: swing.LM is invalid. See '?align.joint' for usage.\n "))
+  }
 
   # Identify the main structure landmarks
-  main.structure.LMs <- 1:dim(shape.data)[1]
-  main.structure.LMs <- main.structure.LMs[which(!(main.structure.LMs %in% substructure.LMs))]
-  if (!(pivot.LM %in% substructure.LMs)) {
-    substructure.LMs <- sort(c(substructure.LMs, pivot.LM))
+  if (is.null(main.structure.LMs)) {
+    main.structure.LMs <- 1:dim(shape.data)[1]
+    main.structure.LMs <- main.structure.LMs[which(!(main.structure.LMs %in% substructure.LMs))]
   }
-  main.structure.LMs <- sort(c(main.structure.LMs, pivot.LM))
+  if (!(pivot.LM %in% substructure.LMs)) {
+    substructure.LMs <- sort(unique(c(substructure.LMs, pivot.LM)))
+  }
+  main.structure.LMs <- sort(unique(main.structure.LMs))
 
   # Trigonometry reminders:
   #   For positive slopes, inverse tangent values range for zero (flat slope) to pi/2.
@@ -131,7 +140,7 @@ align.joint <- function(
   }
 
   ref.joint.angle <- relative.angles(shape.data[main.structure.LMs,,reference.specimen],
-                                     shape.data[substructure.LMs,,reference.specimen])
+                                     shape.data[c(pivot.LM, swing.LM),,reference.specimen])
 
   # MAIN LOOP
   # For each specimen,
@@ -143,7 +152,7 @@ align.joint <- function(
   for (i in specimens.to.adjust) {
     old.coords.i <- shape.data[,,i]
     angle.i <- relative.angles(shape.data[main.structure.LMs,,i],
-                               shape.data[substructure.LMs,,i])
+                               shape.data[c(pivot.LM, swing.LM),,i])
     theta <- angle.i - ref.joint.angle
     adjustment.angles <- c(adjustment.angles, theta)
 
@@ -192,12 +201,15 @@ align.joint <- function(
 
       # Main structure landmarks
       points(shape.data[main.structure.LMs,1,i], shape.data[main.structure.LMs,2,i], pch = 16, col = "grey50")
+      abline(lm(shape.data[main.structure.LMs,2,i] ~ shape.data[main.structure.LMs,1,i]), col = "grey50")
 
       # Old substructure positions
       points(old.coords.i[substructure.LMs,1], old.coords.i[substructure.LMs,2], pch = 1, col = "darkred" )
+      abline(lm(old.coords.i[c(pivot.LM, swing.LM),2] ~ old.coords.i[c(pivot.LM, swing.LM),1]), col = "darkred")
 
       # New substructure positions
       points(shape.data[substructure.LMs,1,i], shape.data[substructure.LMs,2,i], pch = 16, col = "black")
+      abline(lm(shape.data[c(pivot.LM, swing.LM),2,i] ~ shape.data[c(pivot.LM, swing.LM),1,i]), col = "black")
 
       # Pivot
       points(shape.data[pivot.LM,1,i], shape.data[pivot.LM,2,i], pch = 16, col = "darkred")

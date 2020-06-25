@@ -10,7 +10,9 @@ Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
 align.joint(
   A,
   substructure.LMs = NULL,
+  main.structure.LMs = NULL,
   pivot.LM = NULL,
+  swing.LM = NULL,
   reference.specimen = 1,
   include.plot = TRUE,
   provenance = NULL,
@@ -23,7 +25,11 @@ or a list containing such as an array and data provenance.}
 
 \item{substructure.LMs}{A numerical vector giving the landmark numbers of the substructure to be algined.}
 
+\item{main.structure.LMs}{A numerical vector giving the landmark numbers of the main structure.}
+
 \item{pivot.LM}{The number of the landmark that should be used as the joint.}
+
+\item{swing.LM}{The number of the landmark that should be used as the most distal swing point.}
 
 \item{reference.specimen}{The index number of the reference specimen.}
 
