@@ -40,7 +40,7 @@
 #' cat(Y.gdf$provenance)
 #'
 
-listed.gdf <- function (x, ...)
+listed.gdf <- function (x)
 {
   # Don't bother running anything if geomorph isn't installed!
   if (!require(geomorph)) {

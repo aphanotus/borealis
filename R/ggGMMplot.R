@@ -15,6 +15,7 @@
 #' @param x An object of class \code{gm.prcomp}.
 #' @param axis1 The PC axis to plot on the horizontal.
 #' @param axis2 The PC axis to plot on the vertical.
+#' @param main.title An optional title for the plot.
 #' @param group A factor to group samples.
 #' @param group.title An optional title for the group legend.
 #' @param convex.hulls A logical factor specifying whether to plot convex hulls around groups.
@@ -94,6 +95,7 @@ ggGMMplot <- function (
   x,
   axis1 = 1,
   axis2 = 2,
+  main.title = NULL,
   group = NULL,
   group.title = NULL,
   convex.hulls = FALSE,
@@ -185,6 +187,12 @@ ggGMMplot <- function (
     labs(x = paste0('PC',axis1,' (',pc.contributions[1],')'),
          y = paste0('PC',axis2,' (',pc.contributions[2],')')
     )
+
+  # Add main title
+  if (!is.null(main.title)) {
+    base.plot <- base.plot + ggtitle(main.title)
+  }
+
   # Add convex hulls
   if (convex.hulls) {
     base.plot <- base.plot +

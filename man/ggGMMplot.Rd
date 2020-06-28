@@ -11,6 +11,7 @@ ggGMMplot(
   x,
   axis1 = 1,
   axis2 = 2,
+  main.title = NULL,
   group = NULL,
   group.title = NULL,
   convex.hulls = FALSE,
@@ -45,6 +46,8 @@ ggGMMplot(
 \item{axis1}{The PC axis to plot on the horizontal.}
 
 \item{axis2}{The PC axis to plot on the vertical.}
+
+\item{main.title}{An optional title for the plot.}
 
 \item{group}{A factor to group samples.}
 

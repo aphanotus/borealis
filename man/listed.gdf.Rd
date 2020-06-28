@@ -7,7 +7,7 @@
 Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
 }
 \usage{
-listed.gdf(x, ...)
+listed.gdf(x)
 }
 \arguments{
 \item{x}{A list containing the output of \code{\link[geomorph]{gpagen}}, metadata and provenance.}
