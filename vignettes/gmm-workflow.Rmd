@@ -263,7 +263,8 @@ landmark.plot(shapes, links = fw.links)
 The data as they exist in our `shape` object right now are included in the `borealis` package. You could choose to start the tutorial at this point using the following command.
 
 ```{r eval=FALSE, include=TRUE}
-shapes <- data("Bombus.forewings", package = "borealis")
+data("Bombus.forewings", package = "borealis")
+shapes <- Bombus.forewings
 ```
 
 ## Re-orient specimens
@@ -301,7 +302,6 @@ For this vignette, I'm going to stretch the utility of our example dataset. The 
 shapes <- align.joint(shapes, 
                       substructure.LMs = c(13,19),
                       pivot.LM = 14,
-                      swing.LM = 18,
                       reference.specimen = 1,
                       include.plot = TRUE)
 ```
@@ -447,7 +447,6 @@ After creation of a `geomorph.data.frame`, a dataset is usually done with pre-pr
 write.provenance(wing.gpa, 
                  output.filename = "~/Desktop/wing.shape.provenance.md",
                  title = "Preliminary wing shape data provenance")
-
 ```
 
 This creates a file in [markdown](https://www.markdownguide.org/getting-started/) format. These files can be treated as plain text and viewed directly, as below. 
@@ -541,15 +540,18 @@ If different groups occupy similar areas of morphospace, an important follow-up 
 We have a good phylogeny for species of bumblebees in our sample dataset. 
 The tree is the consensus from a RAxML analysis of five genes, sequenced by [Cameron et al. (2007)](https://doi.org/10.1111/j.1095-8312.2007.00784.x), for 26 species found in northeastern North America. This tree is includes as data in the `borealis` package.
 
-First, it's necessary for us to find mean shapes for each species. If you have a tree with tips that represent each specimen in your shape dataset, then this step won't be necessary.
+First, it's necessary for us to find mean shapes for each species. If you have a tree with tips that represent each specimen in your shape dataset, then this step won't be necessary. 
 
-Start by using the function `coords.subset` to split the coordinate shape data into species groups.
+Because shapes may differ by caste, we'll limit this analysis to workers. We'll subset the shape data using using the `borealis` function `filter.shapes`.
 
 ```{r eval=FALSE, include=TRUE}
-x <- grep('W$',wing.gpa$gdf$caste)
-worker.fw <- wing.gpa$gdf$coords[,,x]
-worker.sp <- wing.gpa$gdf$species[x]
-coords.by.species <- coords.subset(worker.fw, group = as.character(worker.sp))
+workers <- filter.shapes(wing.gpa, wing.gpa$gdf$caste=="W")
+```
+
+Next, the function `coords.subset` will split the coordinate shape data into groups, in this example, by species.
+
+```{r eval=FALSE, include=TRUE}
+coords.by.species <- coords.subset(workers$gdf$coords, group = workers$gdf$species)```
 ```
 
 This produces a `list` with elements named for each species. 
@@ -760,7 +762,203 @@ Total                                    96    0.082049
 
 In this case, the model that adds "caste" as a predictive factor does not appear to be much better than the model with only size and species as factors.
 
-**Note for the future:** Add some discussion of pairwise tests.
+### *Post hoc* pairwise comparisons
+
+As with any ANOVA, these tests tell us that species is a factor that explains wing shape, at least in part. But it does not tell us which species differ from one another. 
+Answering that question requires what are broadly called *posthoc* tests. 
+There are many ways to do *post hoc* tests, but the simplest and one of the most common is to examine all pairwise contrasts. This can be dome using a function provided in the `RRPP` package, which underlies much of `geomorph`.
+
+Right now our dataset includes some species with too few samples for the `pairwise` function to operate. You can examone sample sizes like this.
+
+```{r eval=FALSE, include=TRUE}
+c(with(wing.gpa$gdf, by(species, species, length)))
+```
+
+```
+bimac   bor  ferv   imp   san  tern terri   vag 
+   23     3     2    28     1    26     2    12
+```
+
+So, first we'll subset the data to just the four species that have good representation. Then we'll create a model similar to the one we built earlier, with size and species as predictive factors.
+
+```{r eval=FALSE, include=TRUE}
+common.sp <- filter.shapes(wing.gpa, wing.gpa$gdf$species %in% c("bimac","imp","tern","vag"))
+common.sp.model <- procD.lm(coords ~ log(Csize) + species, data=common.sp$gdf, iter=i) 
+anova(common.sp.model)
+```
+
+```
+           Df       SS        MS     Rsq       F      Z Pr(>F)   
+log(Csize)  1 0.004258 0.0042576 0.06657  9.4733 4.6087  0.001 **
+species     3 0.021944 0.0073146 0.34312 16.2753 9.3920  0.001 **
+Residuals  84 0.037752 0.0004494 0.59031                         
+Total      88 0.063953 
+```
+
+As before, both factors are significant predictors of wing shape. 
+
+We should also construct a null model, that omits the factor we're interested in. In this case that's `species`. -- The `pairwise` function we'll use later can guess at this, but it's good practice to be explicit about defining the null model. It can help avoid incorrect assumptions.
+
+```{r eval=FALSE, include=TRUE}
+common.size.model <- procD.lm(coords ~ log(Csize), data=common.sp$gdf, iter=i) 
+```
+
+Now we can conduct the *post hoc* pairwise comparisons.
+
+```{r eval=FALSE, include=TRUE}
+common.sp.pw <- pairwise(fit = common.sp.model, 
+                         fit.null = common.size.model,
+                         groups = common.sp$gdf$species)
+summary(common.sp.pw)
+```
+
+```
+Pairwise comparisons
+
+Groups: bimac imp tern vag 
+
+RRPP: 1000 permutations
+
+LS means:
+Vectors hidden (use show.vectors = TRUE to view)
+
+Pairwise distances between means, plus statistics
+                    d  UCL (95%)         Z Pr > d
+bimac:imp  0.02644867 0.01059573 10.404643  0.001
+bimac:tern 0.02364860 0.01426434  5.828100  0.001
+bimac:vag  0.02433783 0.01368575  6.638058  0.001
+imp:tern   0.03171487 0.01286605 10.051005  0.001
+imp:vag    0.04044576 0.01301518 13.426703  0.001
+tern:vag   0.02323543 0.01431901  5.549254  0.001
+```
+
+In this example, all of the species have significant differences from one another in their contribution to wing shape. Importantly, these effects are independent of the influence of wing size on shape. Because the model includes a size factor (`log(Csize)`), that influence is already accounted for. We've asked the `pairwise` function to make comparisons among species, using the argument `groups = common.sp$gdf$species`. 
+
+If we wanted to compare the influence of species, controling for the influence of caste as well, we could do so this way.
+
+```{r eval=FALSE, include=TRUE}
+common.caste.model <- procD.lm(coords ~ log(Csize) + caste, data=common.sp$gdf, iter=i) 
+common.sp.caste.model <- procD.lm(coords ~ log(Csize) + species + caste, data=common.sp$gdf, iter=i)
+common.sp.caste.pw <- pairwise(fit = common.sp.caste.model, 
+                               fit.null = common.caste.model,
+                               groups = common.sp$gdf$species)
+summary(common.sp.caste.pw)
+```
+
+```
+Pairwise distances between means, plus statistics
+                    d  UCL (95%)         Z Pr > d
+bimac:imp  0.02626333 0.01297581  8.191782  0.001
+bimac:tern 0.02437228 0.01764947  4.328084  0.001
+bimac:vag  0.02480890 0.01364798  6.801108  0.001
+imp:tern   0.03298336 0.01334316 10.156108  0.001
+imp:vag    0.04079689 0.01377951 12.566232  0.001
+tern:vag   0.02291126 0.01554668  4.736486  0.003
+```
+
+Again, all species appear significantly different from one another in their contributions to wing shape. And these effects are independent of the influences of wing size and caste, which have already been accounted for in the model.
+
+#### By the way...
+
+This example absolutely requires you to define a null model for the `pairwise` function. 
+If you try just passing the full model, the function will guess wrong.
+
+```{r eval=FALSE, include=TRUE}
+summary(pairwise(common.sp.caste.model, groups = common.sp$gdf$species))
+```
+
+```
+                    d  UCL (95%)          Z Pr > d
+bimac:imp  0.02626333 0.02980956 -0.4516418  0.665
+bimac:tern 0.02437228 0.02801701 -0.4260401  0.653
+bimac:vag  0.02480890 0.02921824 -0.2716658  0.606
+imp:tern   0.03298336 0.03572867  0.2165722  0.410
+imp:vag    0.04079689 0.04448370 -0.1000897  0.541
+tern:vag   0.02291126 0.02770863 -0.7676849  0.784
+```
+
+What? How can there no significant pairwise differences? -- The issue here is that `pairwise` has assumed the wrong null model. If you ever do want to use the short-cut of not specifying a null model, you can check what model the function will assume as its null.
+
+```{r eval=FALSE, include=TRUE}
+reveal.model.designs(common.sp.caste.model)
+```
+
+```
+                         Reduced                          Full                                  
+log(Csize)                     1                    log(Csize)                                  
+species               log(Csize)          log(Csize) + species                                  
+caste       log(Csize) + species  log(Csize) + species + caste <- Null/Full inherent in pairwise
+```
+
+As you can see, the "Reduced" model that is assumed here is `log(Csize) + species`. 
+Since we want to test differences among species, it's essential that we take as our null model one that does not have species in it as a factor. So using this model is what leads to a different (and in this case inappropriate) result.
+
+And while we're talking about ways that these statistical functions can be misused, there's another important issue we should cover in the next section.
+
+### The order of factors in your model matters!
+
+Remember, modeling is about assigning variance in the dependent variable (or shape coordinates) to the factors in the model. There are different ways to do this. The modeling functions in the `geomorph` and `RRPP` packages use what's called a sequential sum of squares by default. This method examines the main effect each factor has on the response variable (or shapes), **in the order that they're named in the model**, before considering any interaction terms. This is generally considered to be the most robust and versatile method. ([Other types](https://mcfromnz.wordpress.com/2011/03/02/anova-type-iiiiii-ss-explained/) are used in more specialized situations.)
+
+In practical terms however, this means that building your model with the terms in a different order can sometimes produce different results. For example, in the last section we modeled wing shape as a factor of wing size, species and caste. Let's look at that model again, and compare it against
+
+let's repeat the pairwise tests above, but with a model examining `species` before `caste.` 
+
+```{r eval=FALSE, include=TRUE}
+anova(common.sp.caste.model)
+```
+
+```
+            Df       SS        MS     Rsq       F      Z Pr(>F)   
+log(Csize)  1 0.004258 0.0042576 0.06657  9.7017 4.6556  0.001 **
+species     3 0.021944 0.0073146 0.34312 16.6678 9.4651  0.001 **
+caste       1 0.001328 0.0013277 0.02076  3.0254 3.0695  0.003 **
+Residuals  83 0.036424 0.0004388 0.56954                         
+Total      88 0.063953 
+```
+
+```{r eval=FALSE, include=TRUE}
+common.caste.sp.model <- procD.lm(coords ~ log(Csize) + caste + species, data=common.sp$gdf, iter=i) 
+anova(common.caste.sp.model)
+```
+
+```
+           Df       SS        MS     Rsq       F      Z Pr(>F)   
+log(Csize)  1 0.004258 0.0042576 0.06657  9.7017 4.6556  0.001 **
+caste       1 0.002269 0.0022685 0.03547  5.1693 3.7851  0.001 **
+species     3 0.021003 0.0070010 0.32841 15.9531 9.3146  0.001 **
+Residuals  83 0.036424 0.0004388 0.56954                         
+Total      88 0.063953   
+```
+
+Same factors; different order. Notice that the *F* statistics and *p* values  (`Pr > d` in this table) are slightly different. In this example, it wouldn't radically change your interpretation, but with a different dataset the difference might be more extreme.
+
+So what order should you use? In general, you should place what you consider to be the most influential factors first. If you're not sure, it's worth examining both orders. If the outcomes differ a lot, then they may be a sign that the factors have a strong interaction (e.g. caste influences wing shape, but differently in different species). If so, you should test a model that includes such as interaction, and see how it stacks up against the simpler model.
+
+```{r eval=FALSE, include=TRUE}
+common.spXcaste.model <- procD.lm(coords ~ log(Csize) + species * caste, data=common.sp$gdf, iter=i) 
+anova(common.sp.caste.model, common.spXcaste.model)
+```
+
+```
+              Df       SS        MS     Rsq       F      Z Pr(>F)   
+log(Csize)     1 0.004258 0.0042576 0.06657 10.0677 4.7297  0.001 **
+species        3 0.021944 0.0073146 0.34312 17.2965 9.5719  0.001 **
+caste          1 0.001328 0.0013277 0.02076  3.1396 3.1617  0.001 **
+species:caste  2 0.002170 0.0010849 0.03393  2.5655 3.4042  0.002 **
+Residuals     81 0.034254 0.0004229 0.53562                         
+Total         88 0.063953  
+```
+
+```
+                                             ResDf Df      RSS        SS        MS      Rsq      F      Z     P Pr(>F)
+coords ~ log(Csize) + species + caste (Null)    83  1 0.036424                     0.000000                           
+coords ~ log(Csize) + species * caste           81  2 0.034254 0.0021699 0.0010849 0.033929 2.5655 3.4042 0.002       
+Total                                           88    0.063953 
+```
+
+As we suspected, in this case, there is a significant interaction of `species` and `caste` that significantly improves the model fit. 
+
+> Careful readers will note that this might not be a solid conclusion, since the sample sizes for non-worker castes are not nearly as large as the workers. This lack of balanced sampling could impact the analysis.
 
 ### Testing for common allometry
 
