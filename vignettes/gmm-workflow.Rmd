@@ -765,10 +765,10 @@ In this case, the model that adds "caste" as a predictive factor does not appear
 ### *Post hoc* pairwise comparisons
 
 As with any ANOVA, these tests tell us that species is a factor that explains wing shape, at least in part. But it does not tell us which species differ from one another. 
-Answering that question requires what are broadly called *posthoc* tests. 
+Answering that question requires what are broadly called *post hoc* tests. 
 There are many ways to do *post hoc* tests, but the simplest and one of the most common is to examine all pairwise contrasts. This can be dome using a function provided in the `RRPP` package, which underlies much of `geomorph`.
 
-Right now our dataset includes some species with too few samples for the `pairwise` function to operate. You can examone sample sizes like this.
+Right now our dataset includes some species with too few samples for the `pairwise` function to operate. You can examine sample sizes like this.
 
 ```{r eval=FALSE, include=TRUE}
 c(with(wing.gpa$gdf, by(species, species, length)))
@@ -834,7 +834,7 @@ tern:vag   0.02323543 0.01431901  5.549254  0.001
 
 In this example, all of the species have significant differences from one another in their contribution to wing shape. Importantly, these effects are independent of the influence of wing size on shape. Because the model includes a size factor (`log(Csize)`), that influence is already accounted for. We've asked the `pairwise` function to make comparisons among species, using the argument `groups = common.sp$gdf$species`. 
 
-If we wanted to compare the influence of species, controling for the influence of caste as well, we could do so this way.
+If we wanted to compare the influence of species, controlling for the influence of caste as well, we could do so this way.
 
 ```{r eval=FALSE, include=TRUE}
 common.caste.model <- procD.lm(coords ~ log(Csize) + caste, data=common.sp$gdf, iter=i) 
@@ -895,7 +895,7 @@ Since we want to test differences among species, it's essential that we take as 
 
 And while we're talking about ways that these statistical functions can be misused, there's another important issue we should cover in the next section.
 
-### The order of factors in your model matters!
+### The sequential order of factors matters!
 
 Remember, modeling is about assigning variance in the dependent variable (or shape coordinates) to the factors in the model. There are different ways to do this. The modeling functions in the `geomorph` and `RRPP` packages use what's called a sequential sum of squares by default. This method examines the main effect each factor has on the response variable (or shapes), **in the order that they're named in the model**, before considering any interaction terms. This is generally considered to be the most robust and versatile method. ([Other types](https://mcfromnz.wordpress.com/2011/03/02/anova-type-iiiiii-ss-explained/) are used in more specialized situations.)
 
@@ -932,7 +932,7 @@ Total      88 0.063953
 
 Same factors; different order. Notice that the *F* statistics and *p* values  (`Pr > d` in this table) are slightly different. In this example, it wouldn't radically change your interpretation, but with a different dataset the difference might be more extreme.
 
-So what order should you use? In general, you should place what you consider to be the most influential factors first. If you're not sure, it's worth examining both orders. If the outcomes differ a lot, then they may be a sign that the factors have a strong interaction (e.g. caste influences wing shape, but differently in different species). If so, you should test a model that includes such as interaction, and see how it stacks up against the simpler model.
+So what order should you use? In general, you should place what you consider to be the most influential factors first. If you're not sure, it's worth examining both orders. If the outcomes differ a lot, then that may be a sign the factors have a strong interaction (e.g. caste influences wing shape, but differently in different species). If so, you should test a model that includes such as interaction, and see how it stacks up against the simpler model.
 
 ```{r eval=FALSE, include=TRUE}
 common.spXcaste.model <- procD.lm(coords ~ log(Csize) + species * caste, data=common.sp$gdf, iter=i) 
