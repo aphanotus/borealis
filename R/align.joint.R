@@ -35,10 +35,11 @@
 #' @param A A 3-dimensional array containing XY shape corrdinates for multiple specimens,
 #'     or a list containing such as an array and data provenance.
 #' @param substructure.LMs A numerical vector giving the landmark numbers of the substructure to be algined.
-#' @param main.structure.LMs A numerical vector giving the landmark numbers of the main structure.
 #' @param pivot.LM The number of the landmark that should be used as the joint.
-#' @param swing.LM The number of the landmark that should be used as the most distal swing point.
+#' @param barrier.LM The number of a landmark that acts as a barrier to rotation.
 #' @param reference.specimen The index number of the reference specimen.
+#' @param rotation.limits A vector of two numbers specifying the rotation.limits of rotations to test.
+#' @param tolerance A value in radians, below which, the function does not adjust the substructure
 #' @param include.plot A logical factor specifying whether to include a plot showing the alginment of each specimen relative to the reference.
 #' @param provenance An object that should be retained for data provenance.
 #'
@@ -54,8 +55,12 @@
 #' # Allow alignment of the jaw landmarks, pivoting at the jaw joint
 #' plethodon <- align.joint(
 #'   plethodon,
-#'   substructure.LMs = c(1,2,3,4,5),
-#'   pivot.LM = 1,
+#'   substructure.LMs = c(4,5),
+#'   main.structure.LMs = c(6,7,8),
+#'   pivot.LM = 3,
+#'   barrier.LM = 6,
+#'   reference.specimen = 5,
+#'   rotation.limits = c(-20,10)/(180/pi),
 #'   include.plot = TRUE,
 #'   links = pletho.links
 #' )
@@ -70,8 +75,10 @@ align.joint <- function(
   substructure.LMs = NULL,
   main.structure.LMs = NULL,
   pivot.LM = NULL,
-  swing.LM = NULL,
+  barrier.LM = NULL,
   reference.specimen = 1,
+  rotation.limits = c(-90,90)/(180/pi),
+  tolerance = 0,
   include.plot = TRUE,
   provenance = NULL,
   ...
@@ -79,17 +86,17 @@ align.joint <- function(
 { # Begin the function
 
   # Initialize
-  shape.data <- NULL
+  shapes <- NULL
   output <- NULL
 
   # Vet the input
   if (class(A)[1] %in% c("gpagen","list")) {
     if (any(grepl("coords",names(A)))) {
-      shape.data <- A$coords
+      shapes <- A$coords
       output <- A[-grep("coords",names(A))]
     } else {
       if (any(grepl("land",names(A)))) {
-        shape.data <- A$land
+        shapes <- A$land
         output <- A[-grep("land",names(A))]
       } else {
         return(cat("Error: Input is not a recognized type. (See the help entry: '?align.joint'.)"))
@@ -97,80 +104,116 @@ align.joint <- function(
     }
   } else {
     if ((class(A)[1] == "array") & (length(dim(A)) == 3)) {
-      shape.data <- A
+      shapes <- A
     } else {
       return(cat("Error: Input is not a recognized type. (See the help entry: '?align.joint'.)"))
     }
   }
-  if (dim(shape.data)[2] != 2) {
+  if (dim(shapes)[2] != 2) {
     return(cat("Error: requires a matrix of X and Y corrdinates."))
   }
-  if (is.null(substructure.LMs) | !is.numeric(substructure.LMs) | (max(substructure.LMs) > dim(shape.data)[1]) | (min(substructure.LMs) < 0)) {
+  if (is.null(substructure.LMs) | !is.numeric(substructure.LMs) | (max(substructure.LMs) > dim(shapes)[1]) | (min(substructure.LMs) < 0)) {
     return(cat("Error: substructure.LMs is invalid. See '?align.joint' for usage.\n "))
   }
-  if (is.null(pivot.LM) | !is.numeric(pivot.LM) | (pivot.LM > dim(shape.data)[1]) | (pivot.LM < 0)) {
+  if (is.null(pivot.LM) | !is.numeric(pivot.LM) | (pivot.LM > dim(shapes)[1]) | (pivot.LM < 0)) {
     return(cat("Error: pivot.LM is invalid. See '?align.joint' for usage.\n "))
   }
-  if (is.null(swing.LM) | !is.numeric(swing.LM) | (swing.LM > dim(shape.data)[1]) | (swing.LM < 0)) {
-    return(cat("Error: swing.LM is invalid. See '?align.joint' for usage.\n "))
+  if (is.null(rotation.limits) | length(rotation.limits)!=2 | any(rotation.limits > 2*pi) | any(rotation.limits < -2*pi)) {
+    return(cat("Error: rotation.limits is invalid. See '?align.joint' for usage.\n "))
+  }
+  rotation.limits <- sort(rotation.limits)
+
+  # Vet the substructure.LMs
+  substructure.LMs <- sort(unique(c(substructure.LMs)))
+  if (pivot.LM %in% substructure.LMs) {
+    substructure.LMs <- substructure.LMs[-which(substructure.LMs == pivot.LM)]
   }
 
-  # Identify the main structure landmarks
+  # Identify the main.structure.LMs
   if (is.null(main.structure.LMs)) {
-    main.structure.LMs <- 1:dim(shape.data)[1]
+    main.structure.LMs <- 1:dim(shapes)[1]
     main.structure.LMs <- main.structure.LMs[which(!(main.structure.LMs %in% substructure.LMs))]
-  }
-  if (!(pivot.LM %in% substructure.LMs)) {
-    substructure.LMs <- sort(unique(c(substructure.LMs, pivot.LM)))
-  }
-  main.structure.LMs <- sort(unique(main.structure.LMs))
-
-  # Trigonometry reminders:
-  #   For positive slopes, inverse tangent values range for zero (flat slope) to pi/2.
-  #   They can also be negative (for negative slopes).
-  #   Positive radian values indicate a relative clockwise angle.
-  #   To convert to degrees multiply radians by (180/pi).
-
-  # A function to comapre the relative angles of two shapes
-  # Returns the angle in randians, based on the difference in inverse tangents of the regression slopes
-  relative.angles <- function(a1, a2) {
-    angle1 <- atan(as.vector(lm(a1[,2] ~ a1[,1])$coefficients[2]))
-    angle2 <- atan(as.vector(lm(a2[,2] ~ a2[,1])$coefficients[2]))
-    return(angle1-angle2)
+    main.structure.LMs <- main.structure.LMs[-which(main.structure.LMs == pivot.LM)]
+  } else {
+    main.structure.LMs <- as.numeric(main.structure.LMs)
+    if ((max(main.structure.LMs) > dim(shapes)[1]) | (min(main.structure.LMs) < 0)) {
+      return(cat("Error: main.structure.LMs is invalid. See '?align.joint' for usage.\n "))
+    }
+    if (any(main.structure.LMs == pivot.LM)) {
+      main.structure.LMs <- main.structure.LMs[-which(main.structure.LMs == pivot.LM)]
+    }
   }
 
-  ref.joint.angle <- relative.angles(shape.data[main.structure.LMs,,reference.specimen],
-                                     shape.data[c(pivot.LM, swing.LM),,reference.specimen])
+  # Calculate a matrix of distances b/w substructure LMs and main LMs for reference.
+  distance <- function(xy,XY) { sqrt((xy[1]-XY[1])^2+(xy[2]-XY[2])^2) }
+  distMatrix <- function(m, lm1, lm2) {
+    df <- data.frame()
+    for (i in 1:length(lm1)) {
+      for (j in 1:length(lm2)) {
+        df[i,j] <- distance(m[lm1[i],], m[lm2[j],])
+      }
+    }
+    dimnames(df) <- list(
+      paste0("lm",lm1),
+      paste0("lm",lm2)
+    )
+    return(df)
+  } # End dMatrix function
 
+  ref.distances <- distMatrix(shapes[,,reference.specimen], main.structure.LMs, substructure.LMs)
+
+  if (include.plot) {
+    i <- reference.specimen
+
+    x <- ifelse(
+      is.null(dimnames(shapes)[[3]][i]),
+      paste("reference specimen:",i),
+      paste("reference specimen:",dimnames(shapes)[[3]][i])
+    )
+
+    landmark.plot(shapes[,,i], main = x, ...)
+
+    # Main structure landmarks
+    points(shapes[main.structure.LMs,1,i], shapes[main.structure.LMs,2,i], pch = 16, col = "grey50")
+
+    # Substructure positions
+    points(shapes[substructure.LMs,1,i], shapes[substructure.LMs,2,i], pch = 16, col = "black")
+
+    # Pivot
+    points(shapes[pivot.LM,1,i], shapes[pivot.LM,2,i], pch = 16, col = "darkred")
+
+    # # rotation.limits lines
+    # if (!is.null(barrier.LM)) {
+    #   abline(lm(shapes[c(pivot.LM, barrier.LM),2,reference.specimen] ~ shapes[c(pivot.LM, barrier.LM),1,reference.specimen]), col="darkred")
+    # }
+
+    readline("Press any key to continue.")
+
+  }
+
+  # #########################################
   # MAIN LOOP
-  # For each specimen,
-  # find out how much the angle of the substructure deviates from the reference angle,
-  # then adjust the substructure accordingly
-  specimens.to.adjust <- 1:(dim(shape.data)[3])
+  # #########################################
+  specimens.to.adjust <- 1:(dim(shapes)[3])
   specimens.to.adjust <- specimens.to.adjust[which(specimens.to.adjust != reference.specimen)]
   adjustment.angles <- NULL
-  for (i in specimens.to.adjust) {
-    old.coords.i <- shape.data[,,i]
-    angle.i <- relative.angles(shape.data[main.structure.LMs,,i],
-                               shape.data[c(pivot.LM, swing.LM),,i])
-    theta <- angle.i - ref.joint.angle
-    adjustment.angles <- c(adjustment.angles, theta)
 
-    # Trigonometry reminder:
-    # Equations for rotating a point by an angle, counter-clockwise, relative to the x-axis
-    # x′ = x*cosθ − y*sinθ
-    # y′ = y*cosθ + x*sinθ
+  # Trigonometry reminder:
+  # Equations for rotating a point by an angle, counter-clockwise, relative to the x-axis
+  # x′ = x*cosθ − y*sinθ
+  # y′ = y*cosθ + x*sinθ
 
+  # A function to rotate substructure.LMs within a matrix (one specimen)
+  rotate.substructure <- function (m, LMs.to.rotate, pivot, theta ) {
     # The location of the pivot point for specimen i
-    x0 <- shape.data[pivot.LM,1,i]
-    y0 <- shape.data[pivot.LM,2,i]
+    x0 <- m[pivot,1]
+    y0 <- m[pivot,2]
 
     # Loop for each substructure landmark
-    for (j in substructure.LMs[which((substructure.LMs != pivot.LM))])
+    for (j in LMs.to.rotate)
     {
-      xj <- shape.data[j,1,i]
-      yj <- shape.data[j,2,i]
-      # cat(j,":\t",xj,yj," --> ")
+      xj <- m[j,1]
+      yj <- m[j,2]
 
       # Translate the landmark, such that the pivot point becomes the origin
       xj <- xj - x0
@@ -184,38 +227,104 @@ align.joint <- function(
       x.adj <- x.adj + x0
       y.adj <- y.adj + y0
 
-      # Update shape.data
-      shape.data[j,1,i] <- x.adj
-      shape.data[j,2,i] <- y.adj
+      # Update shape data
+      m[j,1] <- x.adj
+      m[j,2] <- y.adj
 
     } # End Loop for each substructure landmark
 
+    return(m)
+  }
+
+  # A function to rotate substructure.LMs and report the sum of squared differences from the ref.distances matrix
+  rotate.substructure.diff <- function (m, LMs.to.rotate, pivot, other.LMs, ref.dist.matrix, theta ) {
+    m.prime <- rotate.substructure(m, LMs.to.rotate, pivot, theta)
+    diff <- sum(unlist(ref.distances - distMatrix(m.prime, other.LMs, LMs.to.rotate))^2)
+    return(diff)
+  }
+
+  # Loop for each specimen
+  for (i in 1:length(specimens.to.adjust)) {
+    original.coords.i <- shapes[,,specimens.to.adjust[i]]
+
+    # Curtail the rotation.limits of rotation based on the barrier
+    if (!is.null(barrier.LM)) {
+      if (is.null(pivot.LM) | !is.numeric(pivot.LM) | (pivot.LM > dim(shapes)[1]) | (pivot.LM < 0)) {
+        return(cat("Error: pivot.LM is invalid. See '?align.joint' for usage.\n "))
+      }
+
+      # Find the substructure LM closest to the barrier
+      crash.LM <- as.numeric(sub("lm","",names(which.min(unlist(distMatrix(original.coords.i, barrier.LM, substructure.LMs))))))
+
+      p12 <- distance(shapes[pivot.LM,,specimens.to.adjust[i]], shapes[barrier.LM,,specimens.to.adjust[i]])
+      p13 <- distance(shapes[pivot.LM,,specimens.to.adjust[i]], shapes[crash.LM,,specimens.to.adjust[i]])
+      p23 <- distance(shapes[barrier.LM,,specimens.to.adjust[i]], shapes[crash.LM,,specimens.to.adjust[i]])
+      barrier.angle <- acos((p12^2 + p13^2 - p23^2) / (2 * p12 * p13))
+
+      if (barrier.angle > 0) {
+        rotation.limits[1] <- barrier.angle
+      } else {
+        rotation.limits[2] <- barrier.angle
+      }
+
+    } # End  if (!is.null(barrier.LM))
+
+    # Calculate the matrix of distances b/w substructure LMs and main LMs.
+    # Optimze the rotation angle that minimizes the sum of squared differences
+    # berween distances in the reference and specimen i
+    x <- optimize(
+      f = rotate.substructure.diff,
+      interval = rotation.limits,
+      m = original.coords.i,
+      LMs.to.rotate = substructure.LMs,
+      pivot = pivot.LM,
+      other.LMs = main.structure.LMs,
+      ref.dist.matrix = ref.distances)
+    theta.i <- x$minimum
+    diff.i <- x$objective
+
+    # cat(theta.i,"\t",diff.i,"\n")
+
+    if (abs(theta.i) < tolerance) { theta.i <- 0 }
+
+    # Rotate accordingly
+    shapes[,,specimens.to.adjust[i]] <- rotate.substructure(original.coords.i, substructure.LMs, pivot.LM, theta = -theta.i )
+
+    # Record the angle of rotation
+    adjustment.angles <- c(adjustment.angles, theta.i)
+
     if (include.plot) {
       x <- ifelse(
-        is.null(dimnames(shape.data)[[3]][i]),
-        paste("specimen", i),
-        dimnames(shape.data)[[3]][i]
+        is.null(dimnames(shapes)[[3]][specimens.to.adjust[i]]),
+        paste("specimen:", specimens.to.adjust[i]),
+        dimnames(shapes)[[3]][specimens.to.adjust[i]]
       )
       # Base plot and landmark numbers based on the new positions
-      landmark.plot(shape.data[,,i], main = x, text.color = "darkgray", ...)
+      landmark.plot(shapes[,,specimens.to.adjust[i]], main = x, text.color = "darkgray", ...)
+
+      # Add text details
+      x <- max(shapes[,1,specimens.to.adjust[i]]) #- 0.5*(max(shapes[,1,specimens.to.adjust[i]]) - min(shapes[,1,specimens.to.adjust[i]]))
+      y <- max(shapes[,2,specimens.to.adjust[i]]) #- 0.5*(max(shapes[,2,specimens.to.adjust[i]]) - min(shapes[,1,specimens.to.adjust[i]]))
+      s <- paste0("rotation.limits: ",signif(rotation.limits[1],4)," - ",signif(rotation.limits[2],4),"\n",signif(theta.i,3)," rad\n", signif(theta.i*(180/pi),3),"˚\nSSD: ", signif(diff.i,4))
+      if (any(signif(rotation.limits,4) == signif(theta.i,4))) {
+        s <- paste0(s,"\nat rotation.limits limit")
+      }
+      text(x,y,s, adj = c(1,1), cex = 0.8)
 
       # Main structure landmarks
-      points(shape.data[main.structure.LMs,1,i], shape.data[main.structure.LMs,2,i], pch = 16, col = "grey50")
-      abline(lm(shape.data[main.structure.LMs,2,i] ~ shape.data[main.structure.LMs,1,i]), col = "grey50")
+      points(shapes[main.structure.LMs,1,specimens.to.adjust[i]], shapes[main.structure.LMs,2,specimens.to.adjust[i]], pch = 16, col = "grey50")
 
       # Old substructure positions
-      points(old.coords.i[substructure.LMs,1], old.coords.i[substructure.LMs,2], pch = 1, col = "darkred" )
-      abline(lm(old.coords.i[c(pivot.LM, swing.LM),2] ~ old.coords.i[c(pivot.LM, swing.LM),1]), col = "darkred")
+      points(original.coords.i[substructure.LMs,1], original.coords.i[substructure.LMs,2], pch = 1, col = "darkred" )
 
       # New substructure positions
-      points(shape.data[substructure.LMs,1,i], shape.data[substructure.LMs,2,i], pch = 16, col = "black")
-      abline(lm(shape.data[c(pivot.LM, swing.LM),2,i] ~ shape.data[c(pivot.LM, swing.LM),1,i]), col = "black")
+      points(shapes[substructure.LMs,1,specimens.to.adjust[i]], shapes[substructure.LMs,2,specimens.to.adjust[i]], pch = 16, col = "black")
 
       # Pivot
-      points(shape.data[pivot.LM,1,i], shape.data[pivot.LM,2,i], pch = 16, col = "darkred")
+      points(shapes[pivot.LM,1,specimens.to.adjust[i]], shapes[pivot.LM,2,specimens.to.adjust[i]], pch = 16, col = "darkred")
 
-      if (i != specimens.to.adjust[length(specimens.to.adjust)]) {
-        x <- readline("Show next specimen? (ENTER for more. -- Joint alignment will continue for all specimens.)")
+      if (i != length(specimens.to.adjust)) {
+        x <- readline("Show next specimen? ENTER = yes (Alignment will continue for all specimens)")
         include.plot <- (tolower(x) %in% c("","y","yes","ya","yep"))
       }
     } # End  if (include.plot)
@@ -223,7 +332,7 @@ align.joint <- function(
   } # End loop for each specimen
 
   # Prep the output
-  output$coords <- shape.data
+  output$coords <- shapes
   if (!is.null(provenance) & !any(grepl("provenance",names(output)))) {
     output$provenance <- provenance
   }
@@ -234,13 +343,14 @@ align.joint <- function(
     paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::align.joint` on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n"),
     paste0("- main structure landmarks: ",paste0(main.structure.LMs, collapse = ", "),"\n"),
     paste0("- substructure landmarks: ",paste0(substructure.LMs, collapse = ", "),"\n"),
-    paste0("- pivot point: ",pivot.LM,"\n\n"),
+    paste0("- pivot point: ",pivot.LM,"\n"),
+    ifelse(is.null(barrier.LM),"\n",paste0("- barrier landmark: ",pivot.LM,"\n\n")),
     paste0("Adjustment angles ranged from ",min(adjustment.angles),"˚ to ",max(adjustment.angles),"˚ "),
     paste0("with a mean of ",round(mean(adjustment.angles),1),"˚, relative to the reference specimen, index number ", reference.specimen),
     ifelse(
-      is.null(dimnames(shape.data)[[3]][reference.specimen]),
+      is.null(dimnames(shapes)[[3]][reference.specimen]),
       ".\n\n",
-      paste0(": ", dimnames(shape.data)[[3]][reference.specimen],".\n\n")
+      paste0(": ", dimnames(shapes)[[3]][reference.specimen],".\n\n")
     )
   )
 

@@ -12,8 +12,10 @@ align.joint(
   substructure.LMs = NULL,
   main.structure.LMs = NULL,
   pivot.LM = NULL,
-  swing.LM = NULL,
+  barrier.LM = NULL,
   reference.specimen = 1,
+  rotation.limits = c(-90, 90)/(180/pi),
+  tolerance = 0,
   include.plot = TRUE,
   provenance = NULL,
   ...
@@ -25,13 +27,15 @@ or a list containing such as an array and data provenance.}
 
 \item{substructure.LMs}{A numerical vector giving the landmark numbers of the substructure to be algined.}
 
-\item{main.structure.LMs}{A numerical vector giving the landmark numbers of the main structure.}
-
 \item{pivot.LM}{The number of the landmark that should be used as the joint.}
 
-\item{swing.LM}{The number of the landmark that should be used as the most distal swing point.}
+\item{barrier.LM}{The number of a landmark that acts as a barrier to rotation.}
 
 \item{reference.specimen}{The index number of the reference specimen.}
+
+\item{rotation.limits}{A vector of two numbers specifying the rotation.limits of rotations to test.}
+
+\item{tolerance}{A value in radians, below which, the function does not adjust the substructure}
 
 \item{include.plot}{A logical factor specifying whether to include a plot showing the alginment of each specimen relative to the reference.}
 
@@ -80,8 +84,12 @@ landmark.plot(plethodon$land, links = pletho.links)
 # Allow alignment of the jaw landmarks, pivoting at the jaw joint
 plethodon <- align.joint(
   plethodon,
-  substructure.LMs = c(1,2,3,4,5),
-  pivot.LM = 1,
+  substructure.LMs = c(4,5),
+  main.structure.LMs = c(6,7,8),
+  pivot.LM = 3,
+  barrier.LM = 6,
+  reference.specimen = 5,
+  rotation.limits = c(-20,10)/(180/pi),
   include.plot = TRUE,
   links = pletho.links
 )
