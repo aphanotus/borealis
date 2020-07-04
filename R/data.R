@@ -19,6 +19,30 @@
 #' @references East, E. 1916. Studies on Size Inheritance in \emph{Nicotiana}. \emph{Genetics} 1(2): 164-176
 #'     \url{http://www.genetics.org/content/1/2/164/}
 #'
+#' @examples
+#' library(tidyverse)
+#'
+#' line.info <- data.frame(
+#'   shortdes = c('F2','F2','F3-3','F3-3'),
+#'   xintercept = c(81,69.88,69.88,76.34),
+#'   style = c('dotted','dotted','solid','dotted')
+#' )
+#'
+#' East1916 %>% filter(grepl(') 2',designation)) %>%
+#'   mutate(shortdes = paste0(generation,sub("No. \\(383 X 330\\) 2","",designation))) %>%
+#'   filter(shortdes %in% c('F2','F3-3')) %>%
+#'   ggplot(aes(x=corolla_mm, y=count, fill=shortdes)) +
+#'   theme_bw() +
+#'   theme(strip.text = element_blank(), legend.position="none") +
+#'   facet_grid(shortdes~., ) +
+#'   geom_bar(stat='identity') +
+#'   scale_fill_manual(values = c("#7FD34E", "#C2DF23")) +
+#'   geom_vline(data=line.info, aes(xintercept=xintercept, linetype=style), color = 'gray35', size = 1) +
+#'   labs(x='corolla length (mm)')
+#'
+#' ggsave('East1916.parent.offspring.RS.example.vertical.pdf',
+#'        width = 4, height = 5, scale = 1)
+#'
 "East1916"
 
 #' @title Quantative Genetics Data from East 1916
@@ -101,7 +125,7 @@
 #'
 "Bombus.tree"
 
-#' @title Bumblebee forewing shaoe data
+#' @title Bumblebee forewing shape data
 #'
 #' @description Preliminary shape data from bumblebee forewings. These data were imported from a
 #'     \code{tps} file using \code{\link{read.tps}} . The \code{tps} file was created from raw data using

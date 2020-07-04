@@ -7,7 +7,7 @@
 Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
 }
 \usage{
-filter.shapes(x, index, index.description = NULL)
+\method{filter}{shapes}(x, index, index.description = NULL)
 }
 \arguments{
 \item{x}{A list containing shape data in \code{coords}, \code{gpagen}, or a geomorph.data.frame in \code{gdf}, as well as (optionally) \code{metadata}.}

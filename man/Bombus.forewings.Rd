@@ -3,7 +3,7 @@
 \docType{data}
 \name{Bombus.forewings}
 \alias{Bombus.forewings}
-\title{Bumblebee forewing shaoe data}
+\title{Bumblebee forewing shape data}
 \format{
 An object of class \code{list} of length 6.
 }
