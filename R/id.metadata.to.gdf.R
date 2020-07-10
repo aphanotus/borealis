@@ -96,7 +96,7 @@ id.metadata.to.gdf <- function (
           s <- A
           return.gdf <- FALSE
         } else {
-          return(cat("Error: Input is not a recognized type. (See the help entry: '?id.metadata.to.gdf'.)"))
+          stop("Error: Input is not a recognized type. (See the help entry: '?id.metadata.to.gdf'.)")
         }
       }
     }
@@ -104,14 +104,14 @@ id.metadata.to.gdf <- function (
 
   # Fail safe
   if (is.null(s)) {
-    return(cat("Error: Input is not a recognized type. (See the help entry: '?id.metadata.to.gdf'.)"))
+    stop("Error: Input is not a recognized type. (See the help entry: '?id.metadata.to.gdf'.)")
   }
 
   # Check that the length of id.factors provided matchs the number of divisions in the data
 
   # Make sure the seperator appears in the ID names!
   if (!any(grepl(seperator,s))) {
-    cat("Warning: The seperator",paste0("'",seperator,"'"),"does not appear in the ID information. e.g.",paste0("'",s[1],"'"),"\n")
+    warning(paste("Warning: The seperator",paste0("'",seperator,"'"),"does not appear in the ID information. e.g.",paste0("'",s[1],"'"),"\n"))
   }
 
   # Extract metadata from the ID string
@@ -132,7 +132,7 @@ id.metadata.to.gdf <- function (
 
   # Report on any missing data
   if (!is.null(missing.data)) {
-    cat("Warning: The following specimen IDs appear to have missing data: \n",paste0(missing.data, collapse = "\n"))
+    warning(paste("Warning: The following specimen IDs appear to have missing data: \n",paste0(missing.data, collapse = "\n")))
   }
 
   # If requested, keep the original IDs from the tps file
@@ -142,7 +142,7 @@ id.metadata.to.gdf <- function (
     if (length(ID.col)==1) {
       metadata[,ID.col] <- s
     } else {
-      cat("Warning: 'keep.original.ids = TRUE' but ID column is ambigous among id.factors (",paste0("'",id.factors,"'",collapse = ", "),"). Try including 'id', among them.")
+      warning(paste("Warning: 'keep.original.ids = TRUE' but ID column is ambigous among id.factors (",paste0("'",id.factors,"'",collapse = ", "),"). Try including 'id', among them."))
     }
   }
 

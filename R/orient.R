@@ -52,18 +52,18 @@ orient <- function(A, topLM = NULL, bottomLM = NULL, leftLM = NULL, rightLM = NU
         shape.data <- A$land
         output <- A[-grep("land",names(A))]
       } else {
-        return(cat("Error: Input is not a recognized type. (See the help entry: '?orient'.)"))
+        stop("Error: Input is not a recognized type. (See the help entry: '?orient'.)")
       }
     }
   } else {
     if ((class(A)[1] == "array") & (length(dim(A)) == 3)) {
       shape.data <- A
     } else {
-      return(cat("Error: Input is not a recognized type. (See the help entry: '?orient'.)"))
+      stop("Error: Input is not a recognized type. (See the help entry: '?orient'.)")
     }
   }
   if (dim(shape.data)[2] != 2) {
-    return(cat("Error: requires a matrix of X and Y corrdinates."))
+    stop("Error: requires a matrix of X and Y corrdinates.")
   }
 
   # If no landmark extremes are given, default to the marginal landmarks in specimen 1
@@ -102,7 +102,7 @@ orient <- function(A, topLM = NULL, bottomLM = NULL, leftLM = NULL, rightLM = NU
   for (i in 1:(dim(shape.data)[3])) {
     OKright <- (shape.data[rightLM,1,i] > shape.data[leftLM,1,i])
     OKup    <- (shape.data[topLM,2,i] > shape.data[bottomLM,2,i])
-    if (OKright & OKup) { if (verbose) { cat(dimnames(shape.data)[[3]][i],' ok\n') } }
+    if (OKright & OKup) { if (verbose) { message(dimnames(shape.data)[[3]][i],' ok\n') } }
     else { total.number.flipped <- total.number.flipped +1 }
     if (!OKright) { # If not, mirror the left side to the right.)
       mean.x <- mean(shape.data[,1,i])
@@ -126,9 +126,9 @@ orient <- function(A, topLM = NULL, bottomLM = NULL, leftLM = NULL, rightLM = NU
     }
   }
   if (verbose) {
-    cat(paste0(report.string, collapse = ""))
+    message(paste0(report.string, collapse = ""))
   }
-  cat ("\n",total.number.flipped,"specimens re-oriented.")
+  message("\n",total.number.flipped,"specimens re-oriented.")
   if (include.plot) {
     landmark.plot(shape.data[,,1], links = links)
   }

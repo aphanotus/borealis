@@ -22,6 +22,3 @@ The function will determine the dimensionality of each element and subset them a
 Matrices (2-dimensional elements) will have rows selected according to \code{index}.
 Arrays (3-dimensional elements)  will have specimens (the third dimension) selected.
 }
-\examples{
-
-}

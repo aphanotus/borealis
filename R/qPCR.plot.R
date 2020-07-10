@@ -55,7 +55,7 @@ qPCR.plot <- function(std.conc=NULL, std.cq=NULL, unk.cq=NULL, nrt.cq=NULL, ntc.
   # If no data is provided, simulutate something plausible
   if (is.null(std.conc) | is.null(std.cq)) {
     DataProvided <- FALSE
-    cat('No data provided. Simulating values.')
+    warning('No data provided. Simulating values.')
     std.conc <- 4:6
     std.conc <- sort(rep(std.conc,3))
     a <- -10/3 # slope

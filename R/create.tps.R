@@ -105,7 +105,7 @@ create.tps <- function (
   if (is.null(input.filename)) { input.filename <- file.choose() }
   ISxlsx <- grepl('.xlsx$',input.filename)
   IScsv <- grepl('.csv$',input.filename)
-  if (!ISxlsx & !IScsv) { return(cat(paste("The input file",input.filename,"must be xlsx or csv format."))) }
+  if (!ISxlsx & !IScsv) { stop(paste("The input file",input.filename,"must be xlsx or csv format.")) }
 
   # Import the raw data
   if (ISxlsx) {
@@ -121,7 +121,7 @@ create.tps <- function (
     acceptable.ID.column.names <- c("id","ids","specimen","specimen id","specimen.id","specimen_id","specimen.ids","specimen_ids","sample","sample id","sample.id","sample_id","sample.ids","sample_ids")
     ID.col <- which(names(raw) %in% acceptable.ID.column.names)
     if (!(length(ID.col)==1)) {
-      return(cat(paste("The input file",input.filename,"must have one column with specimen IDs using one of the following headings:",paste(acceptable.ID.column.names, collapse = ', '))))
+      stop(paste("The input file",input.filename,"must have one column with specimen IDs using one of the following headings:",paste(acceptable.ID.column.names, collapse = ', ')))
     }
     specimen.number <- sum(!grepl("^\\s*$", na.omit(raw[,ID.col])))
   }
@@ -132,27 +132,27 @@ create.tps <- function (
     } else {
       landmark.number <- dim(raw)[1] / specimen.number
       if (landmark.number %% 1 != 0) {
-        return(cat(paste("The input file",input.filename,"must have a consistent number of landmarks.",landmark.number,"landmarks detected.")))
+        stop(paste("The input file",input.filename,"must have a consistent number of landmarks.",landmark.number,"landmarks detected."))
       }
     }
   }
 
   # Check for formatting issues
   if (landmark.number < 3) {
-    return(cat(paste('Error:',input.filename,"does not have at least 3 landmarks.\n") ))
+    stop(paste('Error:',input.filename,"does not have at least 3 landmarks.\n") )
   }
   if (!(any(grepl('x',names(raw), ignore.case = TRUE), na.rm = TRUE) &
         any(grepl('y',names(raw), ignore.case = TRUE), na.rm = TRUE) ) ) {
-    return(cat(paste('Error:',input.filename,"does not contain one of the required column headings: 'X' and 'yY'.\n") ))
+    stop(paste('Error:',input.filename,"does not contain one of the required column headings: 'X' and 'yY'.\n") )
   }
   if (specimen.number != dim(raw)[1]/landmark.number) {
     if ((dim(raw)[1] %% landmark.number == 0) & (dim(raw)[1]/landmark.number > specimen.number)) {
       x <- dim(raw)[1]/landmark.number - specimen.number
-      cat('Error:',input.filename,'contains',x,'duplicate specimen IDs. ')
+      s <- paste0('Error: ',input.filename,' contains ',x,' duplicate specimen IDs. ')
       x <- raw[,ID.col]; x <- x[which(nchar(x)>1)]; x <- x[which(duplicated(x))]
-      return(cat(paste(x,'\n')))
+      stop(paste0(s,x,sep='\n'))
     } else {
-      return(cat(paste('Error:',input.filename,'does not contain properly formatted landmark data.\n')))
+      stop(paste('Error:',input.filename,'does not contain properly formatted landmark data.\n'))
     }
   }
 
@@ -160,14 +160,14 @@ create.tps <- function (
   if (include.scale) {
     scale.col <- grep('scale',names(raw), ignore.case = TRUE)
     if (length(scale.col)==0) {
-      cat("Warning: include.scale = TRUE, but no scale column detected in",input.filename,". Proceeding without scale.\n")
+      warning(paste("Warning: include.scale = TRUE, but no scale column detected in",input.filename,". Proceeding without scale.\n"))
       include.scale <- FALSE
     } else {
       if (length(scale.col)>1) {
-        cat("Warning: Multiple columns (",paste(names(raw)[scale.col],collapse = ', '),") may contain scale information. Using only column '",names(raw)[scale.col[1]],"'.\n")
+        warning(paste("Warning: Multiple columns (",paste(names(raw)[scale.col],collapse = ', '),") may contain scale information. Using only column '",names(raw)[scale.col[1]],"'.\n"))
         scale.col <- scale.col[1]
       } else {
-        if (!is.numeric(raw[,scale.col])) { cat('Warning: Some specimens may have non-numeric scale values.\n') }
+        if (!is.numeric(raw[,scale.col])) { warning('Warning: Some specimens may have non-numeric scale values.\n') }
       }
     }
   }

@@ -27,7 +27,7 @@ write.provenance <- function (x, output.filename = NULL, title = NULL )
     if ((class(x)[1] %in% c("gpagen","list"))) {
       provenance <- x
     } else {
-      return(cat("Error: Input is not a recognized type. (See the help entry: '?write.provenace'.)"))
+      stop("Error: Input is not a recognized type. (See the help entry: '?write.provenace'.)")
     }
   }
 
@@ -61,7 +61,7 @@ write.provenance <- function (x, output.filename = NULL, title = NULL )
   output <- paste(header,paste0(unlist(provenance), collapse = "\n"),footer, collapse = "")
 
   if (cat.output.filename.for.user) {
-    cat(paste0("Writen to file '",output.filename,"'.\n"))
+    message(paste0("Written to file '",output.filename,"'.\n"))
   }
 
   write.table(output, file = output.filename, sep="\n", quote = FALSE, row.names = FALSE, col.names = FALSE )

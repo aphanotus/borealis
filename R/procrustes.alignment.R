@@ -55,7 +55,7 @@ procrustes.alignment <- function (
 {
   # Don't bother running anything if geomorph isn't installed!
   if (!require(geomorph)) {
-    return("Please run  install.packages('geomorph'). ")
+    stop("Please run  install.packages('geomorph'). ")
   }
 
   shape.data <- NULL
@@ -71,7 +71,7 @@ procrustes.alignment <- function (
         shape.data <- A$land
         output <- A[-grep("land",names(A))]
       } else {
-        return(cat("Error: Input is not a recognized type. (See the help entry: '?procrustes.alignment'.)"))
+        stop("Error: Input is not a recognized type. (See the help entry: '?procrustes.alignment'.)")
       }
     }
     if (is.null(provenance) & any(grepl("provenance",names(A)))) { provenance <- A$provenance }
@@ -79,12 +79,12 @@ procrustes.alignment <- function (
     if ((class(A)[1] == "array") & (length(dim(A)) == 3)) {
       shape.data <- A
       if (is.null(provenance)) {
-        cat("Warning: No data provenance provided.\n")
+        warning("Warning: No data provenance provided.\n")
       } else {
         output$provenance <- provenance
       }
     } else {
-      return(cat("Error: Input is not a recognized type. (See the help entry: '?procrustes.alignment'.)"))
+      stop("Error: Input is not a recognized type. (See the help entry: '?procrustes.alignment'.)")
     }
   }
 

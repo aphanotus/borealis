@@ -44,17 +44,17 @@ listed.gdf <- function (x)
 {
   # Don't bother running anything if geomorph isn't installed!
   if (!require(geomorph)) {
-    return("Please run  install.packages('geomorph'). ")
+    stop("Please run  install.packages('geomorph'). ")
   }
 
   # Vet the input
   if (!any(grepl("list",class(x)))) {
-    return(cat("Error: Input is not a recognized type. (See the help entry: '?listed.gdf'.)"))
+    stop("Error: Input is not a recognized type. (See the help entry: '?listed.gdf'.)")
   }
 
   gpa <- NULL
   if (!any(grepl("gpagen",names(x)))) {
-    return(cat("Error: Input is not a recognized type. (See the help entry: '?listed.gdf'.)"))
+    stop("Error: Input is not a recognized type. (See the help entry: '?listed.gdf'.)")
   } else {
     gpa <- x$gpagen
   }

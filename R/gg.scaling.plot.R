@@ -78,7 +78,7 @@ gg.scaling.plot <- function(
   ...
 )
 {
-  if (!require(ggplot2)) { return("Requires package ggplot2")}
+  if (!require(ggplot2)) { stop("Requires package ggplot2")}
 
   # Sub functions
   slope <- function(y,x) { lm(y~x)$coefficients[2] }
@@ -108,7 +108,7 @@ gg.scaling.plot <- function(
     } else {
       if(require("viridis")) {
         if (!(viridis.color.option %in% c("magma", "A", "inferno", "B", "plasma", "C", "viridis", "D", "cividis", "E"))) {
-          cat("Warning: Color option is not recognized. See '?viridis::scale_color_viridis' for details. Defaulting to 'viridis'. ")
+          warning("Warning: Color option is not recognized. See '?viridis::scale_color_viridis' for details. Defaulting to 'viridis'. ")
           viridis.color.option <- "viridis"
         }
         color <- viridis::viridis(length(unique(group)), option = viridis.color.option)
@@ -170,7 +170,7 @@ gg.scaling.plot <- function(
     if (!(grepl("\\.pdf",save.as, ignore.case = TRUE) |
           grepl("\\.png",save.as, ignore.case = TRUE) |
           grepl("\\.jpg",save.as, ignore.case = TRUE) ) ) {
-      cat("Warning: Output file format is not recognized. Suported formats are pdf, png, and jpg. Defaulting to jpg. ")
+      warning("Warning: Output file format is not recognized. Suported formats are pdf, png, and jpg. Defaulting to jpg. ")
       save.as <- paste0(save.as,'.jpg')
     }
     ggsave(filename = save.as, plot = base.plot, height = height, width = width, ...)

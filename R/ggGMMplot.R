@@ -127,10 +127,10 @@ ggGMMplot <- function (
 
   # Check that the input is a PCA object
   if (!any(grepl("prcomp",class(x)))) {
-    return(cat("Error: 'x' must be an object of class 'prcomp' or 'gm.prcomp'."))
+    stop("Error: 'x' must be an object of class 'prcomp' or 'gm.prcomp'.")
   } else {
     if (backtransform.examples & !any(grepl("gm.prcomp",class(x)))) {
-      return(cat("Warning: To include backtransformed example shapes, 'x' must be an object of class 'gm.prcomp'."))
+      warning("Warning: To include backtransformed example shapes, 'x' must be an object of class 'gm.prcomp'.")
       backtransform.examples <- FALSE
     }
   }
@@ -144,11 +144,11 @@ ggGMMplot <- function (
 
   # Check that the requested axes are appropriate
   if (!(is.numeric(axis1) & (axis1 %% 1 == 0) & (axis1 > 0) & (axis1 < dim(x$x)[2])))  {
-    cat("Axis 1 is out of bounds. Defaulting to axis1 = 1.")
+    warning("Axis 1 is out of bounds. Defaulting to axis1 = 1.")
     axis1 <- 1
   }
   if (!(is.numeric(axis2) & (axis2 %% 1 == 0) & (axis2 > 0) & (axis2 < dim(x$x)[2]))) {
-    cat("Axis 2 is out of bounds. Defaulting to axis2 = 2.")
+    warning("Axis 2 is out of bounds. Defaulting to axis2 = 2.")
     axis2 <- 2
   }
   pcx <- data.frame(
@@ -163,7 +163,7 @@ ggGMMplot <- function (
     } else {
       if(require("viridis")) {
         if (!(viridis.color.option %in% c("magma", "A", "inferno", "B", "plasma", "C", "viridis", "D", "cividis", "E"))) {
-          cat("Warning: Color option is not recognized. See '?viridis::scale_color_viridis' for details. Defaulting to 'viridis'. ")
+          warning("Warning: Color option is not recognized. See '?viridis::scale_color_viridis' for details. Defaulting to 'viridis'. ")
           viridis.color.option <- "viridis"
         }
         color <- viridis::viridis(length(unique(group)), option = viridis.color.option)
@@ -226,7 +226,7 @@ ggGMMplot <- function (
     if (!(grepl("\\.pdf",save.as, ignore.case = TRUE) |
           grepl("\\.png",save.as, ignore.case = TRUE) |
           grepl("\\.jpg",save.as, ignore.case = TRUE) ) ) {
-      cat("Warning: Output file format is not recognized. Suported formats are pdf, png, and jpg. Defaulting to jpg. ")
+      warning("Warning: Output file format is not recognized. Suported formats are pdf, png, and jpg. Defaulting to jpg. ")
       save.as <- paste0(save.as,'.jpg')
     }
     ggsave(filename = save.as, plot = base.plot,
@@ -239,7 +239,7 @@ ggGMMplot <- function (
 
     # Check that a reference shape is provided. If not, return the base plot
     if (is.null(ref.shape)) {
-      cat("Error: A reference shape is required to include back-transform examples. Try 'ref.shape = gpa$consensus'.")
+      warning("Error: A reference shape is required to include back-transform examples. Try 'ref.shape = gpa$consensus'.")
       return(base.plot)
     }
 
@@ -291,7 +291,7 @@ ggGMMplot <- function (
       if (!(grepl("\\.pdf",save.as, ignore.case = TRUE) |
             grepl("\\.png",save.as, ignore.case = TRUE) |
             grepl("\\.jpg",save.as, ignore.case = TRUE) ) ) {
-        cat("Warning: Output file format is not recognized. Suported formats are pdf, png, and jpg. Defaulting to jpg. ")
+        warning("Warning: Output file format is not recognized. Suported formats are pdf, png, and jpg. Defaulting to jpg. ")
         save.as <- paste0(save.as,'.jpg')
       }
       if (grepl("\\.pdf",save.as, ignore.case = TRUE)) {

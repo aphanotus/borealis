@@ -48,13 +48,13 @@
 pcvar <- function (x = NULL, sdev = NULL, dimensions = "all", rounding = 4, as.percent = TRUE )
 {
   if (is.null(sdev) & is.null(x)) {
-    return(cat("Error: 'x' must be an object of class 'prcomp', or standard deviations must be passed to 'sdev'."))
+    stop("Error: 'x' must be an object of class 'prcomp', or standard deviations must be passed to 'sdev'.")
   }
   if (is.null(sdev) & any(grepl("prcomp",class(x)))) {
     sdev <- x$sdev
   } else {
     if (is.null(sdev) & !any(grepl("prcomp",class(x)))) {
-      return(cat("Error: 'x' must be an object of class 'prcomp', or standard deviations must be passed to 'sdev'."))
+      stop("Error: 'x' must be an object of class 'prcomp', or standard deviations must be passed to 'sdev'.")
     }
   }
   if (dimensions == "all") {

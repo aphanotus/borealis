@@ -91,7 +91,7 @@ read.mmm <- function (
   if (is.null(input.filename)) { input.filename <- file.choose() }
   ISxlsx <- grepl('.xlsx$',input.filename)
   IScsv <- grepl('.csv$',input.filename)
-  if (!ISxlsx & !IScsv) { return(cat(paste("The input file",input.filename,"must be xlsx or csv format."))) }
+  if (!ISxlsx & !IScsv) { stop(paste("The input file",input.filename,"must be xlsx or csv format.")) }
 
   # Import the raw data
   if (ISxlsx) {
@@ -106,18 +106,18 @@ read.mmm <- function (
   acceptable.ID.column.names <- c("id","ids","specimen","specimen id","specimen.id","specimen_id","specimen.ids","specimen_ids","sample","sample id","sample.id","sample_id","sample.ids","sample_ids")
   ID.col <- which(names(raw) %in% acceptable.ID.column.names)
   if (length(ID.col) != 1) {
-    return(cat(paste("The input file",input.filename,"must have one column with specimen IDs using one of the following headings:",paste(acceptable.ID.column.names, collapse = ', '))))
+    stop(paste("The input file",input.filename,"must have one column with specimen IDs using one of the following headings:",paste(acceptable.ID.column.names, collapse = ', ')))
   }
   specimen.number <- sum(!grepl("^\\s*$", na.omit(raw[,ID.col])))
 
   acceptable.MM.column.names <- c("mm","mmm","measurement","measurements","value","pixels","px","distance")
   MM.col <- which(names(raw) %in% acceptable.MM.column.names)
   if (length(MM.col) != 1) {
-    return(cat(paste("The input file",input.filename,"must have one column with measurements using one of the following headings:",paste(acceptable.MM.column.names, collapse = ', '))))
+    stop(paste("The input file",input.filename,"must have one column with measurements using one of the following headings:",paste(acceptable.MM.column.names, collapse = ', ')))
   } else {
     measurement.number <- dim(raw)[1] / specimen.number
     if (measurement.number %% 1 != 0) {
-      return(cat(paste("The input file",input.filename,"must have a consistent number of measurements.",measurement.number,"measurements detected.")))
+      stop(paste("The input file",input.filename,"must have a consistent number of measurements.",measurement.number,"measurements detected."))
     }
   }
 
@@ -127,13 +127,12 @@ read.mmm <- function (
     if ((dim(raw)[1] %% measurement.number == 0) & (dim(raw)[1]/measurement.number > specimen.number)) {
       x <- dim(raw)[1]/measurement.number - specimen.number
       warning.text <- paste0('Warning: ',input.filename,' contains ',x,' duplicate specimen IDs.\n')
-      cat(warning.text)
       x <- raw[,ID.col]; x <- x[which(nchar(x)>1)]; x <- x[which(duplicated(x))]
-      x <- paste0("  ",x,"\n", collapse = "")
-      cat(x)
+      x <- paste(warning.text,paste0("  ",x,"\n", collapse = ""))
+      warning(x)
       warning.text <- paste0(warning.text, x, collapse = "")
     } else {
-      return(cat(paste('Error:',input.filename,'does not contain properly formatted measurement data.\n')))
+      stop(paste('Error:',input.filename,'does not contain properly formatted measurement data.\n'))
     }
   }
 
@@ -149,14 +148,14 @@ read.mmm <- function (
     # Check that measurement.names are not too many
     if (length(measurement.names) > measurement.number) {
       s <- paste("Warning: The number of measurement.names provided exceeds the number of detected measurements. Using only",measurement.number,"names.\n")
-      cat(s)
+      warning(s)
       warning.text <- paste0(warning.text, s, collapse = "")
       measurement.names <- measurement.names[1:measurement.number]
     } else {
       # Check that there are enough measurement.names
       if (length(measurement.names) < measurement.number) {
         s <- paste("Warning: The number of measurement.names provided is fewer than the number of detected number of measurements:",measurement.number,"\n")
-        cat(s)
+        warning(s)
         warning.text <- paste0(warning.text, s, collapse = "")
         measurement.names <- c(measurement.names,default.measurement.names[length(measurement.names):measurement.number])
       }
@@ -169,20 +168,20 @@ read.mmm <- function (
       scale.col <- grep('scale',names(raw), ignore.case = TRUE)
       if (length(scale.col)==0) {
         s <- paste("Warning: apply.scale = TRUE, but no scale column detected in",input.filename,". Proceeding without scale. \nTry specifying a column name e.g. apply.scale = 'scale' \n")
-        cat(s)
+        warning(s)
         warning.text <- paste0(warning.text, s, collapse = "")
         apply.scale <- NULL
         scale.col <- NULL
       } else {
         if (length(scale.col)>1) {
           s <- paste("Warning: Multiple columns (",paste(names(raw)[scale.col],collapse = ', '),") may contain scale information. Using only column '",names(raw)[scale.col[1]],"'.\nTry specifying a column name e.g. apply.scale = 'scale' \n")
-          cat(s)
+          warning(s)
           warning.text <- paste0(warning.text, s, collapse = "")
           scale.col <- scale.col[1]
         } else {
           if (!is.numeric(raw[,scale.col])) {
             s <- paste("Warning: Some specimens may have non-numeric scale values. \nTry specifying a column name e.g. apply.scale = 'scale' \n")
-            cat(s)
+            warning(s)
             warning.text <- paste0(warning.text, s, collapse = "")
           }
         }
@@ -193,18 +192,18 @@ read.mmm <- function (
       scale.col <- grep(apply.scale[1],names(raw), ignore.case = TRUE)
       if (length(scale.col)==0) {
         s <- paste("Warning: apply.scale =",apply.scale,", but no column with that name has been found. Proceeding without scale. \n")
-        cat(s)
+        warning(s)
         warning.text <- paste0(warning.text, s, collapse = "")
         apply.scale <- NULL
         scale.col <- NULL
       } else {
         if (length(scale.col)>1) {
           s <- paste("Warning: Multiple columns (",paste(names(raw)[scale.col],collapse = ', '),") may contain scale information. Using only column '",names(raw)[scale.col[1]],"'.\nTry specifying a different column name e.g. apply.scale = 'scale'. \nRegex expressions may be used, such as 'scale$'.\n")
-          cat(s)
+          warning(s)
           warning.text <- paste0(warning.text, s, collapse = "")
           scale.col <- scale.col[1]
         } else {
-          if (!is.numeric(raw[,scale.col])) { cat("Warning: Some specimens may have non-numeric scale values. \nTry specifying a different column name e.g. apply.scale = 'scale' \n") }
+          if (!is.numeric(raw[,scale.col])) { warning("Warning: Some specimens may have non-numeric scale values. \nTry specifying a different column name e.g. apply.scale = 'scale' \n") }
         }
       }
     }
@@ -224,7 +223,7 @@ read.mmm <- function (
           } else {
             md.cols.not.founds <- metadata.cols[i]
             s <- paste("Warning: Metadata column",md.cols.not.founds,"not found.\n")
-            cat(s)
+            warning(s)
             warning.text <- paste0(warning.text, s, collapse = "")
           }
         }
@@ -278,7 +277,7 @@ read.mmm <- function (
       s <- paste("Warning: The following specimens have no scale values. Using a scale factor of 1.\n")
       x <- paste0("-  ",df[,df.ID.col][specimens.without.scale],"\n", collapse = "\n- ")
       s <- paste(s, x, "\n", collapse = "")
-      cat(s)
+      warning(s)
       warning.text <- paste0(warning.text, s, "\n", collapse = "")
       scale.values[specimens.without.scale] <- 1
       names(specimens.without.scale) <- df[,df.ID.col][specimens.without.scale]
@@ -307,13 +306,13 @@ read.mmm <- function (
       if (grepl(".csv$",output.filename)) { seperator <- "," }
       else {
         s <- paste("Warning:",output.filename,"format not recognized from file name. Writing as",paste0(output.filename,'.csv'),"\n")
-        cat(s)
+        warning(s)
         warning.text <- paste0(warning.text, s, "\n", collapse = "")
         seperator <- ","
         output.filename <- paste0(output.filename,".csv")
       }
       s <- paste("Table exported to",output.filename,"with",measurement.number,"measurements and",length(df.md.cols),"metadata columns for",specimen.number,"specimens.\n")
-      cat(s)
+      message(s)
       warning.text <- paste0(warning.text, s, collapse = "")
       write.table(df, file = output.filename, sep=seperator, quote = FALSE, row.names = FALSE )
     }

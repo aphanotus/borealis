@@ -13,19 +13,18 @@
 #'
 #' @export
 #'
-#' @examples
 #'
 
 filter.shapes <- function (x, index, index.description = NULL)
 {
   # Vet the input
   if (!any(grepl("list",class(x)))) {
-    return(cat("Error: Input is not a recognized type. (See the help entry: '?filter.shapes'.)"))
+    stop("Error: Input is not a recognized type. (See the help entry: '?filter.shapes'.)")
   }
   index.name <- deparse(substitute(index))
   if (is.logical(index)) { index <- which(index) }
   if (!is.numeric(index)) {
-    return(cat("Error: Index is not a recognized type. (See the help entry: '?filter.shapes'.)"))
+    stop("Error: Index is not a recognized type. (See the help entry: '?filter.shapes'.)")
   }
 
   output <- x

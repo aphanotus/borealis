@@ -99,27 +99,27 @@ align.joint <- function(
         shapes <- A$land
         output <- A[-grep("land",names(A))]
       } else {
-        return(cat("Error: Input is not a recognized type. (See the help entry: '?align.joint'.)"))
+        stop("Error: Input is not a recognized type. (See the help entry: '?align.joint'.)")
       }
     }
   } else {
     if ((class(A)[1] == "array") & (length(dim(A)) == 3)) {
       shapes <- A
     } else {
-      return(cat("Error: Input is not a recognized type. (See the help entry: '?align.joint'.)"))
+      stop("Error: Input is not a recognized type. (See the help entry: '?align.joint'.)")
     }
   }
   if (dim(shapes)[2] != 2) {
-    return(cat("Error: requires a matrix of X and Y corrdinates."))
+    stop("Error: requires a matrix of X and Y corrdinates.")
   }
   if (is.null(substructure.LMs) | !is.numeric(substructure.LMs) | (max(substructure.LMs) > dim(shapes)[1]) | (min(substructure.LMs) < 0)) {
-    return(cat("Error: substructure.LMs is invalid. See '?align.joint' for usage.\n "))
+    stop("Error: substructure.LMs is invalid. See '?align.joint' for usage.\n ")
   }
   if (is.null(pivot.LM) | !is.numeric(pivot.LM) | (pivot.LM > dim(shapes)[1]) | (pivot.LM < 0)) {
-    return(cat("Error: pivot.LM is invalid. See '?align.joint' for usage.\n "))
+    stop("Error: pivot.LM is invalid. See '?align.joint' for usage.\n ")
   }
   if (is.null(rotation.limits) | length(rotation.limits)!=2 | any(rotation.limits > 2*pi) | any(rotation.limits < -2*pi)) {
-    return(cat("Error: rotation.limits is invalid. See '?align.joint' for usage.\n "))
+    stop("Error: rotation.limits is invalid. See '?align.joint' for usage.\n ")
   }
   rotation.limits <- sort(rotation.limits)
 
@@ -137,12 +137,18 @@ align.joint <- function(
   } else {
     main.structure.LMs <- as.numeric(main.structure.LMs)
     if ((max(main.structure.LMs) > dim(shapes)[1]) | (min(main.structure.LMs) < 0)) {
-      return(cat("Error: main.structure.LMs is invalid. See '?align.joint' for usage.\n "))
+      stop("Error: main.structure.LMs is invalid. See '?align.joint' for usage.\n ")
     }
     if (any(main.structure.LMs == pivot.LM)) {
       main.structure.LMs <- main.structure.LMs[-which(main.structure.LMs == pivot.LM)]
     }
   }
+
+  if (require("geomorph")) {
+    gpa1.procD <- sum(gpagen(shapes, print.progress = FALSE)$procD)
+  } else { gpa1.procD <- NULL }
+
+  # Sub-functions
 
   # Calculate a matrix of distances b/w substructure LMs and main LMs for reference.
   distance <- function(xy,XY) { sqrt((xy[1]-XY[1])^2+(xy[2]-XY[2])^2) }
@@ -157,54 +163,17 @@ align.joint <- function(
       paste0("lm",lm1),
       paste0("lm",lm2)
     )
-    return(df)
+    return((df))
   } # End dMatrix function
-
-  ref.distances <- distMatrix(shapes[,,reference.specimen], main.structure.LMs, substructure.LMs)
-
-  if (include.plot) {
-    i <- reference.specimen
-
-    x <- ifelse(
-      is.null(dimnames(shapes)[[3]][i]),
-      paste("reference specimen:",i),
-      paste("reference specimen:",dimnames(shapes)[[3]][i])
-    )
-
-    landmark.plot(shapes[,,i], main = x, ...)
-
-    # Main structure landmarks
-    points(shapes[main.structure.LMs,1,i], shapes[main.structure.LMs,2,i], pch = 16, col = "grey50")
-
-    # Substructure positions
-    points(shapes[substructure.LMs,1,i], shapes[substructure.LMs,2,i], pch = 16, col = "black")
-
-    # Pivot
-    points(shapes[pivot.LM,1,i], shapes[pivot.LM,2,i], pch = 16, col = "darkred")
-
-    # # rotation.limits lines
-    # if (!is.null(barrier.LM)) {
-    #   abline(lm(shapes[c(pivot.LM, barrier.LM),2,reference.specimen] ~ shapes[c(pivot.LM, barrier.LM),1,reference.specimen]), col="darkred")
-    # }
-
-    readline("Press any key to continue.")
-
-  }
-
-  # #########################################
-  # MAIN LOOP
-  # #########################################
-  specimens.to.adjust <- 1:(dim(shapes)[3])
-  specimens.to.adjust <- specimens.to.adjust[which(specimens.to.adjust != reference.specimen)]
-  adjustment.angles <- NULL
-
-  # Trigonometry reminder:
-  # Equations for rotating a point by an angle, counter-clockwise, relative to the x-axis
-  # x′ = x*cosθ − y*sinθ
-  # y′ = y*cosθ + x*sinθ
 
   # A function to rotate substructure.LMs within a matrix (one specimen)
   rotate.substructure <- function (m, LMs.to.rotate, pivot, theta ) {
+
+    # Trigonometry reminder:
+    # Equations for rotating a point by an angle, counter-clockwise, relative to the x-axis
+    # x′ = x*cosθ − y*sinθ
+    # y′ = y*cosθ + x*sinθ
+
     # The location of the pivot point for specimen i
     x0 <- m[pivot,1]
     y0 <- m[pivot,2]
@@ -236,21 +205,57 @@ align.joint <- function(
     return(m)
   }
 
-  # A function to rotate substructure.LMs and report the sum of squared differences from the ref.distances matrix
+  # A function to rotate substructure.LMs and report the mean absolute differences in scaled distance matrices
   rotate.substructure.diff <- function (m, LMs.to.rotate, pivot, other.LMs, ref.dist.matrix, theta ) {
     m.prime <- rotate.substructure(m, LMs.to.rotate, pivot, theta)
-    diff <- sum(unlist(ref.distances - distMatrix(m.prime, other.LMs, LMs.to.rotate))^2)
+
+    diff <- mean(abs(unlist(scale(ref.distances, center = F) - scale(distMatrix(m.prime, other.LMs, LMs.to.rotate), center = F)))) # mean of absolute differences
+    # diff <- sum(unlist(ref.distances - distMatrix(m.prime, other.LMs, LMs.to.rotate))^2) # sum of squared differences
     return(diff)
   }
+
+  # End sub-function definitions
+
+  if (include.plot) {
+    i <- reference.specimen
+    x <- ifelse(
+      is.null(dimnames(shapes)[[3]][i]),
+      paste("reference specimen:",i),
+      paste("reference specimen:",dimnames(shapes)[[3]][i])
+    )
+    landmark.plot(shapes[,,i], main = x, ...)
+
+    # Main structure landmarks
+    points(shapes[main.structure.LMs,1,i], shapes[main.structure.LMs,2,i], pch = 16, col = "grey50")
+
+    # Substructure positions
+    points(shapes[substructure.LMs,1,i], shapes[substructure.LMs,2,i], pch = 16, col = "black")
+
+    # Pivot
+    points(shapes[pivot.LM,1,i], shapes[pivot.LM,2,i], pch = 16, col = "darkred")
+
+    readline("Press any key to continue.")
+  } # End   if (include.plot)
+
+
+  # #########################################
+  # MAIN LOOP
+  # #########################################
+  specimens.to.adjust <- 1:(dim(shapes)[3])
+  specimens.to.adjust <- specimens.to.adjust[which(specimens.to.adjust != reference.specimen)]
+  adjustment.angles <- NULL
+  initial.rotation.limits <- rotation.limits
+  ref.distances <- distMatrix(shapes[,,reference.specimen], main.structure.LMs, substructure.LMs)
 
   # Loop for each specimen
   for (i in 1:length(specimens.to.adjust)) {
     original.coords.i <- shapes[,,specimens.to.adjust[i]]
 
     # Curtail the rotation.limits of rotation based on the barrier
+    rotation.limits <- initial.rotation.limits
     if (!is.null(barrier.LM)) {
       if (is.null(pivot.LM) | !is.numeric(pivot.LM) | (pivot.LM > dim(shapes)[1]) | (pivot.LM < 0)) {
-        return(cat("Error: pivot.LM is invalid. See '?align.joint' for usage.\n "))
+        stop("Error: pivot.LM is invalid. See '?align.joint' for usage.\n ")
       }
 
       # Find the substructure LM closest to the barrier
@@ -261,7 +266,7 @@ align.joint <- function(
       p23 <- distance(shapes[barrier.LM,,specimens.to.adjust[i]], shapes[crash.LM,,specimens.to.adjust[i]])
       barrier.angle <- acos((p12^2 + p13^2 - p23^2) / (2 * p12 * p13))
 
-      if (barrier.angle > 0) {
+      if (barrier.angle < 0) {
         rotation.limits[1] <- barrier.angle
       } else {
         rotation.limits[2] <- barrier.angle
@@ -283,8 +288,6 @@ align.joint <- function(
     theta.i <- x$minimum
     diff.i <- x$objective
 
-    # cat(theta.i,"\t",diff.i,"\n")
-
     if (abs(theta.i) < tolerance) { theta.i <- 0 }
 
     # Rotate accordingly
@@ -303,13 +306,13 @@ align.joint <- function(
       landmark.plot(shapes[,,specimens.to.adjust[i]], main = x, text.color = "darkgray", ...)
 
       # Add text details
-      x <- max(shapes[,1,specimens.to.adjust[i]]) #- 0.5*(max(shapes[,1,specimens.to.adjust[i]]) - min(shapes[,1,specimens.to.adjust[i]]))
-      y <- max(shapes[,2,specimens.to.adjust[i]]) #- 0.5*(max(shapes[,2,specimens.to.adjust[i]]) - min(shapes[,1,specimens.to.adjust[i]]))
-      s <- paste0("rotation.limits: ",signif(rotation.limits[1],4)," - ",signif(rotation.limits[2],4),"\n",signif(theta.i,3)," rad\n", signif(theta.i*(180/pi),3),"˚\nSSD: ", signif(diff.i,4))
-      if (any(signif(rotation.limits,4) == signif(theta.i,4))) {
-        s <- paste0(s,"\nat rotation.limits limit")
+      x <- par("usr")[2]
+      y <- par("usr")[4]
+      s <- paste0("\nlimits: ",signif(rotation.limits[1],3)," (", signif(rotation.limits[1]*(180/pi),3),"˚) to ",signif(rotation.limits[2],3)," (", signif(rotation.limits[2]*(180/pi),3),"˚)  \n rotation: ",signif(theta.i,3)," (", signif(theta.i*(180/pi),3),"˚)  \nmean diff: ", signif(diff.i,4),"  \n")
+      if (any(signif(rotation.limits,3) == signif(theta.i,3))) {
+        s <- paste0(s,"\n  AT ROTATION LIMIT  \n")
       }
-      text(x,y,s, adj = c(1,1), cex = 0.8)
+      text(x,y,s, adj = c(1,1), cex = 0.8, offset = 10)
 
       # Main structure landmarks
       points(shapes[main.structure.LMs,1,specimens.to.adjust[i]], shapes[main.structure.LMs,2,specimens.to.adjust[i]], pch = 16, col = "grey50")
@@ -331,13 +334,32 @@ align.joint <- function(
 
   } # End loop for each specimen
 
+  if (!is.null(gpa1.procD)) {
+    gpa2.procD <- sum(gpagen(shapes, print.progress = FALSE)$procD)
+    percent.improvement <- signif(((gpa1.procD - gpa2.procD) / gpa1.procD)*100,3)
+  } else { percent.improvement <- NULL }
+
+  if (!is.null(percent.improvement)) {
+    if (percent.improvement > 0) {
+      s1 <- paste0("Alignment improved (reduced) preliminary Procrustes distances by ",percent.improvement,"%.\n")
+    } else {
+      percent.improvement <- -1*percent.improvement
+      s1 <- paste0("**Warning: Alignment increased preliminary Procrustes distances** by ",percent.improvement,"%.\n")
+    }
+    message(s1)
+  }
+
+  adjustment.angles <- round(adjustment.angles*(180/pi),1)
+  if (include.plot) {
+    hist(adjustment.angles, col="darkred", xlab="adjustment angles (˚)", main = "Histogram of adjustment angles")
+  }
+
   # Prep the output
   output$coords <- shapes
   if (!is.null(provenance) & !any(grepl("provenance",names(output)))) {
     output$provenance <- provenance
   }
 
-  adjustment.angles <- round(adjustment.angles*(180/pi),1)
   s <- paste0(
     paste0("## Joint alignment\n\n"),
     paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::align.joint` on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n"),
@@ -351,7 +373,8 @@ align.joint <- function(
       is.null(dimnames(shapes)[[3]][reference.specimen]),
       ".\n\n",
       paste0(": ", dimnames(shapes)[[3]][reference.specimen],".\n\n")
-    )
+    ),
+    ifelse(is.null(percent.improvement),"\n",paste0(s1,"\n"))
   )
 
   output$provenance$align.joint <- s
