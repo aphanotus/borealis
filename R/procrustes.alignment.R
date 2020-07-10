@@ -14,9 +14,7 @@
 #'
 #' @source   Dave Angelini \email{david.r.angelini@@gmail.com} [aut, cre]
 #'
-#' @references  Geomorph: Software for geometric morphometric analyses.
-#' R package version 3.2.1. D.C. Adams and M.L. Collyer and A. Kaliontzopoulou. 2020.
-#' (\href{https://cran.r-project.org/package=geomorph}{Link})
+#' @references Adams and M.L. Collyer and A. Kaliontzopoulou. 2020. Geomorph: Software for geometric morphometric analyses. R package version 3.2.1. D.C. (\href{https://cran.r-project.org/package=geomorph}{Link})
 #'
 #' @param A A list or 3-dimensional array containing XY shape corrdinates for multiple specimens.
 #' @param curves An optional matrix defining which landmarks should be treated as semilandmarks by \code{gpagen}.

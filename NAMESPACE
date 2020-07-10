@@ -2,7 +2,7 @@
 
 S3method(AIC,adonis)
 S3method(filter,shapes)
-export(align.joint)
+export(align.angle)
 export(create.tps)
 export(distance)
 export(gg.scaling.plot)

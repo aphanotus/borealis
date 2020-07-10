@@ -64,7 +64,7 @@ landmark.plot <- function (A, specimen.number = 1, square = TRUE, links = NULL, 
     stop("Error: requires a matrix of X and Y corrdinates.")
   }
   if (!is.null(links)) {
-    if ((max(links) > dim(landmarks)[1]) | (min(links) < 1)) {
+    if (((max(links) > dim(landmarks)[1]) | (min(links) < 1)) & (links[[1]] != "chull"))  {
       warning("Warning: Provided links are out of bounds. (See the help entry: '?landmark.plot'.)")
       links <- NULL
     }
