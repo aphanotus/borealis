@@ -2,7 +2,7 @@
 
 **Tools for Integrative Biology**
 
-[GMM workflow vignette](https://www.bugsinourbackyard.org/wp-content/uploads/2020/06/gmm-workflow.html)
+[GMM workflow vignette](https://www.bugsinourbackyard.org/wp-content/uploads/2020/07/gmm-workflow.html)
 
 ## Installation
 
@@ -20,7 +20,7 @@ library(borealis)
 One of the goals of this package is to provide a system to record [data provenance](https://en.wikipedia.org/wiki/Data_lineage#Data_provenance) in the objects
 produced through a morphometry workflow. Many of the major GMM step employ functions from the R package [geomorph](https://cran.r-project.org/web/packages/geomorph/index.html).
 
-For a [tutorial of a GMM workflow](https://www.bugsinourbackyard.org/wp-content/uploads/2020/06/gmm-workflow.html) using `borealis`, see the vignettes [online](https://www.bugsinourbackyard.org/wp-content/uploads/2020/06/gmm-workflow.html) or in Rstudio.
+For a [tutorial of a GMM workflow](https://www.bugsinourbackyard.org/wp-content/uploads/2020/07/gmm-workflow.html) using `borealis`, see the vignettes [online](https://www.bugsinourbackyard.org/wp-content/uploads/2020/07/gmm-workflow.html) or in Rstudio.
 
 ```r
 vignette("gmm-workflow", package="borealis")
