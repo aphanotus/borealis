@@ -291,7 +291,7 @@ shapes <- read.tps("wings.tps",
 
 Joints can introduce nuisance variation in landmark-based geometric morphometrics. The `geomorph` function `fixed.angle` rotates a subset of landmarks such that they come to a consistent angle, that is defined by the user through reference to particular landmarks.  
 The `borealis` package wraps this function into another called `align.angle` which provides 
-data provenance, some visualizations, and greater user flexibililty.
+data provenance, some visualizations, and greater user flexibility.
 
 This step should be run before Procrustes alignment, and it is robust to differences in the relative position, orientation and size of specimens. However, it's not always necessary to do this. If the structure you're analyzing isn't jointed, then there's no need for it. 
 
@@ -308,15 +308,22 @@ shapes <- align.angle(shapes,
                       links = fw.links)
 ```
 
-![](https://i.imgur.com/p3MKN81.png)
+![](https://i.imgur.com/nWtnpj7.png)
 
+```
+Angle alignment reduced variance in centroid size-scaled landmark distances by 0.53%.
+```
 
 By default, the function will plot a random specimen, with the new landmark positions. 
-Here we have specified which one to plot using the arguement `show.plot = 1`. 
-The second plot is a histogram of mean distances amonmg landmarks (corrected for centroid size).
-This can be used as a metric of how well the alignment "improves" the consistency of landmark positions. However, there are some expections to this interpretation. 
-If the alimgnment "stretches out" the sub-structure for some specimens, this may produce an increase in mean landmark distances that swamps any reduction caused by greater consistency among the landmarks of that structure. 
-Consider the histogram and mean changes, but use your best judgement.
+Here we have specified which one to plot using the argument `show.plot = 1`. 
+The second plot is a histogram of variances among distances between landmarks (corrected for the centroid size of each specimen).
+This can be used as a metric of how well the alignment improves the consistency of landmark positions, with lower values indicating greater consistency. However, there are some caveats to this interpretation. 
+If the alignment "stretches out" the sub-structure for some specimens, this may produce an increase in mean landmark distances that swamp any reduction caused by greater consistency among the landmarks of that structure. 
+Consider the histogram and mean changes, and use your best judgement.
+
+In this example, any gains are marginal. If you try different values for `angle` you'll see that the reductions in landmark distance variance can be quickly lost. However, there are cases where angular alignment can be very helpful. The output below is from the head of a beetle, where the mandibles were aligned relative to the rest of the head. This reduced landmark distance variance by 11.6%, shifting the distribution to the left.
+
+![](https://i.imgur.com/JvytdwM.png)
 
 ## Procrustes alignment
 
@@ -511,9 +518,15 @@ While it can be useful to know how to work with the raw output from PCA analysis
 
 ```{r eval=FALSE, include=TRUE}
 plot(wing.pca, col = as.factor(wing.gpa$gdf$species))
+
+sp <- as.factor(wing.gpa$gdf$species)
+legend("topright", levels(sp), 
+       col = c(1:length(levels(sp))),
+       cex = 0.9, pch = 1, box.lwd = 0,
+       bg="transparent")
 ```
 
-![](https://i.imgur.com/bduPIp4.jpg)
+![](https://i.imgur.com/fQ141Ed.png)
 
 This is okay, but it's not very pretty. The `borealis` package has a function to plot these values using `ggplot2` with colorblind-friendly palettes.
 

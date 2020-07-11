@@ -50,9 +50,9 @@
 #'     If \code{show.plot = TRUE} (the default), then a specimen is plotted at random.
 #'     Alternatively, a specimen can be indicated as in \code{show.plot = 1}.
 #'     To suppress the visuakl output, set If \code{show.plot = FALSE}.
-#' @param plots.vertical Two plots will be generated if \code{show.plot} and \code{compare.distances} are both
+#' @param plots.vertical Two plots will be generated if \code{show.plot} and \code{compare.variance} are both
 #'     \code{TRUE}. This logical value specifyies whether to arrange them vertically (default) or (if \code{plots.vertical = FALSE}) horizontally.
-#' @param compare.distances A logical value specifying whether to compare the distibutions of mean landmark distances, corrected for centroid size.
+#' @param compare.variance A logical value specifying whether to compare the distibutions of variance in landmark distances, corrected for centroid size.
 #'     before and after alignment to the fixed angle.
 #' @param provenance An object that should be retained for data provenance.
 #'
@@ -83,7 +83,7 @@ align.angle <- function (
   degrees = TRUE,
   show.plot = TRUE,
   plots.vertical = TRUE,
-  compare.distances = TRUE,
+  compare.variance = TRUE,
   provenance = NULL,
   ...
 )
@@ -168,7 +168,7 @@ align.angle <- function (
   #   ref.shape <- ref.shape / ref.CS
   # }
 
-  if (compare.distances) {
+  if (compare.variance) {
     centroid.scaled.distances <- function(m)
     {
       n <- dim(m)[1]
@@ -183,8 +183,10 @@ align.angle <- function (
       return(df)
     } # End centroid.scaled.distances function
 
-    mean.centroid.scaled.distances1 <- apply(shapes, 3, function(m) { mean(abs(unlist(centroid.scaled.distances(m))), na.rm = TRUE) })
-  } else { mean.centroid.scaled.distances1 <- NULL }
+    x <- apply(shapes, 3, function(m) { na.omit(unlist(centroid.scaled.distances(m))) })
+    var.centroid.scaled.distances1 <- apply(x, 1, var)
+    # mean.centroid.scaled.distances1 <- apply(shapes, 3, function(m) { mean(abs(unlist(centroid.scaled.distances(m))), na.rm = TRUE) })
+  } else { var.centroid.scaled.distances1 <- NULL }
 
   # Call to fixed.angle
   shapes <- fixed.angle (
@@ -199,7 +201,7 @@ align.angle <- function (
 
   # Viz
   if (show.plot) {
-    if (compare.distances) { if (plots.vertical) { par(mfrow=c(2,1)) } else { par(mfrow=c(1,2)) } }
+    if (compare.variance) { if (plots.vertical) { par(mfrow=c(2,1)) } else { par(mfrow=c(1,2)) } }
     x <- ifelse(
       is.null(dimnames(shapes)[[3]][reference.specimen]),
       paste("specimen:", reference.specimen),
@@ -215,39 +217,40 @@ align.angle <- function (
     # Legend
     legend("topright",
            legend=c("rot.pts","art.pt", paste0("angle = ",angle,ifelse(degrees,"˚  "," rad  "))),
-           col=c("black", "darkred", "white"),
-           pch = c(16,16, 0),
-           cex = 0.9, xjust = 1, yjust = 1, box.lwd = 0)
+           col=c("black", "darkred", "white"), pch = c(16,16, 0),
+           cex = 0.9, box.lwd = 0, bg="transparent")
     options(warn = 0)
   } # End  if (show.plot)
 
-  if (!is.null(mean.centroid.scaled.distances1)) {
-    mean.centroid.scaled.distances2 <- apply(shapes, 3, function(m) { mean(abs(unlist(centroid.scaled.distances(m))), na.rm = TRUE) })
-    percent.improvement <- signif(((mean(mean.centroid.scaled.distances1) - mean(mean.centroid.scaled.distances2)) / mean(mean.centroid.scaled.distances1))*100,3)
+  if (!is.null(var.centroid.scaled.distances1)) {
+    x <- apply(shapes, 3, function(m) { na.omit(unlist(centroid.scaled.distances(m))) })
+    var.centroid.scaled.distances2 <- apply(x, 1, var)
+    # mean.centroid.scaled.distances2 <- apply(shapes, 3, function(m) { mean(abs(unlist(centroid.scaled.distances(m))), na.rm = TRUE) })
+    percent.improvement <- signif(((sum(var.centroid.scaled.distances1) - sum(var.centroid.scaled.distances2)) / sum(var.centroid.scaled.distances1))*100,3)
   } else { percent.improvement <- NULL }
 
   if (!is.null(percent.improvement)) {
     if (percent.improvement > 0) {
-      s1 <- paste0("Angle alignment reduced mean centroid size-scaled landmark distances by ",percent.improvement,"%.\n")
+      s1 <- paste0("Angle alignment reduced variance in centroid size-scaled landmark distances by ",percent.improvement,"%.\n")
     } else {
       percent.improvement <- -1*percent.improvement
-      s1 <- paste0("Angle alignment increased mean centroid size-scaled landmark distances by ",percent.improvement,"%.\n")
+      s1 <- paste0("Angle alignment increased variance in centroid size-scaled landmark distances by ",percent.improvement,"%.\n")
     }
     if (show.plot) {
       # invisible(readline(prompt="Press [enter] to continue"))
-      b <- min(c(mean.centroid.scaled.distances1,mean.centroid.scaled.distances2)) - 0.0001 # Set the minimum for the breakpoints
-      e <- max(c(mean.centroid.scaled.distances1,mean.centroid.scaled.distances2)) + 0.0001 # Set the maximum for the breakpoints
+      b <- min(c(var.centroid.scaled.distances1,var.centroid.scaled.distances2)) - 0.0001 # Set the minimum for the breakpoints
+      e <- max(c(var.centroid.scaled.distances1,var.centroid.scaled.distances2)) + 0.0001 # Set the maximum for the breakpoints
       options(warn = -1)
       ax <- pretty(c(b,e), n = 9)
-      hg1 <- hist(mean.centroid.scaled.distances1, breaks = ax, plot = FALSE) # Save first histogram data
-      hg2 <- hist(mean.centroid.scaled.distances2, breaks = ax, plot = FALSE) # Save 2nd histogram data
+      hg1 <- hist(var.centroid.scaled.distances1, breaks = ax, plot = FALSE) # Save first histogram data
+      hg2 <- hist(var.centroid.scaled.distances2, breaks = ax, plot = FALSE) # Save 2nd histogram data
       ymax <- max(c(hg1$counts,hg2$counts))
-      plot(hg1, col = '#80000080', xlab = "mean centroid size-scaled landmark distances", main = NULL, ylim=c(0,ymax)) # Plot 1st histogram using a transparent color
+      plot(hg1, col = '#80000080', xlab = "variance in scaled landmark distances", main = NULL, ylim=c(0,ymax)) # Plot 1st histogram using a transparent color
       plot(hg2, col = '#00000050', add = TRUE) # Add 2nd histogram using different color
-      legend.text <- c(paste0("before (",signif(mean(mean.centroid.scaled.distances1),5),")"),
-                       paste0("after (",signif(mean(mean.centroid.scaled.distances2),5),")"))
+      legend.text <- c(paste0("before (",signif(sum(var.centroid.scaled.distances1),4),")"),
+                       paste0("after (",signif(sum(var.centroid.scaled.distances2),4),")"))
       legend("topright", legend=legend.text, fill=c("#80000080", "#00000050"),
-             cex = 0.9, xjust = 1, yjust = 1, box.lwd = 0)
+             cex = 0.9, box.lwd = 0)
       options(warn = 0)
       par(mfrow=c(1,1))
     }

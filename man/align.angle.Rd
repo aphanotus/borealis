@@ -17,7 +17,7 @@ align.angle(
   degrees = TRUE,
   show.plot = TRUE,
   plots.vertical = TRUE,
-  compare.distances = TRUE,
+  compare.variance = TRUE,
   provenance = NULL,
   ...
 )
@@ -49,10 +49,10 @@ If \code{show.plot = TRUE} (the default), then a specimen is plotted at random.
 Alternatively, a specimen can be indicated as in \code{show.plot = 1}.
 To suppress the visuakl output, set If \code{show.plot = FALSE}.}
 
-\item{plots.vertical}{Two plots will be generated if \code{show.plot} and \code{compare.distances} are both
+\item{plots.vertical}{Two plots will be generated if \code{show.plot} and \code{compare.variance} are both
 \code{TRUE}. This logical value specifyies whether to arrange them vertically (default) or (if \code{plots.vertical = FALSE}) horizontally.}
 
-\item{compare.distances}{A logical value specifying whether to compare the distibutions of mean landmark distances, corrected for centroid size.
+\item{compare.variance}{A logical value specifying whether to compare the distibutions of variance in landmark distances, corrected for centroid size.
 before and after alignment to the fixed angle.}
 
 \item{provenance}{An object that should be retained for data provenance.}
