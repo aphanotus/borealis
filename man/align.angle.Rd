@@ -52,15 +52,12 @@ To suppress the visuakl output, set If \code{show.plot = FALSE}.}
 \item{plots.vertical}{Two plots will be generated if \code{show.plot} and \code{compare.variance} are both
 \code{TRUE}. This logical value specifyies whether to arrange them vertically (default) or (if \code{plots.vertical = FALSE}) horizontally.}
 
-\item{compare.variance}{A logical value specifying whether to compare the distibutions of variance in landmark distances, corrected for centroid size.
-before and after alignment to the fixed angle.}
+\item{compare.variance}{A logical value specifying whether to compare the distibutions of variance in landmark distances,
+corrected for centroid size, before and after alignment to the fixed angle.}
 
 \item{provenance}{An object that should be retained for data provenance.}
 }
 \value{
-Returns a list with \code{coords}, \code{provenance}, and
-   any other potential list elements from the input.
-
 Returns a list with \code{coords}, \code{provenance}, and
    any other potential list elements from the input.
 }
@@ -77,15 +74,9 @@ in the relative position, orientation and size of specimens.
 The input array should contain landmark coordinates with \emph{p}, 2, and \emph{n} dimensions,
 where \emph{n} is the number of specimens and \emph{p} is the number of landmarks).
 Dimension 2 must have two columns that contain X and Y locations of the landmark.
-
-If \code{show.plot = TRUE}, then landmarks from each specimen will be displayed.
-Gray points indicate main structure (body) landmarks, which are not moved.
-The original location of subsructure (limb / jaw) landmarks are shown with open red circles;
-the adjusted location of these landmarks are shown with black points.
 The function will pass extra arguments to \code{\link[borealis]{landmark.plot}},
 including \code{links}. Plotting the landmarks can be useful to ensure that the reference
 specimen and pivot point result in sensible alignments for the other specimens.
-
 If the input is a \code{list}, all elements will be retained in the output.
 If a \code{provenance} element is present, then it will be expanded to include an entry
 for this processing step.

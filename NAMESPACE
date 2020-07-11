@@ -2,6 +2,9 @@
 
 S3method(AIC,adonis)
 export(align.angle)
+export(align.reflect)
+export(align.shear)
+export(centroid.scaled.distances)
 export(create.tps)
 export(distance)
 export(filter.shapes)

@@ -7,8 +7,32 @@
 Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
 }
 \usage{
-distance(x1, y1, x2, y2)
+distance(xy, XY)
+}
+\arguments{
+\item{xy}{A numerical vector of length 2, representing a point in Cartesian space}
+
+\item{XY}{A numerical vector of length 2, representing a point in Cartesian space}
+}
+\value{
+Returns the Euclidean distance
 }
 \description{
 Euclidean distance between points in 2D space
+}
+\examples{
+distance(c(9,49),c(24,54))
+
+distance(c(2,5),c(8,1))
+
+x <- matrix(c(9,49, 24,54, 51,28, 81,54, 81,23, 86,32), ncol = 2, byrow = TRUE)
+
+df <- data.frame(matrix(nrow = dim(x)[1], ncol = dim(x)[1]))
+
+for (i in (1:dim(x)[1])) {
+  df[i,] <- unlist(apply(x, 1, distance, XY=x[i,]))
+}
+
+df
+
 }
