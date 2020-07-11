@@ -50,7 +50,9 @@
 #'     If \code{show.plot = TRUE} (the default), then a specimen is plotted at random.
 #'     Alternatively, a specimen can be indicated as in \code{show.plot = 1}.
 #'     To suppress the visuakl output, set If \code{show.plot = FALSE}.
-#' @param test.gpa A logical value specifying whether to compare Procrustes distances from \code{\link[geomorph]{gpagen}}
+#' @param plots.vertical Two plots will be generated if \code{show.plot} and \code{compare.distances} are both
+#'     \code{TRUE}. This logical value specifyies whether to arrange them vertically (default) or (if \code{plots.vertical = FALSE}) horizontally.
+#' @param compare.distances A logical value specifying whether to compare the distibutions of mean landmark distances, corrected for centroid size.
 #'     before and after alignment to the fixed angle.
 #' @param provenance An object that should be retained for data provenance.
 #'
@@ -80,7 +82,8 @@ align.angle <- function (
   angle = 0,
   degrees = TRUE,
   show.plot = TRUE,
-  test.gpa = TRUE,
+  plots.vertical = TRUE,
+  compare.distances = TRUE,
   provenance = NULL,
   ...
 )
@@ -153,11 +156,19 @@ align.angle <- function (
       }
     }
   }
-  if (show.plot) { ref.shape <- shapes[,,reference.specimen] }
 
-  if (test.gpa) {
+  distance <- function(xy,XY) { sqrt((xy[1]-XY[1])^2+(xy[2]-XY[2])^2) }
 
-    distance <- function(xy,XY) { sqrt((xy[1]-XY[1])^2+(xy[2]-XY[2])^2) }
+  # if (show.plot) {
+  #   ref.shape <- shapes[,,reference.specimen]
+  #   ref.centroid <- apply(ref.shape,2,mean)
+  #   ref.CS <- sum(apply(ref.shape,1, distance, XY=ref.centroid))
+  #   ref.shape[,1] <- ref.shape[,1] / ref.centroid[1]
+  #   ref.shape[,2] <- ref.shape[,2] / ref.centroid[2]
+  #   ref.shape <- ref.shape / ref.CS
+  # }
+
+  if (compare.distances) {
     centroid.scaled.distances <- function(m)
     {
       n <- dim(m)[1]
@@ -167,7 +178,7 @@ align.angle <- function (
       }
       df[upper.tri(df, diag = TRUE)] <- NA
       centroid <- apply(m,2,mean)
-      CS <- sum(apply(m,1, distance, XY=centroid))
+      CS <- mean(apply(m,1, distance, XY=centroid))
       df <- df / CS
       return(df)
     } # End centroid.scaled.distances function
@@ -188,32 +199,26 @@ align.angle <- function (
 
   # Viz
   if (show.plot) {
+    if (compare.distances) { if (plots.vertical) { par(mfrow=c(2,1)) } else { par(mfrow=c(1,2)) } }
     x <- ifelse(
       is.null(dimnames(shapes)[[3]][reference.specimen]),
       paste("specimen:", reference.specimen),
       dimnames(shapes)[[3]][reference.specimen]
     )
+    options(warn = -1)
     # Base plot and landmark numbers based on the new positions
     landmark.plot(shapes[,,reference.specimen], main = x, text.color = "darkgray", ...)
-
-    # Add text detail
-    x <- par("usr")[2]
-    y <- par("usr")[4]
-    s <- paste0("\nangle = ",angle,ifelse(degrees,"˚  "," rad  "))
-    text(x,y,s, adj = c(1,1), cex = 0.9, offset = 10)
-
     # New substructure positions
     points(shapes[rot.pts,1,reference.specimen], shapes[rot.pts,2,reference.specimen], pch = 16, col = "black")
-
-    # Old substructure positions
-    points(ref.shape[rot.pts,1], ref.shape[rot.pts,2], pch = 1, col = "darkred" )
-
-    # Main structure landmarks
-    points(shapes[angle.pts.1,1,reference.specimen], shapes[angle.pts.1,2,reference.specimen], pch = 16, col = "grey50")
-
     # Pivot
     points(shapes[art.pt,1,reference.specimen], shapes[art.pt,2,reference.specimen], pch = 16, col = "darkred")
-
+    # Legend
+    legend("topright",
+           legend=c("rot.pts","art.pt", paste0("angle = ",angle,ifelse(degrees,"˚  "," rad  "))),
+           col=c("black", "darkred", "white"),
+           pch = c(16,16, 0),
+           cex = 0.9, xjust = 1, yjust = 1, box.lwd = 0)
+    options(warn = 0)
   } # End  if (show.plot)
 
   if (!is.null(mean.centroid.scaled.distances1)) {
@@ -223,26 +228,28 @@ align.angle <- function (
 
   if (!is.null(percent.improvement)) {
     if (percent.improvement > 0) {
-      s1 <- paste0("Angle alignment improved (reduced) mean centroid size-scaled landmark distances by ",percent.improvement,"%.\n")
+      s1 <- paste0("Angle alignment reduced mean centroid size-scaled landmark distances by ",percent.improvement,"%.\n")
     } else {
       percent.improvement <- -1*percent.improvement
       s1 <- paste0("Angle alignment increased mean centroid size-scaled landmark distances by ",percent.improvement,"%.\n")
     }
     if (show.plot) {
-      invisible(readline(prompt="Press [enter] to continue"))
+      # invisible(readline(prompt="Press [enter] to continue"))
       b <- min(c(mean.centroid.scaled.distances1,mean.centroid.scaled.distances2)) - 0.0001 # Set the minimum for the breakpoints
       e <- max(c(mean.centroid.scaled.distances1,mean.centroid.scaled.distances2)) + 0.0001 # Set the maximum for the breakpoints
       options(warn = -1)
       ax <- pretty(c(b,e), n = 9)
       hg1 <- hist(mean.centroid.scaled.distances1, breaks = ax, plot = FALSE) # Save first histogram data
       hg2 <- hist(mean.centroid.scaled.distances2, breaks = ax, plot = FALSE) # Save 2nd histogram data
-      plot(hg1, col = '#80000080', xlab = "mean centroid size-scaled landmark distances", main = NULL) # Plot 1st histogram using a transparent color
+      ymax <- max(c(hg1$counts,hg2$counts))
+      plot(hg1, col = '#80000080', xlab = "mean centroid size-scaled landmark distances", main = NULL, ylim=c(0,ymax)) # Plot 1st histogram using a transparent color
       plot(hg2, col = '#00000050', add = TRUE) # Add 2nd histogram using different color
       legend.text <- c(paste0("before (",signif(mean(mean.centroid.scaled.distances1),5),")"),
                        paste0("after (",signif(mean(mean.centroid.scaled.distances2),5),")"))
       legend("topright", legend=legend.text, fill=c("#80000080", "#00000050"),
              cex = 0.9, xjust = 1, yjust = 1, box.lwd = 0)
       options(warn = 0)
+      par(mfrow=c(1,1))
     }
     message(s1)
   }

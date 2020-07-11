@@ -289,26 +289,34 @@ shapes <- read.tps("wings.tps",
 
 ## Joint alignment
 
-Joints can introduce nuisance variation in landmark-based geometric morphometrics. The `borealis` function `align.joint` rotates a subset of landmarks about a pivot point. 
-You need to designate a reference specimen, and other specimens will be aligned so that the angle of the main set of landmarks and the substructure always have the same angle. 
+Joints can introduce nuisance variation in landmark-based geometric morphometrics. The `geomorph` function `fixed.angle` rotates a subset of landmarks such that they come to a consistent angle, that is defined by the user through reference to particular landmarks.  
+The `borealis` package wraps this function into another called `align.angle` which provides 
+data provenance, some visualizations, and greater user flexibililty.
 
-This step should be run before Procrustes alignment, and it is robust to differences in the relative position, orientation and size of specimens.
+This step should be run before Procrustes alignment, and it is robust to differences in the relative position, orientation and size of specimens. However, it's not always necessary to do this. If the structure you're analyzing isn't jointed, then there's no need for it. 
 
-However, it's not always necessary to do this. If the structure you're analyzing isn't jointed, then there's no need for it. 
-
-For this vignette, I'm going to stretch the utility of our example dataset. The shape data we've been working with are from bumblebee wings. They are not jointed. However, for the sake of the example, let's imagine we have reason to suspect that landmarks 13 and 19, hinge relative to the rest of the wing's landmarks. The specimens we've been looking at (number 1, by default) will be used as the specimen to define the reference angle.
+For this vignette, I'm going to stretch the utility of our example dataset. The shape data we've been working with are from bumblebee wings. They are not jointed. However, for the sake of the example, let's imagine we have reason to suspect that landmarks 13 and 19, hinge relative to the rest of the wing's landmarks. 
 
 ```{r eval=FALSE, include=TRUE}
-shapes <- align.joint(shapes, 
-                      substructure.LMs = c(13,19),
-                      pivot.LM = 14,
-                      reference.specimen = 1,
-                      include.plot = TRUE)
+shapes <- align.angle(shapes,
+                      art.pt = 14,
+                      angle.pts.1 = c(13,19),
+                      rot.pts = c(13,19),
+                      angle = -5,
+                      show.plot = 1,
+                      plots.vertical = FALSE,
+                      links = fw.links)
 ```
 
-![](https://i.imgur.com/qagHjnu.jpg)
+![](https://i.imgur.com/p3MKN81.png)
 
-By default, the function will not show a plot. However, if (as in this example) you include the argument `include.plot = TRUE`, then each specimen is plotted as above. The gray dots show the location of the landmarks in the main structure. The red dot is the pivot point. The open red circles are the old positions of landmarks in the substructure that's been aligned; the black dots are their new locations.
+
+By default, the function will plot a random specimen, with the new landmark positions. 
+Here we have specified which one to plot using the arguement `show.plot = 1`. 
+The second plot is a histogram of mean distances amonmg landmarks (corrected for centroid size).
+This can be used as a metric of how well the alignment "improves" the consistency of landmark positions. However, there are some expections to this interpretation. 
+If the alimgnment "stretches out" the sub-structure for some specimens, this may produce an increase in mean landmark distances that swamps any reduction caused by greater consistency among the landmarks of that structure. 
+Consider the histogram and mean changes, but use your best judgement.
 
 ## Procrustes alignment
 

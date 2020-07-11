@@ -128,7 +128,7 @@ orient <- function(A, topLM = NULL, bottomLM = NULL, leftLM = NULL, rightLM = NU
   if (verbose) {
     message(paste0(report.string, collapse = ""))
   }
-  message("\n",total.number.flipped,"specimens re-oriented.")
+  message(paste(total.number.flipped,"specimens re-oriented."))
   if (include.plot) {
     landmark.plot(shape.data[,,1], links = links)
   }
