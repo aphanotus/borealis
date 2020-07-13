@@ -136,11 +136,11 @@ ggGMMplot <- function (
   }
 
   # Load packages
-  require(geomorph)
-  require(ggplot2)
-  require(ggpubr)
-  require(grid)
-  require(ggplotify)
+  if (!require(geomorph)) { stop("Package missing. First, try running `install.packages('geomorph')`")}
+  if (!require(ggplot2)) { stop("Package missing. First, try running `install.packages('ggplot2')`")}
+  if (!require(ggpubr)) { stop("Package missing. First, try running `install.packages('ggpubr')`")}
+  if (!require(grid)) { stop("Package missing. First, try running `install.packages('grid')`")}
+  if (!require(ggplotify)) { stop("Package missing. First, try running `install.packages('ggplotify')`")}
 
   # Check that the requested axes are appropriate
   if (!(is.numeric(axis1) & (axis1 %% 1 == 0) & (axis1 > 0) & (axis1 < dim(x$x)[2])))  {

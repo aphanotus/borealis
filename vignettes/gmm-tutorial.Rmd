@@ -1,10 +1,10 @@
 ---
-title: "GMM workflow with borealis"
+title: "GMM tutorial with borealis"
 author: "Dave Angelini"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{GMM workflow with borealis}
+  %\VignetteIndexEntry{GMM tutorial with borealis}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -397,10 +397,10 @@ The final GPA plot looks good: The individual specimen landmarks in gray are ver
 ![](https://i.imgur.com/kK4ddq7.jpg)
 
 
-### Convert data into a geomorph data frame
+## The geomorph data frame
 
 The `geomorph` package ([Adams et al. 2020](https://cran.r-project.org/package=geomorph)) provides a powerful set of tools for GMM analysis. 
-Many functions require shape, size and metadata to be in a data structure called a `geomorph.data.frame`. 
+Many functions require shape, size and other metadata to be in a data structure called a `geomorph.data.frame`. 
 In order to retain data provenance and other elements of our data object, we can use the function `listed.gdf` to convert the `gpagen` and `metadata` elements of our list into a `geomorph.data.frame` while still keeping it within a list with the other elements.
 
 ```{r eval=FALSE, include=TRUE}
@@ -492,7 +492,9 @@ Several free markdown viewers and editors also exist, such as [Typora](https://t
 
 ![](https://i.imgur.com/pFYgjr3.png)
 
-## Ordination (PCA)
+## Ordination
+
+### Principal Component Analysis (PCA)
 
 To visualize variance in shapes, we perform a form of [ordination](https://en.wikipedia.org/wiki/Ordination_(statistics)) known as [Kendall's tangent space projection](https://books.google.com/books?id=5DLZ4lALRTEC&pg=PA98&lpg=PA98&dq=kendall%27s+tangent+space+projection&source=bl&ots=rUkeUb03p4&sig=ACfU3U1VPanhRZUBdXtZm_4_dw5RBUGBTA&hl=en&sa=X&ved=2ahUKEwj9qdLdzJnqAhUdknIEHXO2DV8Q6AEwEHoECAoQAQ#v=onepage&q=kendall's%20tangent%20space%20projection&f=false). Mathematically, this is similar to [principal component analysis (PCA)](https://en.wikipedia.org/wiki/Principal_component_analysis). 
 
@@ -750,6 +752,8 @@ Total      96 0.082049
 So far, all these models have factors that seem to be strong predictors of wing shape. But are the more complex models really better than a simple one? 
 In modeling, there is a danger of false confidence in highly complex models. A model with many factors can partition variance so finely, that it appears to fit the data very well. Every factor have have a very low p-value. 
 But is a more complex model a meaningful improvement over a simple one?
+
+### Model comparisons
 
 `geomorph` allows comparisons among models by simply passing multiple model objects to the `anova` function. (As an aside, this is not the same "anova" function that is used by some other R packages. When you load `geomorph` it will overwrite those others for the duration of your R session, or until you load a package with another function called `anova`.)
 
@@ -1165,5 +1169,4 @@ Confidence Intervals 0.9708
 ```
 
 These results support this modularity hypothesis. However, testing several variations on the hypothesis can be helpful to identify the bounds of a module. 
-
 

@@ -78,7 +78,9 @@ gg.scaling.plot <- function(
   ...
 )
 {
-  if (!require(ggplot2)) { stop("Requires package ggplot2")}
+  if (!require(ggplot2)) { stop("Package missing. First, try running `install.packages('ggplot2')`")}
+  if (!require(magrittr)) { stop("Package missing. First, try running `install.packages('magrittr')`")}
+  if (!require(dplyr)) { stop("Package missing. First, try running `install.packages('dplyr')`")}
 
   # Sub functions
   slope <- function(y,x) { lm(y~x)$coefficients[2] }
@@ -92,8 +94,6 @@ gg.scaling.plot <- function(
 
   df <- filter(df, !is.na(x) & !is.na(y))
 
-  require(magrittr)
-  require(dplyr)
   slope.info <- df %>%
     group_by(group) %>%
     summarise(slope=signif(slope(y, x),3),
@@ -134,6 +134,8 @@ gg.scaling.plot <- function(
     if (require("ggpubr")) {
       base.plot <- base.plot +
         stat_chull(alpha = hull.alpha, geom = "polygon", show.legend = FALSE)
+    } else {
+      warning("Package missing. First, try running `install.packages('ggpubr')`")
     }
   }
 
@@ -151,6 +153,8 @@ gg.scaling.plot <- function(
                                          ifelse(slope.p<0.05,paste0('\np=',slope.p),'') ) ),
                         hjust=0, size = 2.5, lineheight=0.825, alpha=0.7,
                         force = 1, max.iter = 10000)
+    } else {
+      warning("Package missing. First, try running `install.packages('ggrepel')`")
     }
   }
 

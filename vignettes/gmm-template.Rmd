@@ -1,0 +1,328 @@
+---
+title: "A template GMM analysis"
+author: "Dave Angelini"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{GMM tutorial with borealis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This document is a quick starting point for running an analysis of geometric morphometrics using the [`borealis` package](https://github.com/aphanotus/borealis). For a more detailed explanation of each step, please see the accompanying [tutorial](https://www.bugsinourbackyard.org/wp-content/uploads/2020/07/gmm-workflow.html).
+
+## Installing the `borealis` package
+
+```{r eval=FALSE, include=TRUE}
+# If you have a previous version, it's good to detach the old one first
+detach("package:borealis", unload = TRUE)
+
+devtools::install_github("aphanotus/borealis")
+```
+
+## Initializing
+
+```{r}
+# It can be helpful to clear the working environment
+rm(list = ls())
+
+# Load the package
+library(borealis)
+```
+
+## Convert raw landmark coordinates into the `tps` file format
+
+```{r eval=FALSE, include=TRUE}
+create.tps(
+  input.filename = "wings.csv",
+  output.filename = "wings.tps",
+  id.factors = c('species','caste','digitizer'),
+  include.scale = TRUE,
+  invert.scale = TRUE)
+```
+
+
+## Import `tps` data into R
+
+```{r eval=FALSE, include=TRUE}
+shapes <- read.tps("wings.tps")
+```
+
+Or use sample data available in the package
+
+```{r eval=FALSE, include=TRUE}
+data("Bombus.forewings", package = "borealis")
+shapes <- Bombus.forewings
+```
+
+### View the shape data
+
+```{r eval=FALSE, include=TRUE}
+fw.links <- matrix(c(1,2, 1,5, 5,4, 4,3, 3,2, 5,6, 6,7, 7,8, 8,9, 9,4, 3,11, 11,12, 11,10, 9,10, 10,14, 14,15, 15,16, 16,18, 18,20, 16,17, 17,8, 12,13, 13,19, 14,13, 18,19, 2,12),
+                   ncol = 2, byrow = TRUE)
+
+landmark.plot(shapes, links = fw.links)
+```
+
+## Reflect specimens
+
+```{r eval=FALSE, include=TRUE}
+shapes <- align.reflect(shapes, top.pt = 2, left.pt = 1, links = fw.links )
+```
+
+## Angular alignment
+
+```{r eval=FALSE, include=TRUE}
+shapes <- align.angle(shapes,
+                      art.pt = 14,
+                      angle.pts.1 = c(13,19),
+                      rot.pts = c(13,19),
+                      angle = -5,
+                      show.plot = 1,
+                      plots.vertical = FALSE,
+                      links = fw.links)
+```
+
+## Procrustes alignment
+
+### GPA with semilandmarks
+
+```{r eval=FALSE, include=TRUE}
+semiLMs <- matrix(
+  c(5,6,7,  14,15,16),
+  ncol = 3, byrow = TRUE
+)
+
+wing.gpa <- align.procrustes(shapes, curves = semiLMs)
+```
+
+### GPA with outlier detection
+
+```{r eval=FALSE, include=TRUE}
+wing.gpa <- align.procrustes(shapes, outlier.analysis = TRUE)
+```
+
+## The geomorph data frame
+
+```{r eval=FALSE, include=TRUE}
+wing.gpa <- listed.gdf(wing.gpa)
+```
+
+## Reporting data provenance
+
+```{r eval=FALSE, include=TRUE}
+write.provenance(wing.gpa, 
+                 output.filename = "~/Desktop/wing.shape.provenance.md",
+                 title = "Preliminary wing shape data provenance")
+```
+
+## Ordination
+
+### PCA
+
+```{r eval=FALSE, include=TRUE}
+wing.pca <- gm.prcomp(wing.gpa$gdf$coords)
+summary(wing.pca)
+
+ggGMMplot(wing.pca, group = wing.gpa$gdf$species, 
+          group.title = 'species', 
+          convex.hulls = TRUE, include.legend = TRUE)
+
+ggGMMplot(wing.pca, group = wing.gpa$gdf$species, 
+          group.title = 'species', convex.hulls = TRUE,
+          backtransform.examples = TRUE,
+          ref.shape = mshape(wing.gpa$gdf$coords),
+          shape.method = "TPS",
+          bt.shape.mag = 3,
+          bt.links = fw.links)
+```
+
+### Phylogenetic PCA
+
+```{r eval=FALSE, include=TRUE}
+# filter to just workers
+workers <- filter.shapes(wing.gpa, wing.gpa$gdf$caste=="W")
+
+# Find mean shape for each species
+coords.by.species <- coords.subset(workers$gdf$coords, group = workers$gdf$species)
+mshape.by.species <- lapply(coords.by.species, mshape)
+species.names <- names(mshape.by.species)
+mshape.by.species <- array(
+  data = unlist(mshape.by.species),
+  dim = c(dim(mshape.by.species[[1]])[1], 2, length(species.names)),
+  dimnames = list(NULL,NULL,species.names)
+)
+
+# Prep the phylogeny
+data("Bombus.tree", package = "borealis")
+btree <- Bombus.tree
+
+btree$tip.label <- btree$code.name
+
+# Check that species.names (our abbreviations in the shape data) are all present in the tree
+species.names %in% btree$tip.label
+
+library(phytools)
+btree <- keep.tip(btree, species.names)
+
+# Simple overlay of the phylogeny onto the PC-space
+pca.w.phylo <- gm.prcomp(mshape.by.species, phy = btree)
+plot(pca.w.phylo, phylo = TRUE, main = "PCA with phylogeny")
+
+# Phylogenetically-aligned PCA
+paca <- gm.prcomp(mshape.by.species, phy = btree, align.to.phy = TRUE)
+plot(paca, phylo = TRUE, main = "Phylogenetically-aligned PCA")
+```
+
+## Modeling
+
+```{r eval=FALSE, include=TRUE}
+# Set the number of iterations
+# Higher values increase accuracy as well as compute time
+i <- 1e3-1 
+
+# A simple allometric model of shape
+size.model <- procD.lm(coords ~ log(Csize), data = wing.gpa$gdf, iter = i) 
+anova(size.model)
+
+# A model with size and species
+species.model <- procD.lm(coords ~ log(Csize) + species, data=wing.gpa$gdf, iter=i) 
+anova(species.model) 
+
+# Model comparison
+anova(size.model, species.model)
+```
+
+### *Post hoc* pairwise comparisons
+
+```{r eval=FALSE, include=TRUE}
+# Filter to the 4 most common species, to ensure decent sample sizes
+common.sp <- filter.shapes(wing.gpa, wing.gpa$gdf$species %in% c("bimac","imp","tern","vag"))
+
+# Build null and full models
+common.size.model <- procD.lm(coords ~ log(Csize), data=common.sp$gdf, iter=i) 
+anova(common.size.model)
+common.sp.model <- procD.lm(coords ~ log(Csize) + species, data=common.sp$gdf, iter=i) 
+anova(common.sp.model)
+
+# Pairwise comparisons
+common.sp.pw <- pairwise(fit = common.sp.model, 
+                         fit.null = common.size.model,
+                         groups = common.sp$gdf$species)
+summary(common.sp.pw)
+```
+
+```
+Pairwise comparisons
+
+Groups: bimac imp tern vag 
+
+RRPP: 1000 permutations
+
+LS means:
+Vectors hidden (use show.vectors = TRUE to view)
+
+Pairwise distances between means, plus statistics
+                    d  UCL (95%)         Z Pr > d
+bimac:imp  0.02644867 0.01059573 10.404643  0.001
+bimac:tern 0.02364860 0.01426434  5.828100  0.001
+bimac:vag  0.02433783 0.01368575  6.638058  0.001
+imp:tern   0.03171487 0.01286605 10.051005  0.001
+imp:vag    0.04044576 0.01301518 13.426703  0.001
+tern:vag   0.02323543 0.01431901  5.549254  0.001
+```
+
+In this example, all of the species have significant differences from one another in their contribution to wing shape. Importantly, these effects are independent of the influence of wing size on shape. Because the model includes a size factor (`log(Csize)`), that influence is already accounted for. We've asked the `pairwise` function to make comparisons among species, using the argument `groups = common.sp$gdf$species`. 
+
+If we wanted to compare the influence of species, controlling for the influence of caste as well, we could do so this way.
+
+```{r eval=FALSE, include=TRUE}
+common.caste.model <- procD.lm(coords ~ log(Csize) + caste, data=common.sp$gdf, iter=i) 
+common.sp.caste.model <- procD.lm(coords ~ log(Csize) + species + caste, data=common.sp$gdf, iter=i)
+common.sp.caste.pw <- pairwise(fit = common.sp.caste.model, 
+                               fit.null = common.caste.model,
+                               groups = common.sp$gdf$species)
+summary(common.sp.caste.pw)
+```
+
+### Testing for common allometry
+
+```{r eval=FALSE, include=TRUE}
+species.unique.model <- procD.lm(coords ~ log(Csize) * species, data=wing.gpa$gdf, iter=i) 
+
+# geomorph's allometry visualization
+plotAllometry(fit = species.unique.model, size = log10(wing.gpa$gdf$Csize), 
+              col = as.factor(wing.gpa$gdf$species), xlab = "log10 centroid size")
+
+# the equivalant using borealis
+gg.scaling.plot(
+  x = log10(wing.gpa$gdf$Csize), y = wing.pca$x[,1],
+  group=wing.gpa$gdf$species, group.title = "species",
+  xlab = "log10 wing centroid size", ylab = "wing shape PC1",
+  include.legend = TRUE,
+  groups.trendlines = TRUE,
+  fixed.aspect = FALSE
+)
+
+# Compare the models
+anova(species.model, species.unique.model)
+```
+
+#### Allometry-corrected PCA
+
+```{r eval=FALSE, include=TRUE}
+allometry.corrected.pca <- gm.prcomp(size.model$residuals)
+ggGMMplot(allometry.corrected.pca, group = wing.gpa$gdf$species, 
+          group.title = 'species', convex.hulls = TRUE,
+          include.legend = TRUE)
+```
+
+### Phylogenetic ANOVA
+
+```{r eval=FALSE, include=TRUE}
+# Create a custom geomorph.data.frame with the relevant data
+species.gdf <- geomorph.data.frame(
+  coords = mshape.by.species,
+  Csize = c(by(workers$gdf$Csize, workers$gdf$species, mean)),
+  tree = btree
+)
+
+size.pgls <- procD.pgls(coords ~ log(Csize), phy = tree, data = species.gdf, iter = i)
+
+anova(size.pgls)
+```
+
+## Disparity comparisons
+
+```{r eval=FALSE, include=TRUE}
+morphol.disparity(coords ~ Csize, groups = ~ species, data = wing.gpa$gdf)
+
+# Optionally, filter to just some species
+x <- which(wing.gpa$gdf$species %in% c("bimac","imp","tern"))
+gdf <- geomorph.data.frame(
+  coords = wing.gpa$gdf$coords[,,x], 
+  Csize = wing.gpa$gdf$Csize[x], 
+  species = wing.gpa$gdf$species[x])
+morphol.disparity(coords ~ Csize, groups = ~ species, data = gdf)
+```
+
+## Modularity testing
+
+```{r eval=FALSE, include=TRUE}
+# Define a modularity hypothesis
+modularity.hypothesis1 <- rep("proximal",wing.gpa$landmark.number)
+modularity.hypothesis1[c(1,4,5,6:9,17)] <- "distal"
+
+# Test the hypothesis
+mt1 <- modularity.test(wing.gpa$gdf$coords, modularity.hypothesis1, CI=TRUE, iter=99 )
+summary(mt1) 
+```
+
+![](https://live.staticflickr.com/4275/34579265733_028bceeefd_w_d.jpg)
