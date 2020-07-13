@@ -1060,7 +1060,7 @@ Thankfully, methods have been developed to incorporate knowledge of species rela
 
 One limitation of this approach is that the model can only include one representative from each species (or each tip of the tree, at whatever taxonomic level you're working). 
 
-For this example, let's examone the influence of wing size on shape, in a phylogenetic context. We can use the same shape data we created earlier, `mshape.by.species`, which contains mean worker wing shapes for the 7 most heavily sampled species. The object `btree` also contains the phylogeny for those species. We can calculate mean centroid wing size from th larger dataset, then combine these elements into a new `geomorph.data.frame`.
+For this example, let's examine the influence of wing size on shape, in a phylogenetic context. We can use the same shape data we created earlier, `mshape.by.species`, which contains mean worker wing shapes for the 7 most heavily sampled species. The object `btree` also contains the phylogeny for those species. We can calculate mean centroid wing size from nth larger dataset, then combine these elements into a new `geomorph.data.frame`.
 
 ```{r eval=FALSE, include=TRUE}
 species.gdf <- geomorph.data.frame(
@@ -1081,7 +1081,7 @@ Residuals   5 0.049665 0.0099331 0.74683
 Total       6 0.066502                                      
 ```
 
-In this analysis size does not have a significant influence on wing shape. If you recall, when we looked at the output of `anova(size.model)`, size was a significant influnce on shape. This suggests that the influence of size on shape is phylogenetically dependent. 
+In this analysis size does not have a significant influence on wing shape. If you recall, when we looked at the output of `anova(size.model)`, size was a significant influence on shape. This suggests that the influence of size on shape is phylogenetically dependent. 
 
 You can build multiple models with `procD.pgls` and compare them in the same way as with `procD.lm`, by passing both models to the `anova` function. (With our example dataset here, we don't have another variable that makes sense to add to the model.)
 
