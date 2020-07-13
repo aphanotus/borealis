@@ -219,39 +219,6 @@ common.sp.pw <- pairwise(fit = common.sp.model,
 summary(common.sp.pw)
 ```
 
-```
-Pairwise comparisons
-
-Groups: bimac imp tern vag 
-
-RRPP: 1000 permutations
-
-LS means:
-Vectors hidden (use show.vectors = TRUE to view)
-
-Pairwise distances between means, plus statistics
-                    d  UCL (95%)         Z Pr > d
-bimac:imp  0.02644867 0.01059573 10.404643  0.001
-bimac:tern 0.02364860 0.01426434  5.828100  0.001
-bimac:vag  0.02433783 0.01368575  6.638058  0.001
-imp:tern   0.03171487 0.01286605 10.051005  0.001
-imp:vag    0.04044576 0.01301518 13.426703  0.001
-tern:vag   0.02323543 0.01431901  5.549254  0.001
-```
-
-In this example, all of the species have significant differences from one another in their contribution to wing shape. Importantly, these effects are independent of the influence of wing size on shape. Because the model includes a size factor (`log(Csize)`), that influence is already accounted for. We've asked the `pairwise` function to make comparisons among species, using the argument `groups = common.sp$gdf$species`. 
-
-If we wanted to compare the influence of species, controlling for the influence of caste as well, we could do so this way.
-
-```{r eval=FALSE, include=TRUE}
-common.caste.model <- procD.lm(coords ~ log(Csize) + caste, data=common.sp$gdf, iter=i) 
-common.sp.caste.model <- procD.lm(coords ~ log(Csize) + species + caste, data=common.sp$gdf, iter=i)
-common.sp.caste.pw <- pairwise(fit = common.sp.caste.model, 
-                               fit.null = common.caste.model,
-                               groups = common.sp$gdf$species)
-summary(common.sp.caste.pw)
-```
-
 ### Testing for common allometry
 
 ```{r eval=FALSE, include=TRUE}
