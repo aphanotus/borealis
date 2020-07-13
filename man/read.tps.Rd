@@ -20,7 +20,7 @@ read.tps(
   links = NULL,
   text.color = "darkred",
   line.color = "darkgray",
-  orient.specimens = FALSE,
+  reflect.specimens = FALSE,
   topLM = NULL,
   bottomLM = NULL,
   leftLM = NULL,
@@ -44,7 +44,7 @@ obtain landmark coordinates.
 \details{
 If \code{extract.id.metadata = TRUE} (the default) then the function will extracts
 metadata embedded in the ID lines based on the separator and metadata factor names
-described in the header of the \code{tps} file. If \code{orient.specimens = TRUE}
+described in the header of the \code{tps} file. If \code{reflect.specimens = TRUE}
 then the function will also re-orient specimens using \code{\link{orient}}.
 }
 \examples{
@@ -56,7 +56,7 @@ shapes <- read.tps("sample.tps", links = "chull")
 
 shapes <- read.tps("sample.tps",
                    links = "chull",
-                   orient.specimens = TRUE,
+                   reflect.specimens = TRUE,
                    verbose = FALSE)
 
 names(shapes)

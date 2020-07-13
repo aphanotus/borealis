@@ -5,7 +5,7 @@
 #'
 #' If \code{extract.id.metadata = TRUE} (the default) then the function will extracts
 #' metadata embedded in the ID lines based on the separator and metadata factor names
-#' described in the header of the \code{tps} file. If \code{orient.specimens = TRUE}
+#' described in the header of the \code{tps} file. If \code{reflect.specimens = TRUE}
 #' then the function will also re-orient specimens using \code{\link{orient}}.
 #'
 #' @source   Dave Angelini \email{david.r.angelini@@gmail.com} [aut, cre]
@@ -35,7 +35,7 @@
 #'
 #' shapes <- read.tps("sample.tps",
 #'                    links = "chull",
-#'                    orient.specimens = TRUE,
+#'                    reflect.specimens = TRUE,
 #'                    verbose = FALSE)
 #'
 #' names(shapes)
@@ -60,7 +60,7 @@ read.tps <- function (
   links = NULL,
   text.color = "darkred",
   line.color = "darkgray",
-  orient.specimens = FALSE,
+  reflect.specimens = FALSE,
   topLM = NULL,
   bottomLM = NULL,
   leftLM = NULL,
@@ -85,7 +85,7 @@ read.tps <- function (
 
   # Orient specimens
   orient.provenance <- NULL
-  if (orient.specimens) {
+  if (reflect.specimens) {
     x <- orient(coords,
                 topLM = topLM, bottomLM = bottomLM,
                 leftLM = leftLM, rightLM = rightLM,

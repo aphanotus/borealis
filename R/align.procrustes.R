@@ -32,16 +32,16 @@
 #' names(Bombus.forewings)
 #' cat(Bombus.forewings$provenance[[1]])
 #'
-#' fw.gpa <- procrustes.alignment(Bombus.forewings, show.plot.gpa = FALSE)
+#' fw.gpa <- align.procrustes(Bombus.forewings, show.plot.gpa = FALSE)
 #' plot(fw.gpa)
 #'
-#' fw.gpa <- procrustes.alignment(Bombus.forewings, outlier.analysis = TRUE)
+#' fw.gpa <- align.procrustes(Bombus.forewings, outlier.analysis = TRUE)
 #'
 #' names(fw.gpa$provenance)
 #' cat(fw.gpa$provenance$GPA)
 #'
 
-procrustes.alignment <- function (
+align.procrustes <- function (
   A,
   curves = NULL,
   show.plot.gpa = TRUE,
@@ -69,7 +69,7 @@ procrustes.alignment <- function (
         shape.data <- A$land
         output <- A[-grep("land",names(A))]
       } else {
-        stop("Error: Input is not a recognized type. (See the help entry: '?procrustes.alignment'.)")
+        stop("Error: Input is not a recognized type. (See the help entry: '?align.procrustes'.)")
       }
     }
     if (is.null(provenance) & any(grepl("provenance",names(A)))) { provenance <- A$provenance }
@@ -82,7 +82,7 @@ procrustes.alignment <- function (
         output$provenance <- provenance
       }
     } else {
-      stop("Error: Input is not a recognized type. (See the help entry: '?procrustes.alignment'.)")
+      stop("Error: Input is not a recognized type. (See the help entry: '?align.procrustes'.)")
     }
   }
 
@@ -90,7 +90,7 @@ procrustes.alignment <- function (
   GPA <- gpagen(shape.data, curves = curves, ...)
   new.prov.details <- paste0(
     paste0("## Generalized Procrustes analysis\n\n"),
-    paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::procrustes.alignment` on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n")
+    paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::align.procrustes` on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n")
   )
 
   if(!is.null(curves)) {
@@ -191,7 +191,7 @@ procrustes.alignment <- function (
   if (!is.null(provenance) & !any(grepl("provenance",names(output)))) {
     output$provenance <- provenance
   }
-  output$provenance$procrustes.alignment <- new.prov.details
+  output$provenance$align.procrustes <- new.prov.details
 
   if (any(grepl("specimen.number",names(output))) & (!is.null(names.of.outliers.removed))) {
     output$specimen.number <- dim(output$coords)[3]

@@ -267,27 +267,27 @@ data("Bombus.forewings", package = "borealis")
 shapes <- Bombus.forewings
 ```
 
-## Re-orient specimens
+## Reflect specimens
 
-Occasionally, a few specimens in a dataset are entered upside-down or "reflected" relative to the others. Or perhaps ImageJ recorded XY coordinates with the origin at the lower left, instead of the upper left. In these instances, it's helpful to go through all the specimens and "orient" them to have certain landmarks up or to the left.
+Occasionally, a few specimens in a dataset are entered upside-down or "reflected" relative to the others. Or perhaps ImageJ recorded XY coordinates with the origin at the lower left, instead of the upper left. In these instances, it's helpful to go through all the specimens and orient them to have certain landmarks up or to the left.
 
-The function `orient` will accomplish this, and update the data provenance to list all the reorientations that are made.
+The function `align.reflect` will accomplish this, and update the data provenance to list all the reflections that are made.
 
 ```{r eval=FALSE, include=TRUE}
-shapes <- orient(shapes, topLM = 2, leftLM = 1, links = fw.links )
+shapes <- align.reflect(shapes, topLM = 2, leftLM = 1, links = fw.links )
 ```
 
 ![](https://i.imgur.com/EZdEwYv.jpg)
 
-To save time, the re-orientation step can be included in the initial `read.tps` statement.
+To save time, the reflection step can be included in the initial `read.tps` statement.
 
 ```{r eval=FALSE, include=TRUE}
 shapes <- read.tps("wings.tps", 
-                   orient.specimens = TRUE,
+                   reflect.specimens = TRUE,
                    topLM = 2, leftLM = 1, links = fw.links)
 ```
 
-## Joint alignment
+## Angular alignment
 
 Joints can introduce nuisance variation in landmark-based geometric morphometrics. The `geomorph` function `fixed.angle` rotates a subset of landmarks such that they come to a consistent angle, that is defined by the user through reference to particular landmarks.  
 The `borealis` package wraps this function into another called `align.angle` which provides 
@@ -332,12 +332,12 @@ In this way, GPA makes shapes comparable and removes trivial issues introduced b
 GPA also retains size information as [centroid size](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4896994/#:~:text=Centroid%20size%20is%20the%20measure,y%20coordinates%20of%20all%20landmarks).). 
 
 ```{r eval=FALSE, include=TRUE}
-wing.gpa <- procrustes.alignment(shapes)
+wing.gpa <- align.procrustes(shapes)
 ```
 
 ![](https://i.imgur.com/AXVWXFV.jpg)
 
-What's happening behind the scenes is that `borealis` relies on the function `gpagen` in the R package `geomorph`. The output of the `procrustes.alignment` contains the same list elements produced by `geomorph::gpagen`. However it also retains any list elements from the input and add to the data provenance element.
+What's happening behind the scenes is that `borealis` relies on the function `gpagen` in the R package `geomorph`. The output of the `align.procrustes` contains the same list elements produced by `geomorph::gpagen`. However it also retains any list elements from the input and add to the data provenance element.
 
 ### GPA with semilandmarks
 
@@ -350,7 +350,7 @@ But their deviation from that axis is retained, in order to capture that shape v
 But sliding them during GPA helps optimize the alignment of specimens, and reduces variance in shapes that is not biologically meaningful ([Zelditch et al. 2012](https://www.sciencedirect.com/science/article/pii/B9780123869036000022)).
 
 In the bumblebee wing dataset, all landmarks are true landmarks, defined by the intersections of veins. 
-However, to provide an example, let's consider landmarks 6 and 15 to be sliding semilandmarks. To define the landmarks, `gpagen` and `procrustes.alignment` will take a matrix with 3 columns. Each row defines one semilandmark. The semilandmark itself is in the middle column. The flanking neighbors, which define the axis for sliding, are in columns 1 and 3. 
+However, to provide an example, let's consider landmarks 6 and 15 to be sliding semilandmarks. To define the landmarks, `gpagen` and `align.procrustes` will take a matrix with 3 columns. Each row defines one semilandmark. The semilandmark itself is in the middle column. The flanking neighbors, which define the axis for sliding, are in columns 1 and 3. 
 
 ```{r eval=FALSE, include=TRUE}
 semiLMs <- matrix(
@@ -366,10 +366,10 @@ semiLMs
 [2,]   14   15   16
 ```
 
-The matrix defining semilandmarks is then included in the call to `procrustes.alignment` with the `curves` argument.
+The matrix defining semilandmarks is then included in the call to `align.procrustes` with the `curves` argument.
 
 ```{r eval=FALSE, include=TRUE}
-wing.gpa <- procrustes.alignment(shapes, curves = semiLMs)
+wing.gpa <- align.procrustes(shapes, curves = semiLMs)
 ```
 
 The use of semilandmarks and their definitions is recorded in the data provenance.
@@ -379,11 +379,11 @@ The use of semilandmarks and their definitions is recorded in the data provenanc
 After initial GPA, it's typically important to remove any obvious outliers. These may be specimens where coordinate positions were recorded incorrectly. 
 There presences in the dataset can skew signals that are actually of interest. 
 
-`procrustes.alignment` facilitates interactive outlier detection and removal. Just include the argument `outlier.analysis = TRUE`. The function will run `geomorph::plotOutliers`, then display
+`align.procrustes` facilitates interactive outlier detection and removal. Just include the argument `outlier.analysis = TRUE`. The function will run `geomorph::plotOutliers`, then display
 warp grids for the most extreme shapes and prompt the user to remove some number of them. This can be done iteratively.
 
 ```{r eval=FALSE, include=TRUE}
-wing.gpa <- procrustes.alignment(shapes, outlier.analysis = TRUE)
+wing.gpa <- align.procrustes(shapes, outlier.analysis = TRUE)
 ```
 
 ![](https://i.imgur.com/VwKtdq3.jpg)
@@ -425,8 +425,8 @@ names(wing.gpa$provenance)
 ```
 
 ```
-[1] "create.tps"           "read.tps"             "reorientation"        "align.joint"         
-[5] "procrustes.alignment" "listed.gdf"          
+[1] "create.tps"           "read.tps"             "align.reflect"        "align.joint"         
+[5] "align.procrustes" "listed.gdf"          
 ```
 
 The data structure is actually described in the provenance report for this step.
