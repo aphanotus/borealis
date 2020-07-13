@@ -274,7 +274,7 @@ Occasionally, a few specimens in a dataset are entered upside-down or "reflected
 The function `align.reflect` will accomplish this, and update the data provenance to list all the reflections that are made.
 
 ```{r eval=FALSE, include=TRUE}
-shapes <- align.reflect(shapes, topLM = 2, leftLM = 1, links = fw.links )
+shapes <- align.reflect(shapes, top.pt = 2, left.pt = 1, links = fw.links )
 ```
 
 ![](https://i.imgur.com/EZdEwYv.jpg)
@@ -284,7 +284,7 @@ To save time, the reflection step can be included in the initial `read.tps` stat
 ```{r eval=FALSE, include=TRUE}
 shapes <- read.tps("wings.tps", 
                    reflect.specimens = TRUE,
-                   topLM = 2, leftLM = 1, links = fw.links)
+                   top.pt = 2, left.pt = 1, links = fw.links)
 ```
 
 ## Angular alignment
@@ -374,7 +374,7 @@ wing.gpa <- align.procrustes(shapes, curves = semiLMs)
 
 The use of semilandmarks and their definitions is recorded in the data provenance.
 
-### Outlier detection
+### GPA with outlier detection
 
 After initial GPA, it's typically important to remove any obvious outliers. These may be specimens where coordinate positions were recorded incorrectly. 
 There presences in the dataset can skew signals that are actually of interest. 
@@ -390,7 +390,12 @@ wing.gpa <- align.procrustes(shapes, outlier.analysis = TRUE)
 
 ![](https://i.imgur.com/DHZkZZ7.jpg)
 
-In this case, removing the two most extreme outliers looks prudent.
+In this case, removing the two most extreme outliers looks prudent. 
+
+The final GPA plot looks good: The individual specimen landmarks in gray are very close to the mean landmarks shown in black.
+
+![](https://i.imgur.com/kK4ddq7.jpg)
+
 
 ### Convert data into a geomorph data frame
 
@@ -1028,7 +1033,7 @@ The results here are inconclusive. The benefit in model fit gained by adding uni
 
 However, it's worth noting that this dataset is not ideal to answer this question. The sampling is very uneven across species. Ideally, equal numbers of species would be included and represent similar sizes.
 
-### Allometry-corrected PCA
+#### Allometry-corrected PCA
 
 Size often has a dominant effect on shape. Therefore it can be helpful to examine aspects of shape that remain when the effects of allometry are subtracted out.
 
@@ -1043,6 +1048,43 @@ ggGMMplot(allometry.corrected.pca, group = wing.gpa$gdf$species,
 
 After this correction, we see more separation of the groups in the center, which may reveal aspects of their shape that are different, independent of differences in their size.
 
+### Phylogenetic ANOVA
+
+One general feature of ANOVA is that is assumes the levels of each factor are independent of one another. 
+For example, if the `species` factor has 8 different values, the ANOVA assumes that there's connection between them. 
+However, we know that some species share ancestors more recently than others.
+Therefore, this "independence" isn't true. 
+Worse perhaps, is the fact that it will vary among the species, based on the topology of the tree.
+
+Thankfully, methods have been developed to incorporate knowledge of species relationships into an ANOVA. `geomoprh` includes a function, `procD.pgls`, which will build models similar to `procD.lm` while also accounting for phylogeny. What's happening under the hood here is that the tree is used in the permutations that generate the statistics. So while the output is similar with `procD.pgls` and `procD.lm`, the former is more reliable if you have a good phylogeny available.
+
+One limitation of this approach is that the model can only include one representative from each species (or each tip of the tree, at whatever taxonomic level you're working). 
+
+For this example, let's examone the influence of wing size on shape, in a phylogenetic context. We can use the same shape data we created earlier, `mshape.by.species`, which contains mean worker wing shapes for the 7 most heavily sampled species. The object `btree` also contains the phylogeny for those species. We can calculate mean centroid wing size from th larger dataset, then combine these elements into a new `geomorph.data.frame`.
+
+```{r eval=FALSE, include=TRUE}
+species.gdf <- geomorph.data.frame(
+  coords = mshape.by.species,
+  Csize = c(by(workers$gdf$Csize, workers$gdf$species, mean)),
+  tree = btree
+)
+
+size.pgls <- procD.pgls(coords ~ log(Csize), phy = tree, data = species.gdf, iter = i)
+
+anova(size.pgls)
+```
+
+```
+           Df       SS        MS     Rsq     F      Z Pr(>F)
+log(Csize)  1 0.016836 0.0168363 0.25317 1.695 1.1565  0.135
+Residuals   5 0.049665 0.0099331 0.74683                    
+Total       6 0.066502                                      
+```
+
+In this analysis size does not have a significant influence on wing shape. If you recall, when we looked at the output of `anova(size.model)`, size was a significant influnce on shape. This suggests that the influence of size on shape is phylogenetically dependent. 
+
+You can build multiple models with `procD.pgls` and compare them in the same way as with `procD.lm`, by passing both models to the `anova` function. (With our example dataset here, we don't have another variable that makes sense to add to the model.)
+
 ## Disparity comparisons
 
 Organisms vary. The extent of that variation (disparity) may also be different among different groups. Are these differences greater than expected by chance? That can be tested, as shown below.
@@ -1053,7 +1095,7 @@ morphol.disparity(coords ~ Csize, groups = ~ species, data = wing.gpa$gdf)
 
 The output is a table of pairwise mean Procrustes distances and p-values. 
 
-We don't have balanced sampling among species in this dataset, making this a rather inappropriate comparison. We could either increasing sampling for underrepresented species, or we could subset the data to only those species with good sample sizes.
+We don't have balanced sampling among species in this dataset, making this a rather inappropriate comparison. We could either increase sampling for the underrepresented species, or we could subset the data to only those species with good sample sizes.
 
 ```{r eval=FALSE, include=TRUE}
 c(with(wing.gpa$gdf, by(species,species, length)))
