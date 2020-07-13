@@ -2,7 +2,10 @@
 
 **Tools for Integrative Biology**
 
-[GMM workflow vignette](https://www.bugsinourbackyard.org/wp-content/uploads/2020/07/gmm-workflow.html)
+[GMM workflow template](https://www.bugsinourbackyard.org/wp-content/uploads/2020/07/gmm-template.html)
+
+[GMM tutorial](https://www.bugsinourbackyard.org/wp-content/uploads/2020/07/gmm-tutorial.html)
+
 
 ## Installation
 
@@ -20,10 +23,11 @@ library(borealis)
 One of the goals of this package is to provide a system to record [data provenance](https://en.wikipedia.org/wiki/Data_lineage#Data_provenance) in the objects
 produced through a morphometry workflow. Many of the major GMM step employ functions from the R package [geomorph](https://cran.r-project.org/web/packages/geomorph/index.html).
 
-For a [tutorial of a GMM workflow](https://www.bugsinourbackyard.org/wp-content/uploads/2020/07/gmm-workflow.html) using `borealis`, see the vignettes [online](https://www.bugsinourbackyard.org/wp-content/uploads/2020/07/gmm-workflow.html) or in Rstudio.
+For a [tutorial of a GMM workflow](https://www.bugsinourbackyard.org/wp-content/uploads/2020/07/gmm-tutorial.html) using `borealis`, see the vignettes [online](https://www.bugsinourbackyard.org/wp-content/uploads/2020/07/gmm-tutorial.html) or in Rstudio.
 
 ```r
-vignette("gmm-workflow", package="borealis")
+vignette("gmm-tutorial", package="borealis")
+vignette("gmm-template", package="borealis")
 ```
 
 #### Other functions 
@@ -31,6 +35,10 @@ vignette("gmm-workflow", package="borealis")
 ##### AIC.adonis
 
 A simple function to calculate generalized [AIC](https://en.wikipedia.org/wiki/Akaike_information_criterion) for models created by [`vegan::adonis`](https://www.rdocumentation.org/packages/vegan/versions/2.4-2/topics/adonis).
+
+##### centroid.scaled.distances
+
+Calculate the matrix of distances between landmarks in 2-D shape data, optionally scaled by centroid size.
 
 ##### pcvar
  
