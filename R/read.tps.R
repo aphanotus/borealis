@@ -61,10 +61,10 @@ read.tps <- function (
   text.color = "darkred",
   line.color = "darkgray",
   reflect.specimens = FALSE,
-  topLM = NULL,
-  bottomLM = NULL,
-  leftLM = NULL,
-  rightLM = NULL,
+  top.pt = NULL,
+  bottom.pt = NULL,
+  left.pt = NULL,
+  right.pt = NULL,
   verbose = TRUE
 )
 {
@@ -87,8 +87,8 @@ read.tps <- function (
   orient.provenance <- NULL
   if (reflect.specimens) {
     x <- orient(coords,
-                topLM = topLM, bottomLM = bottomLM,
-                leftLM = leftLM, rightLM = rightLM,
+                top.pt = top.pt, bottom.pt = bottom.pt,
+                left.pt = left.pt, right.pt = right.pt,
                 include.plot = FALSE,
                 verbose = verbose
     )

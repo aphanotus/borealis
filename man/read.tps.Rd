@@ -21,10 +21,10 @@ read.tps(
   text.color = "darkred",
   line.color = "darkgray",
   reflect.specimens = FALSE,
-  topLM = NULL,
-  bottomLM = NULL,
-  leftLM = NULL,
-  rightLM = NULL,
+  top.pt = NULL,
+  bottom.pt = NULL,
+  left.pt = NULL,
+  right.pt = NULL,
   verbose = TRUE
 )
 }
