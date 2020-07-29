@@ -6,7 +6,7 @@
 #' If \code{extract.id.metadata = TRUE} (the default) then the function will extracts
 #' metadata embedded in the ID lines based on the separator and metadata factor names
 #' described in the header of the \code{tps} file. If \code{reflect.specimens = TRUE}
-#' then the function will also re-orient specimens using \code{\link{orient}}.
+#' then the function will also re-orient specimens using \code{\link{align.reflect}}.
 #'
 #' @source   Dave Angelini \email{david.r.angelini@@gmail.com} [aut, cre]
 #'
@@ -61,10 +61,10 @@ read.tps <- function (
   text.color = "darkred",
   line.color = "darkgray",
   reflect.specimens = FALSE,
-  topLM = NULL,
-  bottomLM = NULL,
-  leftLM = NULL,
-  rightLM = NULL,
+  top.pt = NULL,
+  bottom.pt = NULL,
+  left.pt = NULL,
+  right.pt = NULL,
   verbose = TRUE
 )
 {
@@ -84,16 +84,16 @@ read.tps <- function (
   )
 
   # Orient specimens
-  orient.provenance <- NULL
+  reflect.provenance <- NULL
   if (reflect.specimens) {
-    x <- orient(coords,
-                topLM = topLM, bottomLM = bottomLM,
-                leftLM = leftLM, rightLM = rightLM,
+    x <- align.reflect(coords,
+                top.pt = top.pt, bottom.pt = bottom.pt,
+                left.pt = left.pt, right.pt = right.pt,
                 include.plot = FALSE,
                 verbose = verbose
     )
     coords <- x$coords
-    orient.provenance <- x$provenance$reorientation
+    reflect.provenance <- x$provenance$align.reflect
   }
 
   # Landmark plot
@@ -216,8 +216,8 @@ read.tps <- function (
   }
   output$provenance$read.tps <- s
 
-  if (!is.null(orient.provenance)) {
-    output$provenance$reorientation <- orient.provenance
+  if (!is.null(reflect.provenance)) {
+    output$provenance$align.reflect <- reflect.provenance
   }
 
   return(output)
