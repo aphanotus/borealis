@@ -27,7 +27,7 @@
 #' @export
 #'
 #' @examples
-#' shapes <- read.tps("sample.tps", show.landmark.plot = FALSE)
+#' shapes <- read.tps("sample.tps", show.plot = FALSE)
 #'
 #' shapes <- read.tps("sample.tps")
 #'
@@ -55,7 +55,7 @@ read.tps <- function (
   warnmsg = TRUE,
   extract.id.metadata = TRUE,
   keep.original.ids = FALSE,
-  show.landmark.plot = TRUE,
+  show.plot = TRUE,
   square = TRUE,
   links = NULL,
   text.color = "darkred",
@@ -95,7 +95,7 @@ read.tps <- function (
   }
 
   # Landmark plot
-  if (show.landmark.plot) {
+  if (show.plot) {
     landmark.plot(
       coords[,,1],
       square = square,

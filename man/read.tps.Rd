@@ -15,7 +15,7 @@ read.tps(
   warnmsg = TRUE,
   extract.id.metadata = TRUE,
   keep.original.ids = FALSE,
-  show.landmark.plot = TRUE,
+  show.plot = TRUE,
   square = TRUE,
   links = NULL,
   text.color = "darkred",
@@ -48,7 +48,7 @@ described in the header of the \code{tps} file. If \code{reflect.specimens = TRU
 then the function will also re-orient specimens using \code{\link{align.reflect}}.
 }
 \examples{
-shapes <- read.tps("sample.tps", show.landmark.plot = FALSE)
+shapes <- read.tps("sample.tps", show.plot = FALSE)
 
 shapes <- read.tps("sample.tps")
 
