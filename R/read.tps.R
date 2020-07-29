@@ -87,11 +87,9 @@ read.tps <- function (
   reflect.provenance <- NULL
   if (reflect.specimens) {
     x <- align.reflect(coords,
-                top.pt = top.pt, bottom.pt = bottom.pt,
-                left.pt = left.pt, right.pt = right.pt,
-                include.plot = FALSE,
-                verbose = verbose
-    )
+                       top.pt = top.pt, bottom.pt = bottom.pt,
+                       left.pt = left.pt, right.pt = right.pt,
+                       include.plot = FALSE, verbose = verbose )
     coords <- x$coords
     reflect.provenance <- x$provenance$align.reflect
   }
