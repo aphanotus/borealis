@@ -78,7 +78,7 @@ For landmark-based geometric morphometrics, the first step is to "digitize" coor
 ### Digitizing specimens in ImageJ
 
 Before you begin, think carefully about the landmarks you should use to represent the shape
-of the the structure you're interested in. Areas with a greater density of landmarks will
+of the structure you're interested in. Areas with a greater density of landmarks will
 capture more shape variation among specimens. However, you don't necessarily need dozens of
 landmarks. Important insights can still be obtained from a simple set of landmarks. 
 

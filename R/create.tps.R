@@ -167,7 +167,9 @@ create.tps <- function (
         warning(paste("Warning: Multiple columns (",paste(names(raw)[scale.col],collapse = ', '),") may contain scale information. Using only column '",names(raw)[scale.col[1]],"'.\n"))
         scale.col <- scale.col[1]
       } else {
-        if (!is.numeric(raw[,scale.col])) { warning('Warning: Some specimens may have non-numeric scale values.\n') }
+        if (!is.numeric(raw[,scale.col])) {
+          warning(paste0('Warning: Some specimens may have non-numeric scale values, e.g. ',raw[1,scale.col],'\n'))
+        }
       }
     }
   }
@@ -222,7 +224,9 @@ create.tps <- function (
     if (include.scale) {
       scale.value <- raw[x,scale.col]
       if (invert.scale) { scale.value <- 1 / as.numeric(scale.value) }
-      cat(paste0('SCALE=',scale.value,'\n'))
+      if (!is.na(scale.value) & is.numeric(scale.value)) {
+        cat(paste0('SCALE=',scale.value,'\n'))
+      }
     }
     cat('\n')
   } # End loop for each specimen

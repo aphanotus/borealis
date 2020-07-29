@@ -43,7 +43,7 @@ landmark.plot <- function (A, specimen.number = 1, square = TRUE, links = NULL, 
       if (any(grepl("land",names(A)))) {
         landmarks <- A$land[,,specimen.number]
       } else {
-        stop("Error: Input is not a recognized type. (See the help entry: '?landmark.plot'.)")
+        stop("Error: Input is not a recognized type. (See the help entry: `?landmark.plot`.)")
       }
     }
   } else {
@@ -53,7 +53,7 @@ landmark.plot <- function (A, specimen.number = 1, square = TRUE, links = NULL, 
       if ((class(A)[1] == "matrix") & (dim(A)[2] == 2)) {
         landmarks <- A
       } else {
-        stop("Error: Input is not a recognized type. (See the help entry: '?landmark.plot'.)")
+        stop("Error: Input is not a recognized type. (See the help entry: `?landmark.plot`.)")
       }
     }
   }
@@ -61,11 +61,14 @@ landmark.plot <- function (A, specimen.number = 1, square = TRUE, links = NULL, 
   # Fail safes
   if (length(dim(landmarks)) == 3) { landmarks <- landmarks[,,specimen.number] }
   if (dim(landmarks)[2] != 2) {
-    stop("Error: requires a matrix of X and Y corrdinates.")
+    stop("Error: Requires a matrix of X and Y corrdinates. (See the help entry: `?landmark.plot`.)")
+  }
+  if (any(is.na(landmarks))) {
+    stop("Error: Coordinate data contains NA values. (See the help entry: `?landmark.plot`.)")
   }
   if (!is.null(links)) {
     if (((max(links) > dim(landmarks)[1]) | (min(links) < 1)) & (links[[1]] != "chull"))  {
-      warning("Warning: Provided links are out of bounds. (See the help entry: '?landmark.plot'.)")
+      warning("Warning: Provided links are out of bounds. (See the help entry: `?landmark.plot`.)")
       links <- NULL
     }
   }
@@ -81,7 +84,7 @@ landmark.plot <- function (A, specimen.number = 1, square = TRUE, links = NULL, 
       }
     } else {
       if (dim(links)[2] != 2) {
-        warning("Warning: Links must be a matrix with two columns of landmark numbers")
+        warning("Warning: Links must be a matrix with two columns of landmark numbers. (See the help entry: `?landmark.plot`.)")
       } else {
         for (i in 1:(dim(links)[1])) {
           segments(landmarks[links[i,1],1], landmarks[links[i,1],2], landmarks[links[i,2],1], landmarks[links[i,2],2], col = line.color )
