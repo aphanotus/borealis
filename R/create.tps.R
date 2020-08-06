@@ -109,7 +109,7 @@ create.tps <- function (
 
   # Import the raw data
   if (ISxlsx) {
-    require('openxlsx')
+    if (!require('openxlsx')) { stop("To import from xlsx files, please run `install.packages('openxlsx')` ")}
     raw <- openxlsx::read.xlsx(input.filename)
   } else {
     raw <- read.csv(input.filename, stringsAsFactors=FALSE)
@@ -192,6 +192,7 @@ create.tps <- function (
     cat("# Input file: ",input.filename,"\n# \n")
     cat(paste0("# The dataset is ",landmark.number," x 2 x ",specimen.number," (*p* landmarks x *k* dimensions x *n* specimens)\n# \n"))
     if (length(id.factors)>0) {
+      id.factors <- tolower(id.factors)
       cat(paste0("# Metadata are encoded in specimen ID lines from the following factors:\n# - ",paste0(id.factors, collapse = '\n# - '),"\n# \n"))
       cat(paste0("# Metadata separator: ",separator,"\n# \n"))
     }
