@@ -2,12 +2,16 @@
 #'
 #' @source   Dave Angelini \email{david.r.angelini@@gmail.com} [aut, cre]
 #'
-#' @param A A 2D matrix of X and Y shape corrdinates,
-#'     a 3-dimensional array containing XY corrdinates for multiple specimens, or
+#' @param A A 2D matrix of X and Y shape coordinates,
+#'     a 3-dimensional array containing XY coordinates for multiple specimens, or
 #'     a list containing such as an array.
-#' @param specimen.number If an array is provided, the specimen number to plot.
+#' @param specimen.number If an array is provided, the specimen number(s) to plot.
 #' @param square A logical factor specifying whether the aspect ratio of the plot should be equal.
+#' @param landmark.numbers A logical factor specifying whether landmarks should appear as numbers (if TRUE) or as dots.
 #' @param links A matrix with two columns indicating landmarks to connect by lines. Or \code{"chull"} can be used to draw a convex hull.
+#' @param panels A vector with exactly two integers specifying the number of rows and columns of specimens to plot.
+#'     If the number of panels exceeds the number of values entered in \code{specimen.number} then the next consecutive specimens will be shown,
+#'     starting from specimen 1 if no value is provided for \code{specimen.number}.
 #' @param text.color Color names or value for the text.
 #' @param line.color Color names or value for lines.
 #'
@@ -32,34 +36,75 @@
 #' landmark.plot(plethodon$land, links = pletho.links )
 #'
 
-landmark.plot <- function (A, specimen.number = 1, square = TRUE, links = NULL, text.color = "darkred", line.color = "darkgray", ...)
+landmark.plot <- function (A,
+                           specimen.number = 1,
+                           square = TRUE,
+                           landmark.numbers = TRUE,
+                           links = NULL,
+                           panels = c(1,1),
+                           text.color = "darkred",
+                           line.color = "darkgray",
+                           ...)
 {
+  # Fail safes
+  if (length(panels)!=2) {
+    panels <- c(1,1)
+    warning("Warning: panels requires two integers values for the number of rows and columns to display. (See the help entry: `?landmark.plot`.)")
+  }
+  if (prod(panels) < length(specimen.number)) {
+    specimen.number <- specimen.number[1:prod(panels)]
+  } else {
+    if (prod(panels) > length(specimen.number)) {
+      x <- prod(panels) - length(specimen.number)
+      specimen.number <- c(specimen.number, (c(1:x) + specimen.number[length(specimen.number)]))
+    }
+  }
 
   # Vet the input
   if (class(A)[1] %in% c("gpagen","list")) {
     if (any(grepl("coords",names(A)))) {
+      specimen.number <- specimen.number[-which(specimen.number > dim(A$coords)[3])]
       landmarks <- A$coords[,,specimen.number]
+      if (length(specimen.number)>1) { x <- dimnames(A$coords[,,specimen.number])[[3]] }
+      else { x <- dimnames(A$coords)[[3]][specimen.number] }
+      if (is.null(x)) { main.title <- specimen.number }
+      else { main.title <- x }
     } else {
       if (any(grepl("land",names(A)))) {
+        specimen.number <- specimen.number[-which(specimen.number > dim(A$land)[3])]
         landmarks <- A$land[,,specimen.number]
+        if (length(specimen.number)>1) { x <- dimnames(A$land[,,specimen.number])[[3]] }
+        else { x <- dimnames(A$land)[[3]][specimen.number] }
+        if (is.null(x)) { main.title <- specimen.number }
+        else { main.title <- x }
       } else {
         stop("Error: Input is not a recognized type. (See the help entry: `?landmark.plot`.)")
       }
     }
   } else {
     if ((class(A)[1] == "array") & (length(dim(A)) == 3)) {
+      specimen.number <- specimen.number[-which(specimen.number > dim(A)[3])]
       landmarks <- A[,,specimen.number]
+      if (length(specimen.number)>1) { x <- dimnames(A[,,specimen.number])[[3]] }
+      else { x <- dimnames(A)[[3]][specimen.number] }
+      if (is.null(x)) { main.title <- specimen.number }
+      else { main.title <- x }
     } else {
       if ((class(A)[1] == "matrix") & (dim(A)[2] == 2)) {
         landmarks <- A
+        main.title <- specimen.number
       } else {
         stop("Error: Input is not a recognized type. (See the help entry: `?landmark.plot`.)")
       }
     }
   }
 
-  # Fail safes
-  if (length(dim(landmarks)) == 3) { landmarks <- landmarks[,,specimen.number] }
+  # Make sure even if there's just one specimen, landmarks is an array
+  if ((class(landmarks)[1] == "matrix")) {
+    landmarks <- array(rep(unlist(landmarks),2), dim = c(dim(landmarks),2))
+  }
+
+  # More fail safes
   if (dim(landmarks)[2] != 2) {
     stop("Error: Requires a matrix of X and Y corrdinates. (See the help entry: `?landmark.plot`.)")
   }
@@ -73,28 +118,42 @@ landmark.plot <- function (A, specimen.number = 1, square = TRUE, links = NULL, 
     }
   }
 
-  # Plot
-  plot(landmarks, type='n', asp = square, xlab = 'x', ylab = 'y', ...)
-  if (!is.null(links)) {
-    if (links[[1]] == "chull") {
-      links <- grDevices::chull(landmarks)
-      links <- matrix(c(links,links[-1],links[1]), ncol=2, byrow = FALSE)
-      for (i in 1:(dim(links)[1])) {
-        segments(landmarks[links[i,1],1], landmarks[links[i,1],2], landmarks[links[i,2],1], landmarks[links[i,2],2], col = line.color )
-      }
-    } else {
-      if (dim(links)[2] != 2) {
-        warning("Warning: Links must be a matrix with two columns of landmark numbers. (See the help entry: `?landmark.plot`.)")
+  # Setup panels
+  par(mfrow=panels)
+
+  # Main loop
+  for (i in 1:length(specimen.number)) {
+    # Plot
+    plot(landmarks[,,i], type='n', asp = square, xlab = 'x', ylab = 'y', main = main.title[i], ...)
+    if (!is.null(links)) {
+      if (links[[1]] == "chull") {
+        links <- grDevices::chull(landmarks[,,i])
+        links <- matrix(c(links,links[-1],links[1]), ncol=2, byrow = FALSE)
+        for (j in 1:(dim(links)[1])) {
+          segments(landmarks[links[j,1],1,i], landmarks[links[j,1],2,i], landmarks[links[j,2],1,i], landmarks[links[j,2],2,i], col = line.color )
+        }
       } else {
-        for (i in 1:(dim(links)[1])) {
-          segments(landmarks[links[i,1],1], landmarks[links[i,1],2], landmarks[links[i,2],1], landmarks[links[i,2],2], col = line.color )
+        if (dim(links)[2] != 2) {
+          warning("Warning: Links must be a matrix with two columns of landmark numbers. (See the help entry: `?landmark.plot`.)")
+        } else {
+          for (j in 1:(dim(links)[1])) {
+            segments(landmarks[links[j,1],1,i], landmarks[links[j,1],2,i], landmarks[links[j,2],1,i], landmarks[links[j,2],2,i], col = line.color )
+          }
         }
       }
-    }
-  } # End  if (!is.null(links))
+    } # End  if (!is.null(links))
 
-  # Landmark labels
-  for (i in 1:(dim(landmarks)[1])) { text(landmarks[i,1], landmarks[i,2], labels=i, col = text.color) }
+    # Landmark labels
+    if (landmark.numbers) {
+      for (j in 1:(dim(landmarks)[1])) { text(landmarks[j,1,i], landmarks[j,2,i], labels=j, col = text.color) }
+    } else {
+      points(landmarks[,,i])
+    }
+
+  } # End for loop
+
+  # Return plot to 1x1
+  par(mfrow=c(1,1))
 
 } # End of function
 

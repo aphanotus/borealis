@@ -205,8 +205,18 @@
 #' # Load the dataset
 #' data("mantis", package = "borealis")
 #'
-#' names(mantis)
+#' # Define connecting lines
+#' {
+#'   x <- 1:16
+#'   mantis.lines <- matrix(c(x[-length(x)],x[-1]), ncol = 2)
+#'   mantis.lines[10,] <- c(10,1)
+#'   mantis.lines[15,] <- c(15,6)
+#'   mantis.lines <- rbind(mantis.lines,
+#'                         matrix(c(5,11, 6,11, 13,16, 14,16), ncol = 2, byrow = TRUE))
+#' }
+#'
 #' landmark.plot(mantis)
+#' names(mantis)
 #'
 "mantis"
 

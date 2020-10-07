@@ -11,22 +11,30 @@ landmark.plot(
   A,
   specimen.number = 1,
   square = TRUE,
+  landmark.numbers = TRUE,
   links = NULL,
+  panels = c(1, 1),
   text.color = "darkred",
   line.color = "darkgray",
   ...
 )
 }
 \arguments{
-\item{A}{A 2D matrix of X and Y shape corrdinates,
-a 3-dimensional array containing XY corrdinates for multiple specimens, or
+\item{A}{A 2D matrix of X and Y shape coordinates,
+a 3-dimensional array containing XY coordinates for multiple specimens, or
 a list containing such as an array.}
 
-\item{specimen.number}{If an array is provided, the specimen number to plot.}
+\item{specimen.number}{If an array is provided, the specimen number(s) to plot.}
 
 \item{square}{A logical factor specifying whether the aspect ratio of the plot should be equal.}
 
+\item{landmark.numbers}{A logical factor specifying whether landmarks should appear as numbers (if TRUE) or as dots.}
+
 \item{links}{A matrix with two columns indicating landmarks to connect by lines. Or \code{"chull"} can be used to draw a convex hull.}
+
+\item{panels}{A vector with exactly two integers specifying the number of rows and columns of specimens to plot.
+If the number of panels exceeds the number of values entered in \code{specimen.number} then the next consecutive specimens will be shown,
+starting from specimen 1 if no value is provided for \code{specimen.number}.}
 
 \item{text.color}{Color names or value for the text.}
 
