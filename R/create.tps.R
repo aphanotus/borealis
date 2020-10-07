@@ -217,9 +217,9 @@ create.tps <- function (
     } # End nested loop for each landmark
 
     x <- landmark.number*(i-1) + 1
-    id.text <- paste0(sub('\\.','_',trimws(raw[x,ID.col])))
+    id.text <- paste0(sub('\\.','_',trimws(as.character(raw[x,ID.col]))))
     if (length(id.factors)>0) {
-      id.text <- paste0(id.text,separator,paste(trimws(raw[x,id.factors]),collapse = separator) )
+      id.text <- paste0(id.text,separator,paste(trimws(as.character(raw[x,id.factors])),collapse = separator) )
     }
     cat(paste0('ID=',id.text,'\n'))
     if (include.scale) {
