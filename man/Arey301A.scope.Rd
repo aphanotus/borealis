@@ -14,7 +14,7 @@ Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
 Arey301A.scope
 }
 \description{
-Ideally, micrpgraphs are taken with a ruler or other scale in the image.
+Ideally, micrographs are taken with a ruler or other scale in the image.
     However, if that's not the case, metric distances can be infered from pixel distances
     based on this conversion table. These data are based on measurements made
     from a high-quality stage micrometer on the VWR VistaVision dissecting microscope
