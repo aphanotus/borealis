@@ -17,6 +17,8 @@ ggGMMplot(
   convex.hulls = FALSE,
   label.groups = TRUE,
   include.legend = FALSE,
+  xlim = NULL,
+  ylim = NULL,
   color = NULL,
   pt.size = 1.5,
   pt.alpha = 0.85,
@@ -58,6 +60,10 @@ ggGMMplot(
 \item{label.groups}{A logical factor specifying whether to label groups.}
 
 \item{include.legend}{A logical factor specifying whether to include a legend.}
+
+\item{xlim}{Set x scale limits}
+
+\item{ylim}{Set y scale limits}
 
 \item{color}{The color of points and hulls in each group.}
 

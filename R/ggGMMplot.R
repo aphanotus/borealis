@@ -21,6 +21,8 @@
 #' @param convex.hulls A logical factor specifying whether to plot convex hulls around groups.
 #' @param label.groups A logical factor specifying whether to label groups.
 #' @param include.legend A logical factor specifying whether to include a legend.
+#' @param xlim Set x scale limits
+#' @param ylim Set y scale limits
 #' @param color The color of points and hulls in each group.
 #' @param pt.size The size of individual points.
 #' @param pt.alpha The opacity of individual points.
@@ -101,6 +103,8 @@ ggGMMplot <- function (
   convex.hulls = FALSE,
   label.groups = TRUE,
   include.legend = FALSE,
+  xlim = NULL,
+  ylim = NULL,
   color = NULL,
   pt.size = 1.5,
   pt.alpha = 0.85,
@@ -192,6 +196,10 @@ ggGMMplot <- function (
   if (!is.null(main.title)) {
     base.plot <- base.plot + ggtitle(main.title)
   }
+
+  # Set scale limits
+  if (!is.null(xlim)) { base.plot <- base.plot + xlim(xlim) }
+  if (!is.null(ylim)) { base.plot <- base.plot + ylim(ylim) }
 
   # Add convex hulls
   if (convex.hulls) {
