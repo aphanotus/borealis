@@ -156,7 +156,7 @@
 
 #' @title Pixel-to-metric distance conversions for the dissecting scope in Arey 301A
 #'
-#' @description Ideally, micrpgraphs are taken with a ruler or other scale in the image.
+#' @description Ideally, micrographs are taken with a ruler or other scale in the image.
 #'     However, if that's not the case, metric distances can be infered from pixel distances
 #'     based on this conversion table. These data are based on measurements made
 #'     from a high-quality stage micrometer on the VWR VistaVision dissecting microscope
@@ -184,4 +184,29 @@
 #' Arey301A.scope
 #'
 "Arey301A.scope"
+
+#' @title Simulated dataset of Mantis forelimb shapes
+#'
+#' @description A simulated dataset of with 16 landmarks on the femur and tibia for 100 Mantis specimens.
+#'     Two species with male and female shape differences are included.
+#'
+#' @details
+#' \describe{
+#'   \item{\code{coords}}{An array of XY coordinates for the shape of multiple specimens (16 landmarks by 2 (XY) by 100 specimens).}
+#'   \item{\code{landmark.number}}{The number of landmarks in the shape data.}
+#'   \item{\code{specimen.number}}{The number of specimens in the shape data.}
+#'   \item{\code{metadata}}{A data frame of simulated metadata.}
+#'   \item{\code{provenance}}{Data provenance.}
+#' }
+#'
+#' @source   Dave Angelini \email{david.r.angelini@@gmail.com} [aut, cre]
+#'
+#' @examples
+#' # Load the dataset
+#' data("mantis", package = "borealis")
+#'
+#' names(mantis)
+#' landmark.plot(mantis)
+#'
+"mantis"
 
