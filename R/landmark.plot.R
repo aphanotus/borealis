@@ -83,7 +83,7 @@ landmark.plot <- function (A,
   # Vet the shape data
   if (class(A)[1] %in% c("gpagen","list")) {
     if (any(grepl("coords",names(A)))) {
-      specimen.number <- specimen.number[which(specimen.number < dim(A$coords)[3])]
+      specimen.number <- specimen.number[which(specimen.number <= dim(A$coords)[3])]
       landmarks <- A$coords[,,specimen.number]
       if (length(specimen.number)>1) { x <- dimnames(A$coords[,,specimen.number])[[3]] }
       else { x <- dimnames(A$coords)[[3]][specimen.number] }
@@ -91,7 +91,7 @@ landmark.plot <- function (A,
       else { main.title <- x }
     } else {
       if (any(grepl("land",names(A)))) {
-        specimen.number <- specimen.number[which(specimen.number < dim(A$land)[3])]
+        specimen.number <- specimen.number[which(specimen.number <= dim(A$land)[3])]
         landmarks <- A$land[,,specimen.number]
         if (length(specimen.number)>1) { x <- dimnames(A$land[,,specimen.number])[[3]] }
         else { x <- dimnames(A$land)[[3]][specimen.number] }
@@ -103,7 +103,7 @@ landmark.plot <- function (A,
     }
   } else {
     if ((class(A)[1] == "array") & (length(dim(A)) == 3)) {
-      specimen.number <- specimen.number[which(specimen.number < dim(A)[3])]
+      specimen.number <- specimen.number[which(specimen.number <= dim(A)[3])]
       landmarks <- A[,,specimen.number]
       if (length(specimen.number)>1) { x <- dimnames(A[,,specimen.number])[[3]] }
       else { x <- dimnames(A)[[3]][specimen.number] }
