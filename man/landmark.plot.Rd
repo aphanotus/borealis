@@ -9,7 +9,7 @@ Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
 \usage{
 landmark.plot(
   A,
-  specimen.number = 1,
+  specimen.number = NULL,
   square = TRUE,
   landmark.numbers = TRUE,
   links = NULL,
@@ -62,6 +62,7 @@ pletho.links <- matrix(c(4,5,5,6,6,7,7,8,8,9,9,10,10,11,2,4,12,2,3,5),
 landmark.plot(plethodon$land, links = pletho.links )
 
 # Multiple panels
+landmark.plot(plethodon$land, links = pletho.links, specimen.number = 1:4 )
 landmark.plot(plethodon$land, links = pletho.links, panels = c(3,2) )
 
 }

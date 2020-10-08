@@ -36,11 +36,12 @@
 #' landmark.plot(plethodon$land, links = pletho.links )
 #'
 #' # Multiple panels
+#' landmark.plot(plethodon$land, links = pletho.links, specimen.number = 1:4 )
 #' landmark.plot(plethodon$land, links = pletho.links, panels = c(3,2) )
 #'
 
 landmark.plot <- function (A,
-                           specimen.number = 1,
+                           specimen.number = NULL,
                            square = TRUE,
                            landmark.numbers = TRUE,
                            links = NULL,
@@ -49,22 +50,37 @@ landmark.plot <- function (A,
                            line.color = "darkgray",
                            ...)
 {
+  no.specimen.numbers.given <- TRUE
+  if (is.null(specimen.number)) { specimen.number <- 1 }
+  else { no.specimen.numbers.given <- FALSE }
 
   # Fail safes
+  if (!is.numeric(specimen.number)) {
+    stop("Error: specimen.number must be a vector of whole numbers. (See the help entry: `?landmark.plot`.)")
+    if (specimen.number%%1!=0) {
+      stop("Error: specimen.number must be a vector of whole numbers. (See the help entry: `?landmark.plot`.)")
+    }
+  }
+
+  # Check panels input
   if (length(panels)!=2) {
     panels <- c(1,1)
     warning("Warning: panels requires two integers values for the number of rows and columns to display. (See the help entry: `?landmark.plot`.)")
   }
-  if (prod(panels) < length(specimen.number)) {
-    specimen.number <- specimen.number[1:prod(panels)]
+
+  # Does specimen.number length match panels?
+  if (no.specimen.numbers.given & (prod(panels) > length(specimen.number))) {
+    x <- prod(panels) - length(specimen.number)
+    specimen.number <- c(specimen.number, (c(1:x) + specimen.number[length(specimen.number)]))
   } else {
-    if (prod(panels) > length(specimen.number)) {
-      x <- prod(panels) - length(specimen.number)
-      specimen.number <- c(specimen.number, (c(1:x) + specimen.number[length(specimen.number)]))
+    if (prod(panels) < length(specimen.number)) {
+      x <- ceiling(sqrt(length(specimen.number)))
+      panels <- c(x,x)
+      if (prod(panels) - length(specimen.number) >= x) { panels[2] <- panels[2]-1 }
     }
   }
 
-  # Vet the input
+  # Vet the shape data
   if (class(A)[1] %in% c("gpagen","list")) {
     if (any(grepl("coords",names(A)))) {
       specimen.number <- specimen.number[which(specimen.number < dim(A$coords)[3])]
