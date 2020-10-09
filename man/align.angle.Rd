@@ -15,15 +15,14 @@ align.angle(
   rot.pts = NULL,
   angle = 0,
   degrees = TRUE,
+  reference.specimen = "all",
   show.plot = TRUE,
-  plots.vertical = TRUE,
   compare.variance = TRUE,
-  provenance = NULL,
   ...
 )
 }
 \arguments{
-\item{A}{A 3-dimensional array containing XY shape corrdinates for multiple specimens, or a list containing such as an array and data provenance.}
+\item{A}{A 3-dimensional array containing XY shape coordinates for multiple specimens, or a list containing such as an array and data provenance.}
 
 \item{art.pt}{A number specifying which landmark is the articulation point between the two landmark subsets.}
 
@@ -44,53 +43,55 @@ clear if this is the case, upon plotting results.}
 
 \item{degrees}{A logical value specifying whether the additional rotation angle is expressed in degrees or radians (degrees is the default).}
 
-\item{show.plot}{A logical factor or index number specifying whether to display a plot showing the alginment of one specimen relative to the reference.
-If \code{show.plot = TRUE} (the default), then a specimen is plotted at random.
-Alternatively, a specimen can be indicated as in \code{show.plot = 1}.
-To suppress the visuakl output, set If \code{show.plot = FALSE}.}
+\item{reference.specimen}{A number or numeric vector specifying which specimens should be taken as the reference for the angle
+defined by \code{angle.pts.1}, \code{art.pt}, and \code{angle.pts.2} or provided in \code{angle}.
+The default is \code{"all"}, which uses the mean angle of all specimens.}
 
-\item{plots.vertical}{Two plots will be generated if \code{show.plot} and \code{compare.variance} are both
-\code{TRUE}. This logical value specifyies whether to arrange them vertically (default) or (if \code{plots.vertical = FALSE}) horizontally.}
-
-\item{compare.variance}{A logical value specifying whether to compare the distibutions of variance in landmark distances,
+\item{show.plot}{A logical argument specifying whether to display a plot
+comparing the distributions of variance in landmark distances,
 corrected for centroid size, before and after alignment to the fixed angle.}
-
-\item{provenance}{An object that should be retained for data provenance.}
 }
 \value{
 Returns a list with \code{coords}, \code{provenance}, and
    any other potential list elements from the input.
 }
 \description{
-A wrapper for \code{\link[geomorph]{fixed.angle}}, which rotates a subset of landmarks so that the articulation angle between subsets is constant. (See \code{?geomorph::fixed.angle})
-This function adds data provenance and optional vizualization.
-}
-\details{
 Joints can introduce nuisance variation in landmark-based geometric morphometrics.
-This function rotates a subset of landmarks about a pivot point.
+This function rotates a subset of landmarks about a pivot point, such that all specimens
+will align to a designated reference specimen(s).
 This step should be run before Procrustes alignment, and it is robust to differences
 in the relative position, orientation and size of specimens.
-
+}
+\details{
 The input array should contain landmark coordinates with \emph{p}, 2, and \emph{n} dimensions,
 where \emph{n} is the number of specimens and \emph{p} is the number of landmarks).
 Dimension 2 must have two columns that contain X and Y locations of the landmark.
 The function will pass extra arguments to \code{\link[borealis]{landmark.plot}},
 including \code{links}. Plotting the landmarks can be useful to ensure that the reference
-specimen and pivot point result in sensible alignments for the other specimens.
-If the input is a \code{list}, all elements will be retained in the output.
-If a \code{provenance} element is present, then it will be expanded to include an entry
-for this processing step.
+specimen and pivot point result in sensible alignments.
 }
 \examples{
-data("plethodon", package = "geomorph")
+data("mantis", package = "borealis")
 
-pletho <- align.angle(
-  plethodon,
-  art.pt = 1,       # These three variables:
-  angle.pts.1 = 6,  #   art.pt, angle.pts.1 & angle.pts.2
-  angle.pts.2 = 5,  #   define the angle to align
-  rot.pts = c(2:5), # rot.pts defines the points to actually rotate
-  links = "chull")  # Arguments to landmark.plot are accepted too.
+# Define mantis.lines
+{
+  x <- 1:16
+  mantis.lines <- matrix(c(x[-length(x)],x[-1]), ncol = 2)
+  mantis.lines[10,] <- c(10,1)
+  mantis.lines[15,] <- c(15,6)
+  mantis.lines <- rbind(mantis.lines,
+                        matrix(c(5,11, 6,11, 13,16, 14,16), ncol = 2, byrow = TRUE))
+}
+
+x <- align.angle(mantis,
+                 art.pt = 11,       # These three variables:
+                 angle.pts.1 = 1:10,  #   art.pt, angle.pts.1 & angle.pts.2
+                 angle.pts.2 = 12:15,  #   define the angle to align
+                 rot.pts = 12:16, # rot.pts defines the points to actually rotate
+                 links = mantis.lines )
+
+landmark.plot(mantis, specimen.number = 1:4, links = mantis.lines)
+landmark.plot(x, specimen.number = 1:4, links = mantis.lines)
 
 }
 \references{
