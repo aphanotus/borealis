@@ -10,9 +10,9 @@ Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
 subsetGMM(A, specimens = NULL, landmarks = NULL)
 }
 \arguments{
-\item{A}{A \code{geomorph.data.frame} or a data structure such as those produced by the \code{borealis} package.
+\item{A}{A \code{geomorph.data.frame} or a data structure produced by functions in the \code{borealis} package.
 A 3-dimensional array of XY coordinates for multiple specimens must reside in a list
-element called \code{coords} or \code{gdf$coords}. Associated metadata may exist in
+element called \code{coords}, \code{gpagen$coords} or \code{gdf$coords}. Associated metadata may exist in
 a matrix element called \code{metadata} or as vectors with a length equal to the number
 of specimens.}
 
