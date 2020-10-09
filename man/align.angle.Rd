@@ -16,9 +16,7 @@ align.angle(
   angle = 0,
   degrees = TRUE,
   reference.specimen = "all",
-  show.plot = TRUE,
-  compare.variance = TRUE,
-  ...
+  show.plot = TRUE
 )
 }
 \arguments{
@@ -83,14 +81,26 @@ data("mantis", package = "borealis")
                         matrix(c(5,11, 6,11, 13,16, 14,16), ncol = 2, byrow = TRUE))
 }
 
+# angle.pts.1, art.pt (the vertex), and angle.pts.2 define the angle to enforce
+# rot.pts defines the landmarks to actually rotate
 x <- align.angle(mantis,
-                 art.pt = 11,       # These three variables:
-                 angle.pts.1 = 1:10,  #   art.pt, angle.pts.1 & angle.pts.2
-                 angle.pts.2 = 12:15,  #   define the angle to align
-                 rot.pts = 12:16, # rot.pts defines the points to actually rotate
-                 links = mantis.lines )
+                 art.pt = 11,
+                 angle.pts.1 = 1:10,
+                 angle.pts.2 = 12:15,
+                 rot.pts = 12:16)
 
 landmark.plot(mantis, specimen.number = 1:4, links = mantis.lines)
+landmark.plot(x, specimen.number = 1:4, links = mantis.lines)
+
+# By default the average of all specimens defines the reference angle
+# However reference.specimen can specify one of more specimens to use.
+x <- align.angle(mantis,
+                 art.pt = 11,
+                 angle.pts.1 = 1:10,
+                 angle.pts.2 = 12:15,
+                 rot.pts = 12:16,
+                 reference.specimen = c(1,7) )
+
 landmark.plot(x, specimen.number = 1:4, links = mantis.lines)
 
 }
