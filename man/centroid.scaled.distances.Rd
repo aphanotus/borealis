@@ -10,7 +10,7 @@ Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
 centroid.scaled.distances(m, scale = TRUE, symmetrical = FALSE)
 }
 \arguments{
-\item{m}{A matrix containing XY shape corrdinates for \emph{p} landmarks}
+\item{m}{A matrix containing XY shape coordinates for \emph{p} landmarks}
 
 \item{scale}{A logical argument for whether to scale the distances by centroid size}
 
@@ -27,13 +27,15 @@ Calculate the matrix of distances between shape coordinates, scaled by centroid 
 \examples{
 x <- matrix(c(9,49, 24,54, 51,28, 81,54, 81,23, 86,32), ncol = 2, byrow = TRUE)
 
+centroid.scaled.distances(x)
+centroid.scaled.distances(x, symmetrical = TRUE)
+centroid.scaled.distances(x, symmetrical = TRUE, scale = FALSE)
+
+# cross validation
 df <- data.frame(matrix(nrow = dim(x)[1], ncol = dim(x)[1]))
 for (i in (1:dim(x)[1])) {
   df[i,] <- unlist(apply(x, 1, distance, XY=x[i,]))
 }
 df
-
-centroid.scaled.distances(x, symmetrical = TRUE)
-centroid.scaled.distances(x, symmetrical = TRUE, scale = FALSE)
 
 }
