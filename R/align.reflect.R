@@ -161,7 +161,7 @@ align.reflect <- function(
       paste("specimen:", reference.specimen),
       dimnames(shapes)[[3]][reference.specimen]
     )
-    landmark.plot(shapes[,,reference.specimen], main = x, ...)
+    landmark.plot(shapes, specimen.number = reference.specimen, ...)
   } # End  if (show.plot)
 
   # Prep the output
