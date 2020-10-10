@@ -97,7 +97,8 @@ read.tps <- function (
   # Landmark plot
   if (show.plot) {
     landmark.plot(
-      coords[,,1],
+      coords,
+      specimen.number = 1,
       square = square,
       links = links,
       text.color = text.color,
