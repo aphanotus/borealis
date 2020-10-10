@@ -18,6 +18,7 @@
 #' @export
 #'
 #' @examples
+#' data("plethodon", package = "geomorph")
 #'
 #' pleth <- add.provenance(
 #'   plethodon,
