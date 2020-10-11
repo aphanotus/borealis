@@ -42,7 +42,23 @@ subsetGMM <- function (A, specimens = NULL, landmarks = NULL)
   )
 
   # Subset landmarks
-  if (!is.null(landmarks) ) {
+  if (is.null(landmarks)) {
+    if (any(names(output) == "gpagen")) {
+      landmarks <- 1:(dim(A$gpagen$coords)[1])
+      original.landmark.number <- dim(A$gpagen$coords)[1]
+    } else {
+      if (any(names(output) == "gdf")) {
+        landmarks <- 1:(dim(A$gdf$coords)[1])
+        original.landmark.number <- dim(A$gdf$coords)[1]
+      }
+    }
+    if (any(names(output) == "coords")) {
+      if (!is.null(dim(output$coords))) {
+        landmarks <- 1:(dim(A$coords)[1])
+        original.landmark.number <- dim(A$coords)[1]
+      }
+    }
+  } else {
     if (!is.numeric(landmarks) | length(landmarks)<1) {
       stop("Error: `landmarks` is not a recognized type. (See the help entry: `?subsetGMM`.)")
     }
@@ -56,8 +72,10 @@ subsetGMM <- function (A, specimens = NULL, landmarks = NULL)
       }
     }
     if (any(names(output) == "coords")) {
-      output$coords <- output$coords[landmarks,,]
-      original.landmark.number <- dim(A$coords)[1]
+      if (!is.null(dim(output$coords))) {
+        output$coords <- output$coords[landmarks,,]
+        original.landmark.number <- dim(A$coords)[1]
+      }
     }
     new.provenance <- paste0(
       new.provenance,
@@ -66,7 +84,7 @@ subsetGMM <- function (A, specimens = NULL, landmarks = NULL)
     )
   } # End Subset landmarks
 
- # Subset specimens
+  # Subset specimens
   if (!is.null(specimens) ) {
     if (!is.numeric(specimens) | length(specimens)<1) {
       stop("Error: `specimens` is not a recognized type. (See the help entry: `?subsetGMM`.)")
@@ -122,8 +140,10 @@ subsetGMM <- function (A, specimens = NULL, landmarks = NULL)
     }
     # COORDS elements
     if (any(names(output) == "coords")) {
-      output$coords <- output$coords[,,specimens]
-      original.specimen.number <- dim(A$coords)[3]
+      if (!is.null(dim(output$coords))) {
+        output$coords <- output$coords[,,specimens]
+        original.specimen.number <- dim(A$coords)[3]
+      }
     }
     # METADATA elements
     if (any(grepl("metadata",names(output)))) {
