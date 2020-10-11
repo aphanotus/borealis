@@ -81,24 +81,44 @@ landmark.plot <- function (A,
   }
 
   # Vet the shape data
-  if (class(A)[1] %in% c("gpagen","list")) {
-    if (any(grepl("coords",names(A)))) {
-      specimen.number <- specimen.number[which(specimen.number <= dim(A$coords)[3])]
-      landmarks <- A$coords[,,specimen.number]
-      if (length(specimen.number)>1) { x <- dimnames(A$coords[,,specimen.number])[[3]] }
-      else { x <- dimnames(A$coords)[[3]][specimen.number] }
+  if (class(A)[1] %in% c("gpagen","list","geomorph.data.frame")) {
+    if (any(names(A)=="land")) {
+      specimen.number <- specimen.number[which(specimen.number <= dim(A$land)[3])]
+      landmarks <- A$land[,,specimen.number]
+      if (length(specimen.number)>1) { x <- dimnames(A$land[,,specimen.number])[[3]] }
+      else { x <- dimnames(A$land)[[3]][specimen.number] }
       if (is.null(x)) { main.title <- specimen.number }
       else { main.title <- x }
     } else {
-      if (any(grepl("land",names(A)))) {
-        specimen.number <- specimen.number[which(specimen.number <= dim(A$land)[3])]
-        landmarks <- A$land[,,specimen.number]
-        if (length(specimen.number)>1) { x <- dimnames(A$land[,,specimen.number])[[3]] }
-        else { x <- dimnames(A$land)[[3]][specimen.number] }
+      if (any(names(A)=="gpagen")) {
+        specimen.number <- specimen.number[which(specimen.number <= dim(A$gpagen$coords)[3])]
+        landmarks <- A$gpagen$coords[,,specimen.number]
+        if (length(specimen.number)>1) { x <- dimnames(A$gpagen$coords[,,specimen.number])[[3]] }
+        else { x <- dimnames(A$gpagen$coords)[[3]][specimen.number] }
         if (is.null(x)) { main.title <- specimen.number }
         else { main.title <- x }
       } else {
-        stop("Error: Input is not a recognized type. (See the help entry: `?landmark.plot`.)")
+        if (any(names(A)=="gdf")) {
+          specimen.number <- specimen.number[which(specimen.number <= dim(A$gdf$coords)[3])]
+          landmarks <- A$gdf$coords[,,specimen.number]
+          if (length(specimen.number)>1) { x <- dimnames(A$gdf$coords[,,specimen.number])[[3]] }
+          else { x <- dimnames(A$gdf$coords)[[3]][specimen.number] }
+          if (is.null(x)) { main.title <- specimen.number }
+          else { main.title <- x }
+        } else {
+          if (any(names(A)=="coords")) {
+            if (!is.null(dim(A$coords))) {
+              specimen.number <- specimen.number[which(specimen.number <= dim(A$coords)[3])]
+              landmarks <- A$coords[,,specimen.number]
+              if (length(specimen.number)>1) { x <- dimnames(A$coords[,,specimen.number])[[3]] }
+              else { x <- dimnames(A$coords)[[3]][specimen.number] }
+              if (is.null(x)) { main.title <- specimen.number }
+              else { main.title <- x }
+            }
+          } else {
+            stop("Input is not a recognized type. (See the help entry: `?landmark.plot`.)")
+          }
+        }
       }
     }
   } else {
