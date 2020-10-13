@@ -18,9 +18,8 @@ knitr::opts_chunk$set(
 
 ![](https://i.imgur.com/9bNCaKZ.jpg)
 
-Morphometry is a the study of shape and its variations.
-It allows comparisons of shape between different groups. 
-This is a subtle way to analyze phenotypes. Shape analysis typically also includes a consideration of size, since shape typically varies with size (allometry).
+Morphometry is a the study of shape and its variations, allowing quantitative comparisons of shape among groups. 
+Shape analysis typically also includes a consideration of size, since shape typically varies with size (allometric shape variation).
 Therefore morphometrics can be a good way to examine growth and scaling.
 
 The `borealis` package and this vignette are designed for those beginning to do work and analysis in morphometry. Advanced undergraduate and graduate students, as well as investigators new to morphometry will hopefully find this tutorial helpful. 
@@ -34,19 +33,19 @@ A typical workflow for geometric morphometrics (GMM) looks this this:
 3. **Data curation** - Are the specimens all roughly facing the same direction? Are there jointed structures whose position may interfere with downstream steps?
 4. **Generalized Procrustes Analysis (GPA)** aligns specimens to one another, minimizing variance due to relative position, rotation and size. Size is typically retained as a separate variable that can be included in the analysis later. 
 5. **Data curation** - Are there obvious outliers that should be removed?
-6. **Ordination** by tangent-space projection (similar to PCA) highlights differences among individuals and groups
-7. **Model** influences on size and shape (e.g. due to allometric scaling, evolutionary relationships, environmental factors)
+6. **Ordination** by tangent space projection (similar to PCA) highlights differences among individuals and groups
+7. **Model** influences on size and shape (due to allometric scaling, evolutionary relationships, environmental factors, etc.)
 8. **Disparity comparisons** among groups of specimens
 9. **Modularity tests** among landmarks
 
-GMM and morphometry in general is a rich discipline where people have developed a number of excellent analytical tools.
-However, some of these can be difficult to use.
-The main goal of the `borealis` package is to provide R users with a set of relatively simple tools to perform GMM analysis (and some other biology related activities). 
+Morphometry in general nd GMM in particular is a rich discipline where people have developed a number of excellent analytical tools.
+However, many of these tools can be difficult to use.
+The `borealis` package aims to provide R users with a set of relatively simple functions to perform GMM analysis, while maintaining an open-ended flexibility. 
 
 Importantly, GMM typically involves a number of data processing steps. 
-The `borealis` package embraces the concept of [data provenance](https://en.wikipedia.org/wiki/Data_lineage#Data_provenance). Each time a dataset is modified, functions in the package add (or add to) a list element recording important details about the execution and results of that step. This information can then be written to a [markdown](https://www.markdownguide.org/getting-started/) file as a report of the data's history and handling throughout the workflow. 
+The `borealis` package embraces the concept of [data provenance](https://en.wikipedia.org/wiki/Data_lineage#Data_provenance). Each time a dataset is modified, functions in the package add to a list element recording important details about the execution and results of that step. This information can then be written to a [markdown](https://www.markdownguide.org/getting-started/) file as a report of the data's history and handling throughout the workflow. 
 
-`borealis` also includes functions that produce publication-ready figures with minimal user effort.
+`borealis` also includes functions that produce publication-quality figures with minimal user effort.
 
 ## Installing the R package
 
@@ -60,11 +59,15 @@ If you've never installed a package from Git Hub before, it may be necessary for
 
 ```{r eval=FALSE, include=TRUE}
 install.packages("devtools")
+```
 
+Install `borealis` from GitHub as shown below.
+
+```{r eval=FALSE, include=TRUE}
 devtools::install_github("aphanotus/borealis")
 ```
 
-Once that's all sorted out, you can load the package 
+Load the package as any other.
 
 ```{r}
 library(borealis)
@@ -72,7 +75,7 @@ library(borealis)
 
 ## Managing raw coordinate data
 
-For landmark-based geometric morphometrics, the first step is to "digitize" coordinate positions in digital images of each specimen.
+For landmark-based geometric morphometrics (GMM), the first step is to "digitize" coordinate positions in digital images of each specimen.
 [ImageJ](https://imagej.net/) provides the easiest way to do this.
 
 ### Digitizing specimens in ImageJ
@@ -80,7 +83,7 @@ For landmark-based geometric morphometrics, the first step is to "digitize" coor
 Before you begin, think carefully about the landmarks you should use to represent the shape
 of the structure you're interested in. Areas with a greater density of landmarks will
 capture more shape variation among specimens. However, you don't necessarily need dozens of
-landmarks. Important insights can still be obtained from a simple set of landmarks. 
+landmarks. Important insights can be obtained from a simple set of landmarks. 
 
 Often, it's helpful to try a number of different landmark configurations on a small group of
 diverse specimens to see how well they perform. Importantly, you want landmarks that are present in all specimens and that can be placed with good confidence by everyone involved in the digitizing effort. 
@@ -98,16 +101,18 @@ I suggest writing up a good map of all the landmarks before proceeding with the 
 The first row of the spread sheet should provide column names. 
 Enter the X and Y values under columns named "x" and "y". 
 There must be a column giving specimen IDs, such as "specimen.ID", and one for scale.
-Add other columns to record relevant metadata. 
+Optionally, add other columns to record metadata. 
 The ID names, scale and other metadata, should be entered on the row for the first landmark of the specimen. 
 Any linear measurements accompanying the specimen should be treated as metadata.
 Coordinate positions and metadata for each specimen should appear in a consecutive block of rows. In other words, in you have 3 landmarks: row 1 is the header, rows 2-4 are the data for specimen 1, rows 5-7 are the data for specimen 2, etc. 
 This spreadsheet format is convenient, since it allows rapid copy-and-paste of data from ImageJ with minimal formatting. It will also facilitate converting the coordinate positions and encoding the metadata into the `tps` format in the next step.
 
+![](https://i.imgur.com/hVU207q.png =400x)
+
 ### Convert raw landmark coordinates into the `tps` file format
 
-The `tps` ("thin-plate spline") file format is one of the most commonly used formats among different GMM software ([Rohlf 2015](https://doi.org/10.4404/hystrix-26.1-11264)). 
-Creating a large `tps` file manually can be difficult. A stray space or tab can prevent downstream software from handling it properly, and those issues can be very hard to tackle down.
+The `tps` ("thin plate spline") file format is one of the most commonly used formats among different GMM software ([Rohlf 2015](https://doi.org/10.4404/hystrix-26.1-11264)). 
+Creating a large `tps` file manually can be difficult. A stray space or tab can prevent downstream software from handling it properly, and those issues can be very hard to track down.
 For that reason, `borealis` includes a simple function `create.tps` to convert spreadsheet data, as described above, into a `tps` file. It will also begin recording data provenance and embed metadata for each specimen.
 
 The scale value can also be inverted, by setting `invert.scale = TRUE`. The default for downstream functions is to apply scale values by multiplication. Typically this is appropriate when scale is recorded as unit distance (e.g. mm) per pixel. However, if scale is recorded in pixels per unit distance (e.g. pixels/mm) it will be appropriate to first invert the scaling factor before importing coordinate data.
@@ -177,7 +182,7 @@ shapes <- read.tps("wings.tps")
 ```
 
 This creates the object `shapes`. 
-It is what R knows as a `list`, a type of data object that can include many different elements, all accessible together. 
+It is what R knows as a `list`, a type of data object that can include many different elements, all accessible together. (Now the name "shapes" is pretty generic. If you will be doing multiple GMM analyses, it's a good idea to modify your code to use a more descriptive name.)
 You can reveal the components of the list using the `names` function.
 
 ```{r eval=FALSE, include=TRUE}
@@ -225,8 +230,8 @@ Metadata were extracted from specimen ID lines for the following factors:
 ### View the shape data
 
 The `borealis` package has a simple function for viewing the relative positions of landmarks. 
-The function is designed to user-friendly. 
-It will automatically detect whether you're giving it coordinates for one specimen, a 3D array with coordinates for multiple specimens, or 
+The function is designed to be user-friendly. 
+It will automatically detect whether you're giving it coordinates for one specimen, an array with coordinates for multiple specimens, or 
 a `list` object with such an array as one component. 
 So all of the commands below will produce the same plot.
 
@@ -234,6 +239,7 @@ So all of the commands below will produce the same plot.
 landmark.plot(shapes$coords[,,1])
 landmark.plot(shapes$coords)
 landmark.plot(shapes)
+landmark.plot(shapes, specimen.number = 1)
 ```
 
 ![](https://i.imgur.com/SQpXxcG.jpg)
@@ -257,6 +263,16 @@ landmark.plot(shapes, links = fw.links)
 ```
 
 ![](https://i.imgur.com/KYVXHzN.jpg)
+
+### Viewing multiple specimens
+
+It's also frequently helpful to look at more than one specimen side-by-side. If you provide a vector to the `specimen.number` argument, the plotting function will display multiple panels for those specimens.
+
+```{r eval=FALSE, include=TRUE}
+landmark.plot(shapes, specimen.number = 1:4, links = fw.links)
+```
+
+![](https://i.imgur.com/fDml5bJ.png)
 
 ### Bombus forewing data
 
@@ -289,41 +305,52 @@ shapes <- read.tps("wings.tps",
 
 ## Angular alignment
 
-Joints can introduce nuisance variation in landmark-based geometric morphometrics. The `geomorph` function `fixed.angle` rotates a subset of landmarks such that they come to a consistent angle, that is defined by the user through reference to particular landmarks.  
-The `borealis` package wraps this function into another called `align.angle` which provides 
-data provenance, some visualizations, and greater user flexibility.
+Joints can introduce nuisance variation in landmark-based geometric morphometrics. The `borealis` function `align.angle` rotates a subset of landmarks such that they come to a consistent angle. This step should be run before Procrustes alignment, and it is robust to differences in the relative position, orientation and size of specimens. 
 
-This step should be run before Procrustes alignment, and it is robust to differences in the relative position, orientation and size of specimens. However, it's not always necessary to do this. If the structure you're analyzing isn't jointed, then there's no need for it. 
-
-For this vignette, I'm going to stretch the utility of our example dataset. The shape data we've been working with are from bumblebee wings. They are not jointed. However, for the sake of the example, let's imagine we have reason to suspect that landmarks 13 and 19, hinge relative to the rest of the wing's landmarks. 
+However, it's not always necessary to run this step. If the structure you're analyzing isn't jointed, then there's no need for it. So far in this vignette, we've been working with a bumblebee wing dataset that doesn't have obvious joints. So, let's switch to another sample dataset, `mantis`, which includes simulated shapes for the femur and tibia of 100 mantis forelegs.
 
 ```{r eval=FALSE, include=TRUE}
-shapes <- align.angle(shapes,
-                      art.pt = 14,
-                      angle.pts.1 = c(13,19),
-                      rot.pts = c(13,19),
-                      angle = -5,
-                      show.plot = 1,
-                      plots.vertical = FALSE,
-                      links = fw.links)
+data("mantis", package = "borealis")
+
+# Define mantis.lines
+{
+  x <- 1:16
+  mantis.lines <- matrix(c(x[-length(x)],x[-1]), ncol = 2)
+  mantis.lines[10,] <- c(10,1)
+  mantis.lines[15,] <- c(15,6)
+  mantis.lines <- rbind(mantis.lines,
+                        matrix(c(5,11, 6,11, 13,16, 14,16), ncol = 2, byrow = TRUE))
+}
+
+landmark.plot(mantis, specimen.number = 1:3, panels = c(1,3), links = mantis.lines)
 ```
 
-![](https://i.imgur.com/nWtnpj7.png)
+![](https://i.imgur.com/Dxk2DyJ.png)
+
+As you can see, the angle of the femur and the tibia (the smaller segment) varies for each specimen. If you were to proceed into GPA with these data as they are, that angle would dominate the shape variance and obscure any signal from more interesting biological factors.
+
+These angles can be standardized using the `align.angle` function. It takes several arguments, `angle.pts.1`, `art.pt`, and `angle.pts.2`, which define the angle on which we want to focus. `art.pt` is the vertex of the angle and the articulation point for rotation. `rot.pts` defines the landmarks to actually rotate. Each of these arguments can be the number of a single landmark or a vector of several landmark numbers. If multiple landmarks are provided, their mean position is used. Using multiple landmarks helps mitigate any variance individual landmarks may have. However, you should use your knowledge of anatomy to choose landmarks that make sense for your subject. 
+
+```{r eval=FALSE, include=TRUE}
+mant.2 <- align.angle(mantis,
+                      art.pt = 11,
+                      angle.pts.1 = c(1:10),
+                      angle.pts.2 = c(12:15),
+                      rot.pts = c(12:16) )
+
+landmark.plot(mant.2, specimen.number = 1:3, panels = c(1,3), links = mantis.lines)
+```
+
+![](https://i.imgur.com/EnYXyCP.png)
 
 ```
-Angle alignment reduced variance in centroid size-scaled landmark distances by 0.53%.
+Angle alignment reduced variance in centroid size-scaled landmark distances by 20.4%.
 ```
 
-By default, the function will plot a random specimen, with the new landmark positions. 
-Here we have specified which one to plot using the argument `show.plot = 1`. 
-The second plot is a histogram of variances among distances between landmarks (corrected for the centroid size of each specimen).
-This can be used as a metric of how well the alignment improves the consistency of landmark positions, with lower values indicating greater consistency. However, there are some caveats to this interpretation. 
-If the alignment "stretches out" the sub-structure for some specimens, this may produce an increase in mean landmark distances that swamp any reduction caused by greater consistency among the landmarks of that structure. 
-Consider the histogram and mean changes, and use your best judgement.
+By default, the function will plot overlaid histograms using the distribution of variance in inter-landmark distances, scaled by each specimen's centroid size.
+This can be used to determine how well the alignment improves the consistency of landmark positions, with lower values indicating greater consistency. 
 
-In this example, any gains are marginal. If you try different values for `angle` you'll see that the reductions in landmark distance variance can be quickly lost. However, there are cases where angular alignment can be very helpful. The output below is from the head of a beetle, where the mandibles were aligned relative to the rest of the head. This reduced landmark distance variance by 11.6%, shifting the distribution to the left.
-
-![](https://i.imgur.com/JvytdwM.png)
+The angle that is enforced on all specimens is based on the mean angle of all specimens, by default. However, arguments to `reference.specimen` can indicate a subset of specimens on which to base the reference angle. You can also add angular value to all specimens using the `angle` argument.
 
 ## Procrustes alignment
 
@@ -396,7 +423,6 @@ The final GPA plot looks good: The individual specimen landmarks in gray are ver
 
 ![](https://i.imgur.com/kK4ddq7.jpg)
 
-
 ## The geomorph data frame
 
 The `geomorph` package ([Adams et al. 2020](https://cran.r-project.org/package=geomorph)) provides a powerful set of tools for GMM analysis. 
@@ -407,56 +433,84 @@ In order to retain data provenance and other elements of our data object, we can
 wing.gpa <- listed.gdf(wing.gpa)
 ```
 
-We can then take a look at the new data structure.
+We can then take a look at the new data structure. This can be done using the `names` function, as above. However, for complex data structures, the `str` function is often convenient. The output shows the nested relationships among list elements and previews the contents of each one.
 
 ```{r eval=FALSE, include=TRUE}
-names(wing.gpa)
+str(wing.gpa)
 ```
 
 ```
-[1] "gdf"             "landmark.number" "specimen.number" "scaled"          "provenance"     
+List of 5
+ $ gdf            :List of 6
+  ..$ specimen.id: chr [1:97] "DRA190815-001" "DRA190815-002" "DRA190815-003" "DRA190815-004" ...
+  ..$ species    : chr [1:97] "vag" "imp" "imp" "imp" ...
+  ..$ caste      : chr [1:97] "W" "W" "W" "W" ...
+  ..$ digitizer  : chr [1:97] "JL" "JL" "JL" "JL" ...
+  ..$ coords     : num [1:20, 1:2, 1:97] -0.405 -0.0319 -0.0621 -0.1388 -0.2011 ...
+  .. ..- attr(*, "dimnames")=List of 3
+  .. .. ..$ : chr [1:20] "1" "2" "3" "4" ...
+  .. .. ..$ : chr [1:2] "X" "Y"
+  .. .. ..$ : chr [1:97] "DRA190815-001" "DRA190815-002" "DRA190815-003" "DRA190815-004" ...
+  ..$ Csize      : Named num [1:97] 7.02 6.91 6.54 7.2 6.93 ...
+  .. ..- attr(*, "names")= chr [1:97] "DRA190815-001" "DRA190815-002" "DRA190815-003" "DRA190815-004" ...
+  ..- attr(*, "class")= chr "geomorph.data.frame"
+ $ landmark.number: int 20
+ $ specimen.number: int 97
+ $ scaled         : logi TRUE
+ $ provenance     :List of 8
+  ..$ create.tps       : chr "## TPS file creation \n\nCreated by user `drangeli` with `borealis::create.tps` on Tuesday, 23 June 2020, 23:50"| __truncated__
+  ..$ read.tps         : chr "## TPS data import\n\nPerformed by user `drangeli` with `borealis::read.tps` on Tuesday, 23 June 2020, 23:51:33"| __truncated__
+  ..$ align.reflect    : chr "## Reflection alignment\n\nPerformed by user `drangeli` with `borealis::align.reflect` on Saturday, 10 October "| __truncated__
+  ..$ align.procrustes : chr "## Generalized Procrustes analysis\n\nPerformed by user `drangeli` with `borealis::align.procrustes` on Saturda"| __truncated__
+  ..$ listed.gdf       : chr "## Geomorph data frame conversion\n\nPerformed by user `drangeli` with `borealis::listed.gdf` on Saturday, 10 O"| __truncated__
 ```
+
+## Subsetting shape data
+
+Later in the analysis we will have reasons to work with a subset of the full dataset. As data structures become complex, subsetting them becomes difficult. For example, there is no convenient way to [subset a `geomorph.data.frame`](https://groups.google.com/g/geomorph-r-package/c/xiL_VRyYaHI?pli=1) using traditional R bracketing.
+
+### Subsetting specimens
+
+The function `subsetGMM` provides a shortcut for subsetting `geomorph.data.frame` objects and data structures produced by the `borealis` functions. As always data provenance entries record these changes. In the example below, we will subset only the bumblebee wing specimens that present workers.
 
 ```{r eval=FALSE, include=TRUE}
-names(wing.gpa$gdf)
+x <- which(wing.gpa$gdf$caste=="W")
+workers <- subsetGMM(wing.gpa, specimens = x)
 ```
 
-```
-[1] "specimen.id" "species"     "caste"       "digitizer"   "coords"      "Csize"      
-```
+### Subsetting landmarks
 
-```{r eval=FALSE, include=TRUE}
-names(wing.gpa$provenance)
-```
-
-```
-[1] "create.tps"           "read.tps"             "align.reflect"        "align.joint"         
-[5] "align.procrustes" "listed.gdf"          
-```
-
-The data structure is actually described in the provenance report for this step.
+It's also possible to use `subsetGMM` to select a subset of the landmarks in a data structure. 
 
 ```{r eval=FALSE, include=TRUE}
-cat(wing.gpa$provenance$listed.gdf)
+distal.wing <- subsetGMM(wing.gpa, landmarks = 1:10)
+landmark.plot(distal.wing)
+```
+
+![](https://i.imgur.com/NekvBKk.png)
+
+## Custom additions to data provenance
+
+It is possible you may need to make custom modifications to your shape dataset. In order to maintain data provenance in these circumstances the function `add.provenance` allows you to document any custom data manipulation.
+
+```{r eval=FALSE, include=TRUE}
+wing.gpa$gdf$digitizer[1] <- "FJ"
+
+wing.gpa <- add.provenance(
+  wing.gpa,
+  name="error.correction",
+  title = "Corrected error in the metadata",
+  text = "Upon checking lab notes, an error needed to be corrected. The digitizer of specimen 1 appears to have been FJ, not JL." )
+
+cat(wing.gpa$provenance$error.correction)
 ```
 
 ```
-## Geomorph data frame conversion
+## Corrected error in the metadata
 
-Performed by user `drangeli` with `borealis::listed.gdf` on Wednesday, 24 June 2020, 00:12:10
+Performed by user `drangeli` on Saturday, 10 October 2020, 10:15:50
 
-Current data structure:
-- gdf
-  - specimen.id
-  - species
-  - caste
-  - digitizer
-  - coords
-  - Csize
-- landmark.number
-- specimen.number
-- scaled
-- provenance
+Upon checking lab notes, an error needed to be corrected. The digitizer of specimen 1 appears to have been FJ, not JL.
 ```
 
 ## Reporting data provenance
@@ -521,7 +575,7 @@ Proportion of Variance 0.2694561165 0.1967867258 1.047460e-01 7.036203e-02 5.249
 Cumulative Proportion  0.2694561165 0.4662428423 5.709889e-01 6.413509e-01 6.938430e-01
 ```
 
-While it can be useful to know how to work with the raw output from PCA analysis, often people are most interested in plotting the first two PC axes. PCA is particularly helpful for understanding differences in shapes among groups. And group membership can be mapped onto the shape-shape plot.
+While it can be useful to know how to work with the raw output from PCA analysis, often people are most interested in plotting the first two PC axes. PCA is particularly helpful for understanding differences in shapes among groups. And group membership can be mapped onto the shape space plot.
 
 ```{r eval=FALSE, include=TRUE}
 plot(wing.pca, col = as.factor(wing.gpa$gdf$species))
@@ -570,16 +624,17 @@ The tree is the consensus from a RAxML analysis of five genes, sequenced by [Cam
 
 First, it's necessary for us to find mean shapes for each species. If you have a tree with tips that represent each specimen in your shape dataset, then this step won't be necessary. 
 
-Because shapes may differ by caste, we'll limit this analysis to workers. We'll subset the shape data using using the `borealis` function `filter.shapes`.
+Because shapes may differ by caste, we'll limit this analysis to workers. We'll subset the shape data using using the function `subsetGMM`, as shown above.
 
 ```{r eval=FALSE, include=TRUE}
-workers <- filter.shapes(wing.gpa, wing.gpa$gdf$caste=="W")
+x <- which(wing.gpa$gdf$caste=="W")
+workers <- subsetGMM(wing.gpa, specimens = x)
 ```
 
 Next, the function `coords.subset` will split the coordinate shape data into groups, in this example, by species.
 
 ```{r eval=FALSE, include=TRUE}
-coords.by.species <- coords.subset(workers$gdf$coords, group = workers$gdf$species)```
+coords.by.species <- coords.subset(workers$gdf$coords, group = workers$gdf$species)
 ```
 
 This produces a `list` with elements named for each species. 
@@ -653,9 +708,9 @@ plot(pca.w.phylo, phylo = TRUE, main = "PCA with phylogeny")
 The space plotted here is the first two principal component axes. 
 It's different from the plot we saw above, because each species is represented by only one point. 
 The points are connected by branches that reflect their evolutionary history, as described by the phylogenetic tree above. 
-Based on this result, we might conclude that "bor" and "ferv" (*Bombus borealis* and *B. fervidus*) have wing shapes different from the other species in the dataset, and that those shape differences are coincident with a shared ancestry of those two species. In contrast, while "imp" and "terri" (*B. impatiens* and *B. terricola*) have similar wing shapes, they are relatively distant in their relatedness. 
+Based on this result, we might conclude that "bor" and "ferv" (*Bombus borealis* and *B. fervidus*) have wing shapes different from the other species in the dataset, and that those shape differences are coincident with a shared ancestry of those two species. In contrast, while "imp" and "terri" (*B. impatiens* and *B. terricola*) have similar wing shapes, they are relatively distant in their relatedness. An important caveat here is that the output of the PCA here is exactly the same as before we considered the phylogeny. In this method, the phylogeny is used for plotting only.
 
-`geomorph` provides a more sophisticated may be represent shape and relatedness in a plot like this. As described by its authors, phylogenetically-aligned PCA (PaCA) "...provides an ordination that aligns phenotypic data with phylogenetic signal, by maximizing variation in directions that describe phylogenetic signal, while simultaneously preserving the Euclidean distances among observations in the data space." ([Kaliontzopoulou 2020](https://cran.r-project.org/web/packages/geomorph/vignettes/geomorph.PCA.html))
+`geomorph` provides a more sophisticated way to represent shape and relatedness in a plot like this. As described by its authors, phylogenetically-aligned PCA (PaCA) "...provides an ordination that aligns phenotypic data with phylogenetic signal, by maximizing variation in directions that describe phylogenetic signal, while simultaneously preserving the Euclidean distances among observations in the data space." ([Kaliontzopoulou 2020](https://cran.r-project.org/web/packages/geomorph/vignettes/geomorph.PCA.html))
 
 ```{r eval=FALSE, include=TRUE}
 paca <- gm.prcomp(mshape.by.species, phy = btree, align.to.phy = TRUE)
@@ -792,6 +847,14 @@ Total                                    96    0.082049
 
 In this case, the model that adds "caste" as a predictive factor does not appear to be much better than the model with only size and species as factors.
 
+### A true null model
+
+In the examples above, we compared models that included multiple factors. So our "null" model in each comparison simply needed to omit the factor of interest (e.g. `caste` in the last example). What if we wanted to make a comparison and our model only had one factor? What would be our null model then? We can actually define a silly null model that contains no factors at all: `coords ~ 1`
+
+```{r eval=FALSE, include=TRUE}
+null.model <- procD.lm(coords ~ 1, data=wing.gpa$gdf, iter=i)
+```
+
 ### *Post hoc* pairwise comparisons
 
 As with any ANOVA, these tests tell us that species is a factor that explains wing shape, at least in part. But it does not tell us which species differ from one another. 
@@ -812,7 +875,8 @@ bimac   bor  ferv   imp   san  tern terri   vag
 So, first we'll subset the data to just the four species that have good representation. Then we'll create a model similar to the one we built earlier, with size and species as predictive factors.
 
 ```{r eval=FALSE, include=TRUE}
-common.sp <- filter.shapes(wing.gpa, wing.gpa$gdf$species %in% c("bimac","imp","tern","vag"))
+common.sp <- subsetGMM(wing.gpa, specimens = (wing.gpa$gdf$species %in% c("bimac","imp","tern","vag")) )
+
 common.sp.model <- procD.lm(coords ~ log(Csize) + species, data=common.sp$gdf, iter=i) 
 anova(common.sp.model)
 ```
@@ -891,7 +955,7 @@ Again, all species appear significantly different from one another in their cont
 #### By the way...
 
 This example absolutely requires you to define a null model for the `pairwise` function. 
-If you try just passing the full model, the function will guess wrong.
+If you try just passing the full model, the function will guess at the null model and may be wrong.
 
 ```{r eval=FALSE, include=TRUE}
 summary(pairwise(common.sp.caste.model, groups = common.sp$gdf$species))
@@ -907,7 +971,7 @@ imp:vag    0.04079689 0.04448370 -0.1000897  0.541
 tern:vag   0.02291126 0.02770863 -0.7676849  0.784
 ```
 
-What? How can there no significant pairwise differences? -- The issue here is that `pairwise` has assumed the wrong null model. If you ever do want to use the short-cut of not specifying a null model, you can check what model the function will assume as its null.
+What? How can there no significant pairwise differences? -- The problem here is that `pairwise` has assumed the wrong null model. If you ever do want to use the short-cut of not specifying a null model, you can check what model the function will assume as its null.
 
 ```{r eval=FALSE, include=TRUE}
 reveal.model.designs(common.sp.caste.model)
@@ -923,15 +987,13 @@ caste       log(Csize) + species  log(Csize) + species + caste <- Null/Full inhe
 As you can see, the "Reduced" model that is assumed here is `log(Csize) + species`. 
 Since we want to test differences among species, it's essential that we take as our null model one that does not have species in it as a factor. So using this model is what leads to a different (and in this case inappropriate) result.
 
-And while we're talking about ways that these statistical functions can be misused, there's another important issue we should cover in the next section.
+And while we're talking about ways that these statistical functions can be misused, there's another important issue we should cover in the next section!
 
-### The sequential order of factors matters!
+### The sequential order of factors matters
 
 Remember, modeling is about assigning variance in the dependent variable (or shape coordinates) to the factors in the model. There are different ways to do this. The modeling functions in the `geomorph` and `RRPP` packages use what's called a sequential sum of squares by default. This method examines the main effect each factor has on the response variable (or shapes), **in the order that they're named in the model**, before considering any interaction terms. This is generally considered to be the most robust and versatile method. ([Other types](https://mcfromnz.wordpress.com/2011/03/02/anova-type-iiiiii-ss-explained/) are used in more specialized situations.)
 
-In practical terms however, this means that building your model with the terms in a different order can sometimes produce different results. For example, in the last section we modeled wing shape as a factor of wing size, species and caste. Let's look at that model again, and compare it against
-
-let's repeat the pairwise tests above, but with a model examining `species` before `caste.` 
+In practical terms however, this means that building your model with the terms in a different order can sometimes produce different results. For example, in the last section we modeled wing shape as a factor of wing size, species and caste. Let's look at that model again, and compare it against a model that places `caste` before `species.`
 
 ```{r eval=FALSE, include=TRUE}
 anova(common.sp.caste.model)
@@ -964,6 +1026,10 @@ Same factors; different order. Notice that the *F* statistics and *p* values  (`
 
 So what order should you use? In general, you should place what you consider to be the most influential factors first. If you're not sure, it's worth examining both orders. If the outcomes differ a lot, then that may be a sign the factors have a strong interaction (e.g. caste influences wing shape, but differently in different species). If so, you should test a model that includes such as interaction, and see how it stacks up against the simpler model.
 
+### Interactions terms
+
+We can also model the influence of interactions. For example, we already have support for the hypotheses that species and caste influence shape independently. But what if certain combinations of those factors have a shape that is unique and different from the influences of each factor alone? We can examine that by comparing models with and without an interaction term.
+
 ```{r eval=FALSE, include=TRUE}
 common.spXcaste.model <- procD.lm(coords ~ log(Csize) + species * caste, data=common.sp$gdf, iter=i) 
 anova(common.sp.caste.model, common.spXcaste.model)
@@ -986,13 +1052,19 @@ coords ~ log(Csize) + species * caste           81  2 0.034254 0.0021699 0.00108
 Total                                           88    0.063953 
 ```
 
-As we suspected, in this case, there is a significant interaction of `species` and `caste` that significantly improves the model fit. 
+As we suspected, in this case, there is a significant interaction of `species` and `caste` that significantly improves the model fit. (Careful readers will note that this might not be a solid conclusion, since the sample sizes for non-worker castes are not nearly as large as the workers. This lack of balanced sampling could impact the analysis.)
 
-> Careful readers will note that this might not be a solid conclusion, since the sample sizes for non-worker castes are not nearly as large as the workers. This lack of balanced sampling could impact the analysis.
+You can specify an interaction in a model using the `*` symbol, as in the example above, or in general terms as `Y ~ A * B`. However, you can also name the interaction term specifically using `:`. In general, this looks like `Y ~ A + B + A:B`. Or we could modify the call above to become...
+
+```{r eval=FALSE, include=TRUE}
+common.spXcaste.model <- procD.lm(coords ~ log(Csize) + species + caste + species:caste, data=common.sp$gdf, iter=i) 
+```
+
+...it will accomplish the same thing! This `:` notation can be useful if you have a complex model with many factors where you want to be very explicit above the interactions you test!
 
 ### Testing for common allometry
 
-Size and shape are often correlated. This means that as specimens get larger, their shape changes in a predictable way. However, we may want to ask if that relationship is consistent about all the groups in our dataset. Do species all share a common allometry or do some species have unique allometries? The way to approach this statistically is to compare our model where size and species independently influence shape, to one that allows for an interaction between those two terms. The function `plotAllometry` also provides a way to visualize these relationships.
+Size and shape are often correlated. This means that as specimens get larger, their shape changes in a predictable way. However, we may want to ask if that relationship is consistent for all of the groups in our dataset. Do species all share a common allometry or do some species have unique allometries? The way to approach this statistically is to compare a model, where size and species independently influence shape, to one that allows for an interaction between those two terms. The function `plotAllometry` also provides a way to visualize these relationships.
 
 ```{r eval=FALSE, include=TRUE}
 species.unique.model <- procD.lm(coords ~ log(Csize) * species, data=wing.gpa$gdf, iter=i) 
@@ -1055,16 +1127,16 @@ After this correction, we see more separation of the groups in the center, which
 ### Phylogenetic ANOVA
 
 One general feature of ANOVA is that is assumes the levels of each factor are independent of one another. 
-For example, if the `species` factor has 8 different values, the ANOVA assumes that there's connection between them. 
+For example, if the `species` factor has 8 different values, ANOVA assumes that there's no connection between them. 
 However, we know that some species share ancestors more recently than others.
-Therefore, this "independence" isn't true. 
-Worse perhaps, is the fact that it will vary among the species, based on the topology of the tree.
+Therefore, this assumption of independence doesn't hold when compared groups with an evolutionary history. 
+Worse perhaps, is the fact that the degree of relatedness (and therefore the extent of non-independence) will vary among individual species.
 
-Thankfully, methods have been developed to incorporate knowledge of species relationships into an ANOVA. `geomoprh` includes a function, `procD.pgls`, which will build models similar to `procD.lm` while also accounting for phylogeny. What's happening under the hood here is that the tree is used in the permutations that generate the statistics. So while the output is similar with `procD.pgls` and `procD.lm`, the former is more reliable if you have a good phylogeny available.
+Thankfully, methods have been developed to incorporate knowledge of species relationships into an ANOVA. `geomoprh` includes a function, `procD.pgls`, which will build models similar to `procD.lm` while also accounting for phylogeny. What's happening under the hood here is that the tree is used in the permutations that generate the test statistics. So while the output is similar with `procD.pgls` and `procD.lm`, the former is more reliable if you have a good phylogeny available.
 
-One limitation of this approach is that the model can only include one representative from each species (or each tip of the tree, at whatever taxonomic level you're working). 
+One limitation of this approach is that the model can only include one representative from each species (or each tip of the tree, at whatever taxonomic level you're working with). 
 
-For this example, let's examine the influence of wing size on shape, in a phylogenetic context. We can use the same shape data we created earlier, `mshape.by.species`, which contains mean worker wing shapes for the 7 most heavily sampled species. The object `btree` also contains the phylogeny for those species. We can calculate mean centroid wing size from nth larger dataset, then combine these elements into a new `geomorph.data.frame`.
+For this example, let's examine the influence of wing size on shape, in a phylogenetic context. We can use the same shape data we created earlier, `mshape.by.species`, which contains mean worker wing shapes for the 7 most heavily sampled species. The object `btree` also contains the phylogeny for those species. We can calculate the mean centroid wing size from the larger dataset, then combine these elements into a new `geomorph.data.frame`.
 
 ```{r eval=FALSE, include=TRUE}
 species.gdf <- geomorph.data.frame(
@@ -1085,7 +1157,7 @@ Residuals   5 0.049665 0.0099331 0.74683
 Total       6 0.066502                                      
 ```
 
-In this analysis size does not have a significant influence on wing shape. If you recall, when we looked at the output of `anova(size.model)`, size was a significant influence on shape. This suggests that the influence of size on shape is phylogenetically dependent. 
+In this analysis size does not have a significant influence on wing shape. If you recall, when we looked at the output of `anova(size.model)`, size was a significant influence on shape. To interpret these results, it's important to remember that earlier, we had a larger dataset and including size as a factor tested whether *individual* size differences influenced *individual* wing shapes. Here we're asking a slightly different question: whether *species-level* size influence the mean worker wing shape of the *species*.
 
 You can build multiple models with `procD.pgls` and compare them in the same way as with `procD.lm`, by passing both models to the `anova` function. (With our example dataset here, we don't have another variable that makes sense to add to the model.)
 
@@ -1099,47 +1171,51 @@ morphol.disparity(coords ~ Csize, groups = ~ species, data = wing.gpa$gdf)
 
 The output is a table of pairwise mean Procrustes distances and p-values. 
 
-We don't have balanced sampling among species in this dataset, making this a rather inappropriate comparison. We could either increase sampling for the underrepresented species, or we could subset the data to only those species with good sample sizes.
+We don't have balanced sampling by species or caste in this dataset, making this a rather inappropriate comparison. We could either increase sampling for the underrepresented species, or we could subset the data to only those species with good sample sizes.
 
 ```{r eval=FALSE, include=TRUE}
 c(with(wing.gpa$gdf, by(species,species, length)))
+c(with(workers$gdf, by(species,species, length)))
 ```
 
 ```
 bimac   bor  ferv   imp   san  tern terri   vag 
    23     3     2    28     1    26     2    12 
+
+bimac   bor  ferv   imp  tern terri   vag 
+   12     3     2    26    26     2     8   
 ```
 
+Let's just compare workers from the three most heavily sampled species.
+
 ```{r eval=FALSE, include=TRUE}
-x <- which(wing.gpa$gdf$species %in% c("bimac","imp","tern"))
-gdf <- geomorph.data.frame(
-  coords = wing.gpa$gdf$coords[,,x], 
-  Csize = wing.gpa$gdf$Csize[x], 
-  species = wing.gpa$gdf$species[x])
-morphol.disparity(coords ~ Csize, groups = ~ species, data = gdf)
+x <- which(workers$gdf$species %in% c("bimac","imp","tern"))
+well.sampled.workers <- subsetGMM(workers, specimens = x)
+
+morphol.disparity(coords ~ Csize, groups = ~ species, data = well.sampled.workers$gdf)
 ```
 
 ```
 Procrustes variances for defined groups
        bimac          imp         tern 
-0.0007140412 0.0006587135 0.0005569535 
+0.0007636383 0.0005756033 0.0005171270 
 
 
 Pairwise absolute differences between variances
              bimac          imp         tern
-bimac 0.000000e+00 5.532764e-05 0.0001570877
-imp   5.532764e-05 0.000000e+00 0.0001017600
-tern  1.570877e-04 1.017600e-04 0.0000000000
+bimac 0.0000000000 1.880350e-04 2.465113e-04
+imp   0.0001880350 0.000000e+00 5.847636e-05
+tern  0.0002465113 5.847636e-05 0.000000e+00
 
 
 P-Values
       bimac   imp  tern
-bimac 1.000 0.509 0.057
-imp   0.509 1.000 0.174
-tern  0.057 0.174 1.000
+bimac 1.000 0.050 0.008
+imp   0.050 1.000 0.426
+tern  0.008 0.426 1.000
 ```
 
-From these results we can see that `tern` (*B. ternarius*) has marginally less shape disparity than `bimac` (*B. bimaculatus*).
+From these results we can conclude that workers of `bimac` (*B. bimaculatus*) have significantly more variation in wing shapes than workers of the other two species.
 
 ## Modularity testing
 
@@ -1154,7 +1230,12 @@ The most sensible modularity hypotheses will be suggested by anatomical or devel
 ```{r eval=FALSE, include=TRUE}
 modularity.hypothesis1 <- rep("proximal",wing.gpa$landmark.number)
 modularity.hypothesis1[c(1,4,5,6:9,17)] <- "distal"
+```
 
+We’re ready to test whether the two regions exhibit modularity. The function `modularity.test` requires an array of shape data in the argument `A`. The modularity hypothesis is passed into the argument `partition.gp`. The argument `CI` is a logical parameter that says whether the function should calculate a confidence interval on the test statistic. (That’s usually useful.) Finally, `iter` specifies the number of iterations. 
+This function is very computationally demanding. Use a low value of `iter` to explore hypotheses early on, remembering that the lowest possible p-value is `1/iter`. Then for confirmation, invest compute time in a run with a higher `iter` value for greater precision.
+
+```{r eval=FALSE, include=TRUE}
 mt1 <- modularity.test(wing.gpa$gdf$coords, modularity.hypothesis1, CI=TRUE, iter=99 )
 summary(mt1) 
 ```
@@ -1169,4 +1250,8 @@ Confidence Intervals 0.9708
 ```
 
 These results support this modularity hypothesis. However, testing several variations on the hypothesis can be helpful to identify the bounds of a module. 
+
+---
+
+[borealis GitHub page](https://github.com/aphanotus/borealis)
 

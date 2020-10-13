@@ -16,9 +16,9 @@ element called \code{coords}, \code{gpagen$coords} or \code{gdf$coords}. Associa
 a matrix element called \code{metadata} or as vectors with a length equal to the number
 of specimens.}
 
-\item{specimens}{A vector for subsetting specimens and metadata.}
+\item{specimens}{A numerical or logical vector for subsetting specimens and metadata.}
 
-\item{landmarks}{A vector for subsetting landmarks.
+\item{landmarks}{A numerical vector for subsetting landmarks.
 Subsetting landmarks will not affect metadata.}
 }
 \description{

@@ -39,6 +39,7 @@ This function will add a custom data provenance entry in the markdown-based form
     by \code{\link{base::as.list}}.
 }
 \examples{
+data("plethodon", package = "geomorph")
 
 pleth <- add.provenance(
   plethodon,

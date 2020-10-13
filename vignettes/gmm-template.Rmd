@@ -69,6 +69,7 @@ fw.links <- matrix(c(1,2, 1,5, 5,4, 4,3, 3,2, 5,6, 6,7, 7,8, 8,9, 9,4, 3,11, 11,
                    ncol = 2, byrow = TRUE)
 
 landmark.plot(shapes, links = fw.links)
+landmark.plot(shapes, specimen.number = 1:4, links = fw.links)
 ```
 
 ## Reflect specimens
@@ -80,14 +81,27 @@ shapes <- align.reflect(shapes, top.pt = 2, left.pt = 1, links = fw.links )
 ## Angular alignment
 
 ```{r eval=FALSE, include=TRUE}
-shapes <- align.angle(shapes,
-                      art.pt = 14,
-                      angle.pts.1 = c(13,19),
-                      rot.pts = c(13,19),
-                      angle = -5,
-                      show.plot = 1,
-                      plots.vertical = FALSE,
-                      links = fw.links)
+data("mantis", package = "borealis")
+
+# Define mantis.lines
+{
+  x <- 1:16
+  mantis.lines <- matrix(c(x[-length(x)],x[-1]), ncol = 2)
+  mantis.lines[10,] <- c(10,1)
+  mantis.lines[15,] <- c(15,6)
+  mantis.lines <- rbind(mantis.lines,
+                        matrix(c(5,11, 6,11, 13,16, 14,16), ncol = 2, byrow = TRUE))
+}
+
+landmark.plot(mantis, specimen.number = 1:3, panels = c(1,3), links = mantis.lines)
+
+mant.2 <- align.angle(mantis,
+                      art.pt = 11,
+                      angle.pts.1 = c(1:10),
+                      angle.pts.2 = c(12:15),
+                      rot.pts = c(12:16) )
+
+landmark.plot(mant.2, specimen.number = 1:3, panels = c(1,3), links = mantis.lines)
 ```
 
 ## Procrustes alignment
@@ -113,6 +127,30 @@ wing.gpa <- align.procrustes(shapes, outlier.analysis = TRUE)
 
 ```{r eval=FALSE, include=TRUE}
 wing.gpa <- listed.gdf(wing.gpa)
+```
+
+## Subsetting shape data
+
+```{r eval=FALSE, include=TRUE}
+x <- which(wing.gpa$gdf$caste=="W")
+workers <- subsetGMM(wing.gpa, specimens = x)
+
+distal.wing <- subsetGMM(wing.gpa, landmarks = 1:10)
+landmark.plot(distal.wing)
+```
+
+## Custom additions to data provenance
+
+```{r eval=FALSE, include=TRUE}
+wing.gpa$gdf$digitizer[1] <- "FJ"
+
+wing.gpa <- add.provenance(
+  wing.gpa,
+  name="error.correction",
+  title = "Corrected error in the metadata",
+  text = "Upon checking lab notes, an error needed to be corrected. The digitizer of specimen 1 appears to have been FJ, not JL." )
+
+cat(wing.gpa$provenance$error.correction)
 ```
 
 ## Reporting data provenance
@@ -148,7 +186,8 @@ ggGMMplot(wing.pca, group = wing.gpa$gdf$species,
 
 ```{r eval=FALSE, include=TRUE}
 # filter to just workers
-workers <- filter.shapes(wing.gpa, wing.gpa$gdf$caste=="W")
+x <- which(wing.gpa$gdf$caste=="W")
+workers <- subsetGMM(wing.gpa, specimens = x)
 
 # Find mean shape for each species
 coords.by.species <- coords.subset(workers$gdf$coords, group = workers$gdf$species)
@@ -204,7 +243,7 @@ anova(size.model, species.model)
 
 ```{r eval=FALSE, include=TRUE}
 # Filter to the 4 most common species, to ensure decent sample sizes
-common.sp <- filter.shapes(wing.gpa, wing.gpa$gdf$species %in% c("bimac","imp","tern","vag"))
+common.sp <- subsetGMM(wing.gpa, specimens = (wing.gpa$gdf$species %in% c("bimac","imp","tern","vag")))
 
 # Build null and full models
 common.size.model <- procD.lm(coords ~ log(Csize), data=common.sp$gdf, iter=i) 
@@ -228,7 +267,7 @@ species.unique.model <- procD.lm(coords ~ log(Csize) * species, data=wing.gpa$gd
 plotAllometry(fit = species.unique.model, size = log10(wing.gpa$gdf$Csize), 
               col = as.factor(wing.gpa$gdf$species), xlab = "log10 centroid size")
 
-# the equivalant using borealis
+# the equivalent using borealis
 gg.scaling.plot(
   x = log10(wing.gpa$gdf$Csize), y = wing.pca$x[,1],
   group=wing.gpa$gdf$species, group.title = "species",
@@ -269,15 +308,10 @@ anova(size.pgls)
 ## Disparity comparisons
 
 ```{r eval=FALSE, include=TRUE}
-morphol.disparity(coords ~ Csize, groups = ~ species, data = wing.gpa$gdf)
+x <- which(workers$gdf$species %in% c("bimac","imp","tern"))
+well.sampled.workers <- subsetGMM(workers, specimens = x)
 
-# Optionally, filter to just some species
-x <- which(wing.gpa$gdf$species %in% c("bimac","imp","tern"))
-gdf <- geomorph.data.frame(
-  coords = wing.gpa$gdf$coords[,,x], 
-  Csize = wing.gpa$gdf$Csize[x], 
-  species = wing.gpa$gdf$species[x])
-morphol.disparity(coords ~ Csize, groups = ~ species, data = gdf)
+morphol.disparity(coords ~ Csize, groups = ~ species, data = well.sampled.workers$gdf)
 ```
 
 ## Modularity testing
@@ -293,3 +327,7 @@ summary(mt1)
 ```
 
 ![](https://live.staticflickr.com/4275/34579265733_028bceeefd_w_d.jpg)
+---
+
+[borealis GitHub page](https://github.com/aphanotus/borealis)
+
