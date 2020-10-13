@@ -7,8 +7,8 @@
 #'     element called \code{coords}, \code{gpagen$coords} or \code{gdf$coords}. Associated metadata may exist in
 #'     a matrix element called \code{metadata} or as vectors with a length equal to the number
 #'     of specimens.
-#' @param specimens A vector for subsetting specimens and metadata.
-#' @param landmarks A vector for subsetting landmarks.
+#' @param specimens A numerical or logical vector for subsetting specimens and metadata.
+#' @param landmarks A numerical vector for subsetting landmarks.
 #'     Subsetting landmarks will not affect metadata.
 #'
 #' @export
@@ -86,8 +86,11 @@ subsetGMM <- function (A, specimens = NULL, landmarks = NULL)
 
   # Subset specimens
   if (!is.null(specimens) ) {
-    if (!is.numeric(specimens) | length(specimens)<1) {
+    if (!(is.numeric(specimens) | is.logical(specimens)) | length(specimens)<1) {
       stop("Error: `specimens` is not a recognized type. (See the help entry: `?subsetGMM`.)")
+    }
+    if(is.logical(specimens)) {
+      specimens <- which(specimens)
     }
     # GPAGEN elements
     if (any(names(output) == "gpagen")) {
