@@ -2,9 +2,9 @@
 
 **Tools for Integrative Biology**
 
-[GMM workflow template](https://www.bugsinourbackyard.org/wp-content/uploads/2020/07/gmm-template.html)
+[GMM workflow template](https://www.bugsinourbackyard.org/wp-content/uploads/2020/10/gmm-template.html)
 
-[GMM tutorial](https://www.bugsinourbackyard.org/wp-content/uploads/2020/07/gmm-tutorial.html)
+[GMM tutorial](https://www.bugsinourbackyard.org/wp-content/uploads/2020/10/gmm-tutorial.html)
 
 
 ## Installation
@@ -23,7 +23,7 @@ library(borealis)
 One of the goals of this package is to provide a system to record [data provenance](https://en.wikipedia.org/wiki/Data_lineage#Data_provenance) in the objects
 produced through a morphometry workflow. Many of the major GMM step employ functions from the R package [geomorph](https://cran.r-project.org/web/packages/geomorph/index.html).
 
-For a [tutorial of a GMM workflow](https://www.bugsinourbackyard.org/wp-content/uploads/2020/07/gmm-tutorial.html) using `borealis`, see the vignettes [online](https://www.bugsinourbackyard.org/wp-content/uploads/2020/07/gmm-tutorial.html) or in Rstudio.
+For a [tutorial of a GMM workflow](https://www.bugsinourbackyard.org/wp-content/uploads/2020/10/gmm-tutorial.html) using `borealis`, see the vignettes [online](https://www.bugsinourbackyard.org/wp-content/uploads/2020/10/gmm-tutorial.html) or in Rstudio.
 
 ```r
 vignette("gmm-tutorial", package="borealis")
@@ -73,6 +73,10 @@ morphometric workflows.
 ### Bombus.tree
 
 This phylogeny covers 26 bumblebee species (*Bombus*) focusing on those found in northeastern North America. The tree is based on sequence data from five genes, reported by [Cameron et al. (2007)](https://doi.org/10.1111/j.1095-8312.2007.00784.x). The taxa in that study were subset to the species included here. Sequences were realigned using ClustalW and the consensus tree was inferred using RAxML. The `phylo` list also includes data on taxonomy, node support, species names, and convenient short species codes.
+
+### mantis
+
+A simulated dataset of with 16 landmarks on the femur and tibia for 100 mantis specimens. Two species with male and female shape differences are included.
 
 ### East1916
 
