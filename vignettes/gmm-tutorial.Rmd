@@ -337,7 +337,18 @@ mant.2 <- align.angle(mantis,
                       angle.pts.1 = c(1:10),
                       angle.pts.2 = c(12:15),
                       rot.pts = c(12:16) )
+```
 
+![](https://i.imgur.com/0ZXLk1Q.png)
+
+```
+Angle alignment reduced variance in centroid size-scaled landmark distances by 20.4%.
+```
+
+By default, the function will plot overlaid histograms using the distribution of variance in inter-landmark distances, scaled by each specimen's centroid size.
+This can be used to determine how well the alignment improves the consistency of landmark positions, with lower values indicating greater consistency. 
+
+```{r eval=FALSE, include=TRUE}
 landmark.plot(mant.2, specimen.number = 1:3, panels = c(1,3), links = mantis.lines)
 ```
 
@@ -346,9 +357,6 @@ landmark.plot(mant.2, specimen.number = 1:3, panels = c(1,3), links = mantis.lin
 ```
 Angle alignment reduced variance in centroid size-scaled landmark distances by 20.4%.
 ```
-
-By default, the function will plot overlaid histograms using the distribution of variance in inter-landmark distances, scaled by each specimen's centroid size.
-This can be used to determine how well the alignment improves the consistency of landmark positions, with lower values indicating greater consistency. 
 
 The angle that is enforced on all specimens is based on the mean angle of all specimens, by default. However, arguments to `reference.specimen` can indicate a subset of specimens on which to base the reference angle. You can also add angular value to all specimens using the `angle` argument.
 
@@ -656,7 +664,7 @@ mshape.by.species <- lapply(coords.by.species, mshape)
 
 The output is a new list, with elements named for each species, but now each element contains just one shape representing the average for that species.
 
-Ideally, we'd be all set at this point. However, this object still exists as a `list`. The functions we'll use next will expect their input to be a 3-dimensional `array`. So we'll use some base R commands to reformat the data with substantively changing it.
+Ideally, we'd be all set at this point. However, this object still exists as a `list`. The functions we'll use next will expect their input to be a 3-dimensional `array`. So we'll use some base R commands to reformat the data without substantively changing it.
 
 ```{r eval=FALSE, include=TRUE}
 species.names <- names(mshape.by.species)
@@ -677,7 +685,7 @@ plot(btree)
 
 ![](https://i.imgur.com/KjWXYHs.jpg)
 
-We'll need to par it down to only the taxa included in our shape analysis. The names will also need to be changed to match the abbreviated species names we've used in the shape dataset. 
+We'll need to pare it down to only the taxa included in our shape analysis. The names will also need to be changed to match the abbreviated species names we've used in the shape dataset. 
 Doing some of these things will require tools from the `phytools` package. 
 (If necessary run `install.packages("phytools")`). 
 
