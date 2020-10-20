@@ -65,7 +65,7 @@ This function takes raw qPCR data and produces a convenient plot and table, whic
 
 ### Jadera
 
-Shape data and associated metadata for soapberry bug specimens (*Jadera haematoloma*) from [Fawcett et al. 2018 *Nature Communications*](https://www.nature.com/articles/s41467-018-04102-1). `Jadera` contains data for bugs collected in the wild and raised under various environmental conditions in the lab. `JaderaRNAi` includes similar data for bugs subjected to juvenile stage RNA interference targeting *FoxO*. Both datasets include 42 landmarks from the dorsal side and linear metadata for the length of ventral appendages. Landmarks include the head, pronotum, mesonotum and one (upper) forewing.
+Shape data and associated metadata for soapberry bug specimens (*Jadera haematoloma*) from [Fawcett et al. 2018 *Nature Communications*](https://www.nature.com/articles/s41467-018-04102-1). `Jadera` contains data for bugs collected in the wild and raised under various environmental conditions in the lab. `JaderaRNAi` includes similar data for bugs subjected to juvenile stage RNA interference targeting *FoxO* and several components of the *EGF* signaling pathway. Both datasets include 42 landmarks from the dorsal side and linear metadata for the length of ventral appendages. Landmarks include the head, pronotum, mesonotum and one (upper) forewing.
 
 ![](https://i.imgur.com/ZCmMXav.png)
 
