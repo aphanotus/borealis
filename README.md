@@ -62,7 +62,7 @@ This function takes raw qPCR data and produces a convenient plot and table, whic
 
 ## Data
 
-![](https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41467-018-04102-1/MediaObjects/41467_2018_4102_Fig1_HTML.jpg =500x)
+![](https://i.imgur.com/ZCmMXav.png)
 
 ### Jadera
 
@@ -86,7 +86,7 @@ This phylogeny covers 26 bumblebee species (*Bombus*) focusing on those found in
 
 A simulated dataset of with 16 landmarks on the femur and tibia for 100 mantis specimens. Two species with male and female shape differences are included.
 
-![](https://i.imgur.com/M55tSko.jpg =400x)
+![](https://i.imgur.com/M55tSko.jpg)
 
 ### East1916
 
