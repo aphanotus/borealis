@@ -59,34 +59,33 @@ describing the data and providing data provenance.
 
 This function takes raw qPCR data and produces a convenient plot and table, which can be used to assess the data.
 
+![](https://i.imgur.com/wSiHqsD.png)
 
 ## Data
-
-![](https://i.imgur.com/ZCmMXav.png)
 
 ### Jadera
 
 Shape data and associated metadata for soapberry bug specimens (*Jadera haematoloma*) from [Fawcett et al. 2018 *Nature Communications*](https://www.nature.com/articles/s41467-018-04102-1). `Jadera` contains data for bugs collected in the wild and raised under various environmental conditions in the lab. `JaderaRNAi` includes similar data for bugs subjected to juvenile stage RNA interference targeting *FoxO*. Both datasets include 42 landmarks from the dorsal side and linear metadata for the length of ventral appendages. Landmarks include the head, pronotum, mesonotum and one (upper) forewing.
 
-![](https://i.imgur.com/QDTUaFK.jpg)
+![](https://i.imgur.com/ZCmMXav.png)
 
 ### Bombus.forewings
 
 Preliminary shape data from bumblebee forewings. These data were imported from a `tps` file using `read.tps` . (The file was created from raw data using `create.tps`.) These data are very preliminary. They have not been curated and have not undergone Procrustes alignment. The main purpose of these data are for trouble shooting morphometric workflows.
 
-![](https://i.imgur.com/KjWXYHs.jpg)
+![](https://i.imgur.com/QDTUaFK.jpg)
 
 ### Bombus.tree
 
 This phylogeny covers 26 bumblebee species (*Bombus*) focusing on those found in northeastern North America. The tree is based on sequence data from five genes, reported by [Cameron et al. (2007)](https://doi.org/10.1111/j.1095-8312.2007.00784.x). The taxa in that study were subset to the species included here. Sequences were realigned using ClustalW and the consensus tree was inferred using RAxML. The `phylo` list also includes data on taxonomy, node support, species names, and convenient short species codes.
 
-![](https://i.imgur.com/Dxk2DyJ.png)
+![](https://i.imgur.com/KjWXYHs.jpg)
 
 ### mantis
 
 A simulated dataset of with 16 landmarks on the femur and tibia for 100 mantis specimens. Two species with male and female shape differences are included.
 
-![](https://i.imgur.com/M55tSko.jpg)
+![](https://i.imgur.com/Dxk2DyJ.png)
 
 ### East1916
 
@@ -94,6 +93,7 @@ A dataset reporting the corolla lengths of *Nicotiana* flowers of different bree
 
 This dataset is often used in genetics courses to present the effects of selection on quantitative traits. `East1916` organizes the data in a "tidy" long format. `East1916.wide` presents the data in a data frame that most closely resembles the original Table 1 from East (1916).
 
+![](https://i.imgur.com/M55tSko.jpg)
 
 
 
