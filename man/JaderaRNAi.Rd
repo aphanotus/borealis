@@ -30,7 +30,7 @@ Metadata includes the following
 \describe{
   \item{\code{id}}{An ID name for each specimen, which combines a unique identifer with the dsRNA target, morph and sex.}
   \item{\code{treatment}}{An arbitary treatment ID number. }
-  \item{\code{dsRNA}}{The dsRNA target sequence \code{GFP} = \emph{green flourescent protein} (the dsRNA sequence control). \code{FoxO} = \emph{Forkhead Box Class O}. }
+  \item{\code{dsRNA}}{The dsRNA target sequence \code{GFP} = \emph{green flourescent protein} (the dsRNA sequence control). \code{FoxO} = \emph{Forkhead Box Class O}. \code{EGF} = \emph{Epidermal Growth Factor} (\emph{Keren}). \code{EGFR} = \emph{EGF Receptor}. \code{ERK} = \emph{Extracellular signal-regulated kinase} (\emph{rolled}). }
   \item{\code{pop}}{The population of origin. \code{SP} = Silver Palm Dr, Miami, FL. \code{KL} = Key Largo, FL. \code{LE} = Leesburg, FL. \code{AC} = Aurora, CO. \code{FR} = Frederick, MD \code{PK} = Plantation Key, FL. }
   \item{\code{hostplant}}{The host plant bugs were collected from in the wild, or reared on in the lab. \code{GRT} = goldenrain tree, \emph{Koelreuteria} sp. \code{BV} = balloon vine, \emph{Cardiospermum corindum}. }
   \item{\code{vol}}{The volume of the container used to house the bugs after dsRNA injection (L). }
@@ -80,5 +80,8 @@ Fawcett, M.M., Parks, M.C., Tibbetts, A.E., Swart, J.S., Richards, E.M.,
     Vanegas, J.C., Cenzer, M., Crowley, L., Simmons, W.R., Hou, W.S., Angelini, D.R.
     (2018). Manipulation of insulin signaling phenocopies evolution of a host-associated
     polyphenism. \emph{Nature Communications} 9: 1699. \url{https://doi.org/10.1038/s41467-018-04102-1}
+
+Liou, C., Swart, J.S., Angelini, D.R. (unpublished)
+    Effects of EGF pathway knockdown on wing shapes in \emph{Jadera haematoloma}
 }
 \keyword{datasets}
