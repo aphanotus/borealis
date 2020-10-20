@@ -40,7 +40,7 @@
 #' @source   Dave Angelini \email{david.r.angelini@@gmail.com} [aut, cre]
 #'
 #' @references Adams and M.L. Collyer and A. Kaliontzopoulou. 2020. Geomorph: Software for geometric morphometric analyses. R package version 3.2.1. D.C. (\href{https://cran.r-project.org/package=geomorph}{Link})
-#' @references Adams, D. C. 1999. Methods for shape analysis of landmark data from articulated structures. \emph{Evolutionary Ecology Research}. 1:959-970. (\href{http://scholar.google.com/scholar?btnG=Search%2BScholar&as_q=%22Methods%2Bfor%2Bshape%2Banalysis%2Bof%2Blandmark%2Bdata%2Bfrom%2Barticulated%2Bstructures%22&as_sauthors=Adams&as_occt=any&as_epq=&as_oq=&as_eq=&as_publication=&as_ylo=&as_yhi=&as_sdtAAP=1&as_sdtp=1}{Link})
+#' @references Adams, D. C. 1999. Methods for shape analysis of landmark data from articulated structures. \emph{Evolutionary Ecology Research}. 1:959-970.
 #'
 #' @export
 #'
