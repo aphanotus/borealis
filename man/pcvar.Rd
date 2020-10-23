@@ -2,7 +2,7 @@
 % Please edit documentation in R/pcvar.R
 \name{pcvar}
 \alias{pcvar}
-\title{Proprotional Variance from Principal Components}
+\title{Proportional Variance from Principal Components}
 \source{
 Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
 }

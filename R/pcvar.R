@@ -1,4 +1,4 @@
-#' Proprotional Variance from Principal Components
+#' Proportional Variance from Principal Components
 #'
 #' The function returns the proportion of variance explained by each axis in a
 #' principal component analysis (PCA).
