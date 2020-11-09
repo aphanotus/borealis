@@ -7,6 +7,9 @@
 #'     a list containing such as an array.
 #' @param specimen.number If an array is provided, the specimen number(s) to plot.
 #' @param square A logical factor specifying whether the aspect ratio of the plot should be equal.
+#' @param axes A logical factor specifying whether to include x and y axes.
+#' @param def.grids A logical factor specifying whether to plot deformation grids (thin plate splines) using \code{geomorph::plotRefToTarget}.
+#'     If so, the function uses \code{method = "TPS"} and the reference is set to the censusus shape for the entire the coordinate array.
 #' @param landmark.numbers A logical factor specifying whether landmarks should appear as numbers (if TRUE) or as dots.
 #' @param links A matrix with two columns indicating landmarks to connect by lines. Or \code{"chull"} can be used to draw a convex hull.
 #' @param panels A vector with exactly two integers specifying the number of rows and columns of specimens to plot.
@@ -43,6 +46,8 @@
 landmark.plot <- function (A,
                            specimen.number = NULL,
                            square = TRUE,
+                           axes = FALSE,
+                           def.grids = FALSE,
                            landmark.numbers = TRUE,
                            links = NULL,
                            panels = c(1,1),
@@ -85,6 +90,7 @@ landmark.plot <- function (A,
     if (any(names(A)=="land")) {
       specimen.number <- specimen.number[which(specimen.number <= dim(A$land)[3])]
       landmarks <- A$land[,,specimen.number]
+      if (def.grids) { consensus <- mshape(A$land) }
       if (length(specimen.number)>1) { x <- dimnames(A$land[,,specimen.number])[[3]] }
       else { x <- dimnames(A$land)[[3]][specimen.number] }
       if (is.null(x)) { main.title <- specimen.number }
@@ -93,6 +99,7 @@ landmark.plot <- function (A,
       if (any(names(A)=="gpagen")) {
         specimen.number <- specimen.number[which(specimen.number <= dim(A$gpagen$coords)[3])]
         landmarks <- A$gpagen$coords[,,specimen.number]
+        if (def.grids) { consensus <- mshape(A$gpagen$coords) }
         if (length(specimen.number)>1) { x <- dimnames(A$gpagen$coords[,,specimen.number])[[3]] }
         else { x <- dimnames(A$gpagen$coords)[[3]][specimen.number] }
         if (is.null(x)) { main.title <- specimen.number }
@@ -101,6 +108,7 @@ landmark.plot <- function (A,
         if (any(names(A)=="gdf")) {
           specimen.number <- specimen.number[which(specimen.number <= dim(A$gdf$coords)[3])]
           landmarks <- A$gdf$coords[,,specimen.number]
+          if (def.grids) { consensus <- mshape(A$gdf$coords) }
           if (length(specimen.number)>1) { x <- dimnames(A$gdf$coords[,,specimen.number])[[3]] }
           else { x <- dimnames(A$gdf$coords)[[3]][specimen.number] }
           if (is.null(x)) { main.title <- specimen.number }
@@ -110,6 +118,7 @@ landmark.plot <- function (A,
             if (!is.null(dim(A$coords))) {
               specimen.number <- specimen.number[which(specimen.number <= dim(A$coords)[3])]
               landmarks <- A$coords[,,specimen.number]
+              if (def.grids) { consensus <- mshape(A$coords) }
               if (length(specimen.number)>1) { x <- dimnames(A$coords[,,specimen.number])[[3]] }
               else { x <- dimnames(A$coords)[[3]][specimen.number] }
               if (is.null(x)) { main.title <- specimen.number }
@@ -125,6 +134,7 @@ landmark.plot <- function (A,
     if ((class(A)[1] == "array") & (length(dim(A)) == 3)) {
       specimen.number <- specimen.number[which(specimen.number <= dim(A)[3])]
       landmarks <- A[,,specimen.number]
+      if (def.grids) { consensus <- mshape(A) }
       if (length(specimen.number)>1) { x <- dimnames(A[,,specimen.number])[[3]] }
       else { x <- dimnames(A)[[3]][specimen.number] }
       if (is.null(x)) { main.title <- specimen.number }
@@ -132,6 +142,7 @@ landmark.plot <- function (A,
     } else {
       if ((class(A)[1] == "matrix") & (dim(A)[2] == 2)) {
         landmarks <- A
+        if (def.grids) { consensus <- A }
         main.title <- ''
       } else {
         stop("Error: Input is not a recognized type. (See the help entry: `?landmark.plot`.)")
@@ -163,32 +174,73 @@ landmark.plot <- function (A,
 
   # Main loop
   for (i in 1:length(specimen.number)) {
-    # Plot
-    plot(landmarks[,,i], type='n', asp = square, xlab = 'x', ylab = 'y', main = main.title[i], ...)
-    if (!is.null(links)) {
-      if (links[[1]] == "chull") {
-        links <- grDevices::chull(landmarks[,,i])
-        links <- matrix(c(links,links[-1],links[1]), ncol=2, byrow = FALSE)
-        for (j in 1:(dim(links)[1])) {
-          segments(landmarks[links[j,1],1,i], landmarks[links[j,1],2,i], landmarks[links[j,2],1,i], landmarks[links[j,2],2,i], col = line.color )
-        }
-      } else {
-        if (dim(links)[2] != 2) {
-          warning("Warning: Links must be a matrix with two columns of landmark numbers. (See the help entry: `?landmark.plot`.)")
+
+    if (def.grids) {
+      if (!is.null(links)) {
+        if (links[[1]] == "chull") {
+          links <- grDevices::chull(landmarks[,,i])
+          links <- matrix(c(links,links[-1],links[1]), ncol=2, byrow = FALSE)
         } else {
+          if (dim(links)[2] != 2) {
+            warning("Warning: Links must be a matrix with two columns of landmark numbers. (See the help entry: `?landmark.plot`.)")
+            links <- NULL
+          }
+        }
+      } # End  if (!is.null(links))
+
+      GP <- gridPar(
+        txt.col = text.color,
+        tar.link.col = line.color,
+      )
+
+      plotRefToTarget(
+        M1 = consensus,
+        M2 = landmarks[,,i],
+        method = "TPS",
+        links = links,
+        axes = axes,
+        label = landmark.numbers,
+        gridPars = GP,
+        ...
+      )
+      title(main = main.title[i])
+
+    } # End  if (def.grids)
+    else {
+      # Base R Plot
+      if (axes) {
+        xlab <- 'x'
+        ylab <- 'y'
+      } else {
+        xlab <- ''
+        ylab <- ''
+      }
+      plot(landmarks[,,i], type='n', axes = axes, asp = square, xlab = xlab, ylab = ylab, main = main.title[i], ...)
+      if (!is.null(links)) {
+        if (links[[1]] == "chull") {
+          links <- grDevices::chull(landmarks[,,i])
+          links <- matrix(c(links,links[-1],links[1]), ncol=2, byrow = FALSE)
           for (j in 1:(dim(links)[1])) {
             segments(landmarks[links[j,1],1,i], landmarks[links[j,1],2,i], landmarks[links[j,2],1,i], landmarks[links[j,2],2,i], col = line.color )
           }
+        } else {
+          if (dim(links)[2] != 2) {
+            warning("Warning: Links must be a matrix with two columns of landmark numbers. (See the help entry: `?landmark.plot`.)")
+          } else {
+            for (j in 1:(dim(links)[1])) {
+              segments(landmarks[links[j,1],1,i], landmarks[links[j,1],2,i], landmarks[links[j,2],1,i], landmarks[links[j,2],2,i], col = line.color )
+            }
+          }
         }
-      }
-    } # End  if (!is.null(links))
+      } # End  if (!is.null(links))
 
-    # Landmark labels
-    if (landmark.numbers) {
-      for (j in 1:(dim(landmarks)[1])) { text(landmarks[j,1,i], landmarks[j,2,i], labels=j, col = text.color) }
-    } else {
-      points(landmarks[,,i])
-    }
+      # Landmark labels
+      if (landmark.numbers) {
+        for (j in 1:(dim(landmarks)[1])) { text(landmarks[j,1,i], landmarks[j,2,i], labels=j, col = text.color) }
+      } else {
+        points(landmarks[,,i])
+      }
+    } # End  else / if (def.grids)
 
   } # End for loop
 
@@ -196,4 +248,3 @@ landmark.plot <- function (A,
   par(mfrow=c(1,1))
 
 } # End of function
-

@@ -11,6 +11,8 @@ landmark.plot(
   A,
   specimen.number = NULL,
   square = TRUE,
+  axes = FALSE,
+  def.grids = FALSE,
   landmark.numbers = TRUE,
   links = NULL,
   panels = c(1, 1),
@@ -27,6 +29,11 @@ a list containing such as an array.}
 \item{specimen.number}{If an array is provided, the specimen number(s) to plot.}
 
 \item{square}{A logical factor specifying whether the aspect ratio of the plot should be equal.}
+
+\item{axes}{A logical factor specifying whether to include x and y axes.}
+
+\item{def.grids}{A logical factor specifying whether to plot deformation grids (thin plate splines) using \code{geomorph::plotRefToTarget}.
+If so, the function uses \code{method = "TPS"} and the reference is set to the censusus shape for the entire the coordinate array.}
 
 \item{landmark.numbers}{A logical factor specifying whether landmarks should appear as numbers (if TRUE) or as dots.}
 
