@@ -7,23 +7,39 @@
 Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
 }
 \usage{
-pairs(x, col.smooth = "darkred", gap = 0.5, ...)
+pairs(
+  x,
+  cor.method = "pearson",
+  trendline = TRUE,
+  loess = FALSE,
+  span = 2/3,
+  line.col = "darkred",
+  gap = 0.5,
+  ...
+)
 }
 \arguments{
 \item{x}{A matrix or data/frame.
 Logical and factor columns are converted to numeric.
 Character columns are ignored.}
 
-\item{col.smooth}{A color to be used by \code{lines} for drawing the smooths.}
+\item{cor.method}{A character string indicating which correlation coefficient (or covariance) is to be computed. One of "pearson" (default), "kendall", or "spearman": can be abbreviated.}
+
+\item{trendline}{A logical argument specifying whether to include a linear trend line.}
+
+\item{loess}{A logical argument specifying whether to include a smoothed trend line.}
 
 \item{gap}{A distance between subplots, in margin lines.}
 
 \item{...}{Arguments to be passed to \code{graphics::pairs}.}
+
+\item{col.smooth}{A color to be used by \code{lines} for drawing the smooths.}
 }
 \description{
 An enhanced version of the \code{graphics::pairs} function,
-    incorporating the suggested in the example code to create upper and lower
-    triangular split showing correlation coefficients and a smoothed trend line.
+    incorporating some of the example code from the \code{graphics::pairs} help page
+    to create upper and lower triangular split showing correlation coefficients
+    and a trend line.
 }
 \examples{
 
