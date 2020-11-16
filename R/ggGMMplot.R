@@ -216,11 +216,9 @@ ggGMMplot <- function (
     if (label.groups) {
       if (require("ggrepel") & require("magrittr") & require("dplyr")) {
         pcx$group <- group
-        options(warn=-1)
         hull.labels <- pcx %>%
           group_by(group) %>%
-          summarise(x = mean(comp1), y = mean(comp2) )
-        options(warn=0)
+          summarise(x = mean(comp1), y = mean(comp2), .groups = "drop" )
         base.plot <- base.plot +
           geom_text_repel(data=hull.labels,
                           aes(x=x, y=y, group=group, label=group ),
