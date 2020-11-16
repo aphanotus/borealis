@@ -140,6 +140,12 @@ ggGMMplot <- function (
   point.label.size = 2.5
 ) {
 
+  # Compatibility with umap::umap output
+  if (any(grepl("umap",class(x)))) {
+    class(x) <- "prcomp"
+    x$x <- x$layout
+  }
+
   # Check that the input is a PCA object
   if (!any(grepl("prcomp",class(x)))) {
     stop("Error: 'x' must be an object of class 'prcomp' or 'gm.prcomp'.")
