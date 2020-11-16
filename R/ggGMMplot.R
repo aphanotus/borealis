@@ -45,6 +45,8 @@
 #' @param ref.pt.size Scale factor for reference configuration points (single value or vector of values)
 #' @param target.pt.size Scale factor for target configuration points (single value or vector of values)
 #' @param viridis.color.option The color pallette to use from the \code{viridis} package.
+#' @param group.label.size Font size for group labels.
+#' @param point.label.size Font size for individual point labels.
 #'
 #' @export
 #'
@@ -70,6 +72,7 @@
 #' # Labeling points
 #' ggGMMplot(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE,
 #'           labels = plethodon$site,
+#'           group.label.size = 8, point.label.size = 2,
 #'           color = c("royalblue","gray40"))
 #'
 #' # Plots with example shapes
@@ -132,8 +135,9 @@ ggGMMplot <- function (
   bt.legend.position = c(1,1),
   ref.pt.size = 1,
   target.pt.size = 0.75,
-  viridis.color.option = "viridis"
-
+  viridis.color.option = "viridis",
+  group.label.size = 2.5,
+  point.label.size = 2.5
 ) {
 
   # Check that the input is a PCA object
@@ -229,7 +233,7 @@ ggGMMplot <- function (
         base.plot <- base.plot +
           geom_text_repel(data=hull.labels,
                           aes(x=x, y=y, group=group, label=group ),
-                          hjust=0, size = 2.5, lineheight=0.825, alpha=0.7,
+                          hjust=0, size = group.label.size, lineheight=0.825, alpha=0.7,
                           force = 1, max.iter = 10000)
       }
     } # End   if (label.groups)
@@ -249,7 +253,7 @@ ggGMMplot <- function (
         base.plot <- base.plot +
           geom_text_repel(data=pt.labels,
                           aes(x=x, y=y, label=labels ),
-                          hjust=0, size = 2.5, lineheight=0.825, alpha=0.7,
+                          hjust=0, size = point.label.size, lineheight=0.825, alpha=0.7,
                           force = 1, max.iter = 10000)
       }
     }

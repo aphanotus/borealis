@@ -16,6 +16,7 @@ ggGMMplot(
   group.title = NULL,
   convex.hulls = FALSE,
   label.groups = TRUE,
+  labels = NULL,
   include.legend = FALSE,
   xlim = NULL,
   ylim = NULL,
@@ -39,7 +40,9 @@ ggGMMplot(
   bt.legend.position = c(1, 1),
   ref.pt.size = 1,
   target.pt.size = 0.75,
-  viridis.color.option = "viridis"
+  viridis.color.option = "viridis",
+  group.label.size = 2.5,
+  point.label.size = 2.5
 )
 }
 \arguments{
@@ -58,6 +61,8 @@ ggGMMplot(
 \item{convex.hulls}{A logical factor specifying whether to plot convex hulls around groups.}
 
 \item{label.groups}{A logical factor specifying whether to label groups.}
+
+\item{labels}{An optional character vector of point labels.}
 
 \item{include.legend}{A logical factor specifying whether to include a legend.}
 
@@ -106,6 +111,10 @@ ggGMMplot(
 \item{target.pt.size}{Scale factor for target configuration points (single value or vector of values)}
 
 \item{viridis.color.option}{The color pallette to use from the \code{viridis} package.}
+
+\item{group.label.size}{Font size for group labels.}
+
+\item{point.label.size}{Font size for individual point labels.}
 }
 \description{
 Make pretty plots from geometric morphometric ordinations
@@ -132,6 +141,12 @@ ggGMMplot(PCA, group = plethodon$species, group.title = 'species', convex.hulls 
 ggGMMplot(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE,
           viridis.color.option = 'plasma')
 ggGMMplot(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE,
+          color = c("royalblue","gray40"))
+
+# Labeling points
+ggGMMplot(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE,
+          labels = plethodon$site,
+          group.label.size = 8, point.label.size = 2,
           color = c("royalblue","gray40"))
 
 # Plots with example shapes
