@@ -20,6 +20,7 @@
 #' @param group.title An optional title for the group legend.
 #' @param convex.hulls A logical factor specifying whether to plot convex hulls around groups.
 #' @param label.groups A logical factor specifying whether to label groups.
+#' @param labels An optional character vector of point labels.
 #' @param include.legend A logical factor specifying whether to include a legend.
 #' @param xlim Set x scale limits
 #' @param ylim Set y scale limits
@@ -66,6 +67,11 @@
 #' ggGMMplot(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE,
 #'           color = c("royalblue","gray40"))
 #'
+#' # Labeling points
+#' ggGMMplot(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE,
+#'           labels = plethodon$site,
+#'           color = c("royalblue","gray40"))
+#'
 #' # Plots with example shapes
 #' ggGMMplot(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE,
 #'           backtransform.examples = TRUE,
@@ -102,6 +108,7 @@ ggGMMplot <- function (
   group.title = NULL,
   convex.hulls = FALSE,
   label.groups = TRUE,
+  labels = NULL,
   include.legend = FALSE,
   xlim = NULL,
   ylim = NULL,
@@ -228,6 +235,25 @@ ggGMMplot <- function (
     } # End   if (label.groups)
 
   } # End  if (convex.hulls)
+
+  if (!is.null(labels)) {
+    if (length(labels) != (dim(pcx)[1])) {
+      warning("Warning: Length of `labels` does not match specimen number. ")
+    } else {
+      if (require("ggrepel") & require("magrittr") & require("dplyr")) {
+        pt.labels <- data.frame(
+          x = pcx$comp1,
+          y = pcx$comp2,
+          label = labels
+        )
+        base.plot <- base.plot +
+          geom_text_repel(data=pt.labels,
+                          aes(x=x, y=y, label=labels ),
+                          hjust=0, size = 2.5, lineheight=0.825, alpha=0.7,
+                          force = 1, max.iter = 10000)
+      }
+    }
+  }
 
   if (!include.legend) {
     base.plot <- base.plot + theme(legend.position="none")
