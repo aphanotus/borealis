@@ -164,6 +164,8 @@ ggGMMplot <- function (
   if (is.null(color)) {
     if (is.null(group)) {
       color <- "black"
+      group.title <- NULL
+      convex.hulls <- FALSE
     } else {
       if(require("viridis")) {
         if (!(viridis.color.option %in% c("magma", "A", "inferno", "B", "plasma", "C", "viridis", "D", "cividis", "E"))) {
@@ -177,6 +179,10 @@ ggGMMplot <- function (
                         length(unique(group)) )
       }
     }
+  }  # End  if (is.null(color))
+  if (is.null(group)) {
+    group.title <- NULL
+    convex.hulls <- FALSE
   }
 
   pc.contributions <- pcvar(x, dimensions = dim(x$x)[2])[c(axis1,axis2)]
