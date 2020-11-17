@@ -55,6 +55,7 @@ fw.gpa <- align.procrustes(Bombus.forewings, outlier.analysis = TRUE)
 fw.gpa <- align.procrustes(Bombus.forewings, outlier.analysis = 57)
 fw.gpa <- align.procrustes(Bombus.forewings, outlier.analysis = c("FJ190828-002","DRA190718-001"))
 
+names(fw.gpa$provenance)
 cat(fw.gpa$provenance$align.procrustes)
 
 }
