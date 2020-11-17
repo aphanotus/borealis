@@ -2,7 +2,7 @@
 % Please edit documentation in R/align.procrustes.R
 \name{align.procrustes}
 \alias{align.procrustes}
-\title{Generalized Prorustes alignment with interactive outlier detection and removal}
+\title{Generalized Procrustes alignment with interactive outlier detection and removal}
 \source{
 Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
 }
@@ -13,51 +13,49 @@ align.procrustes(
   show.plot.gpa = TRUE,
   outlier.analysis = FALSE,
   display.outliers = 4,
-  provenance = NULL,
   ...
 )
 }
 \arguments{
-\item{A}{A list or 3-dimensional array containing XY shape corrdinates for multiple specimens.}
+\item{A}{A list or 3-dimensional array containing XY shape coordinates for multiple specimens.}
 
 \item{curves}{An optional matrix defining which landmarks should be treated as semilandmarks by \code{gpagen}.}
 
 \item{show.plot.gpa}{A logical value specifying whether to plot the Procrustes-aligned landmarks.}
 
-\item{outlier.analysis}{A logical value specifying whether to poerform interactive outlier analysis.}
+\item{outlier.analysis}{A logical value specifying whether to perform interactive outlier analysis.
+Alternatively, a numeric vector can be provided indicating the index positions of specimens to remove.
+A character vector of specimen names can also be provided, indicating the specimens to remove.}
 
-\item{display.outliers}{The number of outlier shapes to display.}
-
-\item{provenance}{An object that should be retained for data provenance.
-Unnecessary if \code{A} is a list that already contains a \code{provenance} element.}
+\item{display.outliers}{The number of outlier shapes to display in the interactive outlier analysis.}
 }
 \value{
 Returns a list with Procrustes-aligned coordinates in \code{coords}, centroid size in \code{Csize}.
     All other elements from \code{\link[geomorph]{gpagen}} are in the the element \code{gpagen}.
     Any other list elements in the input are retained.
-    Data proveance is also retained in \code{provenance} and updated with details of the GPA..
+    Data provenance is also retained in \code{provenance} and updated with details of the GPA..
 }
 \description{
 GPA is performed by a call to \code{\link[geomorph]{gpagen}}.
 If \code{outlier.analysis = TRUE} then the function will display the results of
 \code{\link[geomorph]{plotOutliers}}, then warp grids for the most extreme shapes.
-The user is prompted to select a cetain number of extreme shapes to exclude from
+The user is prompted to select a certain number of extreme shapes to exclude from
 a repeated Procrustes alignment. This processes is iterative, until the user indicates that
 it should stop or no shapes are requested for removal.
 }
 \examples{
 data("Bombus.forewings", package = "borealis")
 
-names(Bombus.forewings)
-cat(Bombus.forewings$provenance[[1]])
+fw.gpa <- align.procrustes(Bombus.forewings)
 
 fw.gpa <- align.procrustes(Bombus.forewings, show.plot.gpa = FALSE)
-plot(fw.gpa)
+plot(fw.gpa$gpagen)
 
 fw.gpa <- align.procrustes(Bombus.forewings, outlier.analysis = TRUE)
+fw.gpa <- align.procrustes(Bombus.forewings, outlier.analysis = 57)
+fw.gpa <- align.procrustes(Bombus.forewings, outlier.analysis = c("FJ190828-002","DRA190718-001"))
 
-names(fw.gpa$provenance)
-cat(fw.gpa$provenance$GPA)
+cat(fw.gpa$provenance$align.procrustes)
 
 }
 \references{
