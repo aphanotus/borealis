@@ -28,6 +28,9 @@
 #' @param nrt.cq A numeric vector of Cq values measured for no-reverse transcription control (NRT) samples.
 #' @param ntc.cq A numeric vector of Cq values measured for no-template control (NTC) samples.
 #' @param replicate.number The number of technical replicates in the standards (Default value is 3).
+#' @param outlier.method A character specifying the method to use in determining outliers among the standards.
+#'     The default is \code{absolute} which flags values more than 1.5 cycles from the median.
+#'     Alternatively \code{IQR} will flags replicates more than 1.5 times the interquartile range from the median Cq value.
 #' @param main An overall title for the plot.
 #' @param xlab A title for the x axis.
 #' @param ylab A title for the y axis.
@@ -55,13 +58,14 @@
 
 qPCR.plot <- function(std.conc=NULL, std.cq=NULL, unk.cq=NULL, nrt.cq=NULL, ntc.cq=NULL,
                       replicate.number = 3,
+                      outlier.method = c("absolute","IQR"),
                       main=NULL,
                       xlab='log10 template / ul',
                       ylab='Cq',
                       ...)
 { # Begin the function
 
-  # Subfunction
+  # Sub-function
   robust.rep <- function(x, times, ...) {
     if (is.null(times)) { return(NULL) } else {
       if (is.na(times)) { return(NULL) } else {
@@ -110,11 +114,16 @@ qPCR.plot <- function(std.conc=NULL, std.cq=NULL, unk.cq=NULL, nrt.cq=NULL, ntc.
 
   # Find outliers, flagged as technical replicates more than 1.5 cycles from the median
   n <- sort(robust.rep(1:(length(std.cq)/replicate.number),replicate.number))
-  outliers <- unlist(by(std.cq,n,function(x){abs(x - median(x,na.rm=TRUE)) > 1.5}))
-  # if (length(std.cq) %% 3 == 0) {
-  #   n <- sort(robust.rep(1:(length(std.cq)/3),3))
-  #   outliers <- unlist(by(std.cq,n,function(x){abs(x - median(x,na.rm=TRUE)) > 1.5}))
-  # }
+  if (outlier.method[1] == "absolute") {
+    outliers <- unlist(by(std.cq,n,function(x){abs(x - median(x,na.rm=TRUE)) > 1.5}))
+  } else {
+    if (outlier.method[1] == "IQR") {
+      outliers <- unlist(by(std.cq,n,function(x){abs(x - median(x,na.rm=TRUE)) > 1.5*IQR(x, na.rm = TRUE)}))
+    } else {
+      warning("")
+      outliers <- unlist(by(std.cq,n,function(x){abs(x - median(x,na.rm=TRUE)) > 1.5}))
+    }
+  }
 
   # Find bounds for the plot
   if (is.null(unk.cq)) { xvalues <- std.conc ; yvalues <- std.cq }
@@ -198,6 +207,7 @@ qPCR.plot <- function(std.conc=NULL, std.cq=NULL, unk.cq=NULL, nrt.cq=NULL, ntc.
          adj = c(0,1), cex=0.85, labels='Potential outliers', col = 'darkred')
   }
 
+  # Format output
   output <- list(
     stds = data.frame(
       conc = std.conc,
@@ -205,6 +215,8 @@ qPCR.plot <- function(std.conc=NULL, std.cq=NULL, unk.cq=NULL, nrt.cq=NULL, ntc.
       outlier = outliers
     )
   )
+
+  output$outlier.method = outlier.method[1]
 
   if(!is.null(min.control.cq)) {
     output$controls <- data.frame(

@@ -14,6 +14,7 @@ qPCR.plot(
   nrt.cq = NULL,
   ntc.cq = NULL,
   replicate.number = 3,
+  outlier.method = c("absolute", "IQR"),
   main = NULL,
   xlab = "log10 template / ul",
   ylab = "Cq",
@@ -32,6 +33,10 @@ qPCR.plot(
 \item{ntc.cq}{A numeric vector of Cq values measured for no-template control (NTC) samples.}
 
 \item{replicate.number}{The number of technical replicates in the standards (Default value is 3).}
+
+\item{outlier.method}{A character specifying the method to use in determining outliers among the standards.
+The default is \code{absolute} which flags values more than 1.5 cycles from the median.
+Alternatively \code{IQR} will flags replicates more than 1.5 times the interquartile range from the median Cq value.}
 
 \item{main}{An overall title for the plot.}
 
