@@ -70,7 +70,7 @@ align.procrustes <- function (
         shape.data <- A$land
         output <- A[-grep("land",names(A))]
       } else {
-        stop("Error: Input is not a recognized type. (See the help entry: '?align.procrustes'.)")
+        stop("Error: Input is not a recognized type. (See the help entry: `?align.procrustes`.)")
       }
     }
     if (is.null(provenance) & any(grepl("provenance",names(A)))) { provenance <- A$provenance }
@@ -83,7 +83,7 @@ align.procrustes <- function (
         output$provenance <- provenance
       }
     } else {
-      stop("Error: Input is not a recognized type. (See the help entry: '?align.procrustes'.)")
+      stop("Error: Input is not a recognized type. (See the help entry: `?align.procrustes`.)")
     }
   }
 
