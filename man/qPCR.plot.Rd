@@ -13,9 +13,11 @@ qPCR.plot(
   unk.cq = NULL,
   nrt.cq = NULL,
   ntc.cq = NULL,
+  replicate.number = 3,
   main = NULL,
   xlab = "log10 template / ul",
-  ylab = "Cq"
+  ylab = "Cq",
+  ...
 )
 }
 \arguments{
@@ -29,6 +31,8 @@ qPCR.plot(
 
 \item{ntc.cq}{A numeric vector of Cq values measured for no-template control (NTC) samples.}
 
+\item{replicate.number}{The number of technical replicates in the standards (Default value is 3).}
+
 \item{main}{An overall title for the plot.}
 
 \item{xlab}{A title for the x axis.}
@@ -36,38 +40,43 @@ qPCR.plot(
 \item{ylab}{A title for the y axis.}
 }
 \description{
-This function takes raw realtime PCR data and produces a convenient plot and table,
+This function takes raw real-time PCR data and produces a convenient plot and table,
 which can be used to assess the quality of the data.
 }
 \details{
-The function takes information on the standard concentrations (unitless) and Cq values
-measured by the realtime PCR instrument. A linear regression provides intercept and
-slope, from which PCR efficiency is calculated. The correlation coefficient is also
-displayed.
-
+The function takes information on the standard concentrations (unitless, but assumed
+to be log10 of template molecules per microliter) and Cq values measured by the
+real-time PCR instrument. A linear regression provides intercept and slope, from which
+PCR efficiency is calculated. The correlation coefficient is also displayed.
 Potential outlier values in the standard Cq values are highlighted on the plot in red.
-These are flagged as technical replicate more than 1.5 cycles from the median.
-Efficiency values outside the range of 1.8 to 2.2 (90% - 110%) are also highlighted,
+These are flagged as technical replicates more than 1.5 cycles from the median.
+efficiency values outside the range of 1.8 to 2.2 (90% - 110%) are also highlighted,
 as are correlation coefficients (R^2) less than 0.9.
 
-If they are provided, the mean negative control values (NRT and NTC) are ploted as horizontal lines
-(gray and blue, respectively).
+If they are provided, the minimum Cq values for negative controls (NRT and NTC) are
+plotted as horizontal lines (gray and blue, respectively).
+
+If Cq values are provided for unknown samples, they are plotted on the line and the
+corresponding starting concentrations are provided in the output table.
+
+Any additional arguments are passed to \code{plot}.
 }
 \examples{
 std.conc <- c(rep(6,3),rep(5,3),rep(4,3),rep(3,3))
-std.cq <- c(26.74, 27.33, 25.83, 29.42, 29.90, 28.10, 33.15, 33.31, 31.41, 34.56, 34.64, 34.89)
-unk.cq <- c(28.031, 29.331, 29.466, 29.597, 30.168, 30.258, 30.535, 31.706, 31.779)
+std.cq <- c(25.74, 26.33, 25.03,  28.42, 28.90, 27.30,
+            32.15, 32.31, 30.61,  34.46, 34.04, 34.29)
+unk.cq <- c(28.531, 29.331, 29.466,  29.597, 30.168, 30.258,
+            30.535, 31.206, 31.279,  32.332, 33.096, 32.114)
 nrt.cq <- c(32.76, 32.80, 31.51)
-ntc.cq <- c(37.08, 36.56, 38.62)
+ntc.cq <- c(36.08, 35.56, 37.62)
 
 qPCR.plot(std.conc, std.cq, unk.cq, nrt.cq, ntc.cq, main="TFX (FAM)")
 
-# In practice, it's usually convenient to scan in values copied from a spreadsheet
-# e.g.
+# It's often convenient to scan in values copied from a spreadsheet, e.g.
 # std.conc <- scan()
 
 # If no inputs are provided, the function simulates data and analysis,
-# which can be useful when training people new to realtime PCR.
+# which can be useful when training people new to real-time PCR.
 qPCR.plot()
 
 }
