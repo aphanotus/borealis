@@ -16,6 +16,7 @@ qPCR.plot(
   replicate.number = 3,
   outlier.method = c("absolute", "IQR"),
   unk.replicates = FALSE,
+  error.bars = TRUE,
   unk.ids = NULL,
   main = NULL,
   xlab = "log10 template / ul",
@@ -45,6 +46,9 @@ The default value is \code{FALSE}. If set to \code{TRUE}, then the function assu
 the same \code{replicate.number} used for standards.
 Alternatively, a single numeric value can specify a different number of technical
 replicates for the unknown samples.}
+
+\item{error.bars}{A logical factor specifying whether to include error bars on the unknowns.
+Only applies if there are replicates for the unknowns.}
 
 \item{unk.ids}{An optional character vector with ID names for the unknown samples.
 Alternative, if set to \code{TRUE}, then \code{unk.cq} values will be numbered in order.

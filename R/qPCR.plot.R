@@ -36,6 +36,8 @@
 #'     the same \code{replicate.number} used for standards.
 #'     Alternatively, a single numeric value can specify a different number of technical
 #'     replicates for the unknown samples.
+#' @param error.bars A logical factor specifying whether to include error bars on the unknowns.
+#'     Only applies if there are replicates for the unknowns.
 #' @param unk.ids An optional character vector with ID names for the unknown samples.
 #'     Alternative, if set to \code{TRUE}, then \code{unk.cq} values will be numbered in order.
 #'     If \code{unk.replicates} is \code{TRUE} or set to a numeric, then one only one
@@ -76,6 +78,7 @@ qPCR.plot <- function(std.conc=NULL, std.cq=NULL, unk.cq=NULL, nrt.cq=NULL, ntc.
                       replicate.number = 3,
                       outlier.method = c("absolute","IQR"),
                       unk.replicates = FALSE,
+                      error.bars = TRUE,
                       unk.ids = NULL,
                       main = NULL,
                       xlab = 'log10 template / ul',
@@ -112,6 +115,7 @@ qPCR.plot <- function(std.conc=NULL, std.cq=NULL, unk.cq=NULL, nrt.cq=NULL, ntc.
   # Linear model
   if (length(std.cq)==length(std.conc)) {
     model <- lm(std.cq~std.conc)
+    # se.e <- sqrt(sum((std.cq - model$fitted.values)^2)/length(std.cq)) # Standard error of the estimate
   } else {
     stop("`std.conc` and `std.cq` must be equal in length. (See the help entry: `?qPCR.plot`.)")
   }
@@ -209,6 +213,8 @@ qPCR.plot <- function(std.conc=NULL, std.cq=NULL, unk.cq=NULL, nrt.cq=NULL, ntc.
   }
 
   # Plot unknowns
+  unk.cq.range <- NULL
+  unk.conc.ci <- NULL
   if (!is.null(unk.cq)) {
     if (is.logical(unk.replicates)) {
       if (unk.replicates) {
@@ -219,7 +225,21 @@ qPCR.plot <- function(std.conc=NULL, std.cq=NULL, unk.cq=NULL, nrt.cq=NULL, ntc.
       if (length(unk.cq) %% unk.replicates == 0) {
         # Find the mean of unk.cq for each replicate
         n <- sort(robust.rep(1:(length(unk.cq)/unk.replicates),unk.replicates))
-        unk.cq <- c(by(unk.cq, n, mean, na.rm = TRUE))
+        avg <- c(by(unk.cq, n, mean, na.rm = TRUE))
+        x <- c(by(unk.cq,n,function(x){max(abs(x - mean(x,na.rm=TRUE)))}))
+        unk.cq.range <- data.frame(
+          x0 = NA,
+          y0 = avg-x,
+          y1 = avg+x
+        )
+        inv.lm <- lm(std.conc ~ std.cq)
+        x <- predict(inv.lm, data.frame(std.cq=avg), interval="confidence")
+        unk.conc.ci <- data.frame(
+          x0 = x[,2],
+          x1 = x[,3],
+          y0 = avg
+        )
+        unk.cq <- avg
       } else {
         x <- length(unk.cq) %% unk.replicates
         s <- paste0("`unk.cq` length must a multiple of `unk.replicates`\n",
@@ -239,6 +259,13 @@ qPCR.plot <- function(std.conc=NULL, std.cq=NULL, unk.cq=NULL, nrt.cq=NULL, ntc.
       points(x = predicted.conc[!above.zero], y = unk.cq[!above.zero], pch=8, col="midnightblue")
     }
     points(x = predicted.conc[above.zero], y = unk.cq[above.zero], pch=16)
+
+    # Add error bars
+    if (error.bars & !(is.null(unk.conc.ci))) {
+      unk.cq.range$x0 <- predicted.conc
+      with(unk.cq.range, segments(x0=x0, y0=y0, y1=y1, col = "gray50") )
+      with(unk.conc.ci, segments(x0=x0, x1=x1, y0=y0, col = "gray50") )
+    }
 
     # Add unknown IDs
     if (!is.null(unk.ids)) {
