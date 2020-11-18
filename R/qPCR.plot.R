@@ -31,6 +31,15 @@
 #' @param outlier.method A character specifying the method to use in determining outliers among the standards.
 #'     The default is \code{absolute} which flags values more than 1.5 cycles from the median.
 #'     Alternatively \code{IQR} will flags replicates more than 1.5 times the interquartile range from the median Cq value.
+#' @param unk.replicates Specifies whether \code{unk.cq} contains technical replicates (or previously averaged) values.
+#'     The default value is \code{FALSE}. If set to \code{TRUE}, then the function assumes
+#'     the same \code{replicate.number} used for standards.
+#'     Alternatively, a single numeric value can specify a different number of technical
+#'     replicates for the unknown samples.
+#' @param unk.ids An optional character vector with ID names for the unknown samples.
+#'     Alternative, if set to \code{TRUE}, then \code{unk.cq} values will be numbered in order.
+#'     If \code{unk.replicates} is \code{TRUE} or set to a numeric, then one only one
+#'     value should be provided in the \code{unk.ids} vector for each sample.
 #' @param main An overall title for the plot.
 #' @param xlab A title for the x axis.
 #' @param ylab A title for the y axis.
@@ -48,6 +57,13 @@
 #'
 #' qPCR.plot(std.conc, std.cq, unk.cq, nrt.cq, ntc.cq, main="TFX (FAM)")
 #'
+#' qPCR.plot(std.conc, std.cq, unk.cq, nrt.cq, ntc.cq, main="TFX (FAM)",
+#'           unk.ids = TRUE)
+#'
+#' qPCR.plot(std.conc, std.cq, unk.cq, nrt.cq, ntc.cq, main="TFX (FAM)",
+#'           unk.replicates = TRUE,
+#'           unk.ids = c("A","B","C","control"))
+#'
 #' # It's often convenient to scan in values copied from a spreadsheet, e.g.
 #' # std.conc <- scan()
 #'
@@ -59,9 +75,11 @@
 qPCR.plot <- function(std.conc=NULL, std.cq=NULL, unk.cq=NULL, nrt.cq=NULL, ntc.cq=NULL,
                       replicate.number = 3,
                       outlier.method = c("absolute","IQR"),
-                      main=NULL,
-                      xlab='log10 template / ul',
-                      ylab='Cq',
+                      unk.replicates = FALSE,
+                      unk.ids = NULL,
+                      main = NULL,
+                      xlab = 'log10 template / ul',
+                      ylab = 'Cq',
                       ...)
 { # Begin the function
 
@@ -192,14 +210,54 @@ qPCR.plot <- function(std.conc=NULL, std.cq=NULL, unk.cq=NULL, nrt.cq=NULL, ntc.
 
   # Plot unknowns
   if (!is.null(unk.cq)) {
+    if (is.logical(unk.replicates)) {
+      if (unk.replicates) {
+        unk.replicates <- replicate.number
+      }
+    }
+    if (is.numeric(unk.replicates)) {
+      if (length(unk.cq) %% unk.replicates == 0) {
+        # Find the mean of unk.cq for each replicate
+        n <- sort(robust.rep(1:(length(unk.cq)/unk.replicates),unk.replicates))
+        unk.cq <- c(by(unk.cq, n, mean, na.rm = TRUE))
+      } else {
+        x <- length(unk.cq) %% unk.replicates
+        s <- paste0("`unk.cq` length must a multiple of `unk.replicates`\n",
+                    "`unk.replicates` = ",unk.replicates,"\n",
+                    "`length(unk.cq) %% unk.replicates` = ",x,"\n",
+                    "Plotting all values of `unk.cq`. ",
+                    "(See the help entry: `?qPCR.plot`)")
+        warning(s)
+      }
+    }
+
+    # Predict concentrations for unknown Cq values
     predicted.conc <- (unk.cq - model$coefficients[1]) / model$coefficients[2]
     above.zero <- robust.rep(TRUE,length(unk.cq))
     if (!is.null(min.control.cq)) {
       above.zero <- (unk.cq < min.control.cq)
-      points(unk.cq[!above.zero]~predicted.conc[!above.zero], pch=8, col="midnightblue")
+      points(x = predicted.conc[!above.zero], y = unk.cq[!above.zero], pch=8, col="midnightblue")
     }
-    points(unk.cq[above.zero]~predicted.conc[above.zero], pch=16)
-  }
+    points(x = predicted.conc[above.zero], y = unk.cq[above.zero], pch=16)
+
+    # Add unknown IDs
+    if (!is.null(unk.ids)) {
+      if (is.logical(unk.ids)) {
+        if (unk.ids) {
+          unk.ids <- 1:length(unk.cq)
+        }
+      } else {
+        if (length(unk.ids) != length(unk.cq) ) {
+          if (length(unk.ids) > length(unk.cq) ) { unk.ids <- unk.ids[1:length(unk.cq)] }
+          warning("Length of `unk.ids` does not equal length of `unk.cq`. (See the help entry: `?qPCR.plot`.)")
+        }
+      }
+      text(x = predicted.conc, y = unk.cq, labels = unk.ids,
+           pos = 4, cex = 0.85, col = "grey25")
+    }
+
+  } # End  if (!is.null(unk.cq))
+  # End of Plot unknowns section
 
   # Highlight outliers in stats table
   if (any(outliers)) {

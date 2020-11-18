@@ -15,6 +15,8 @@ qPCR.plot(
   ntc.cq = NULL,
   replicate.number = 3,
   outlier.method = c("absolute", "IQR"),
+  unk.replicates = FALSE,
+  unk.ids = NULL,
   main = NULL,
   xlab = "log10 template / ul",
   ylab = "Cq",
@@ -37,6 +39,17 @@ qPCR.plot(
 \item{outlier.method}{A character specifying the method to use in determining outliers among the standards.
 The default is \code{absolute} which flags values more than 1.5 cycles from the median.
 Alternatively \code{IQR} will flags replicates more than 1.5 times the interquartile range from the median Cq value.}
+
+\item{unk.replicates}{Specifies whether \code{unk.cq} contains technical replicates (or previously averaged) values.
+The default value is \code{FALSE}. If set to \code{TRUE}, then the function assumes
+the same \code{replicate.number} used for standards.
+Alternatively, a single numeric value can specify a different number of technical
+replicates for the unknown samples.}
+
+\item{unk.ids}{An optional character vector with ID names for the unknown samples.
+Alternative, if set to \code{TRUE}, then \code{unk.cq} values will be numbered in order.
+If \code{unk.replicates} is \code{TRUE} or set to a numeric, then one only one
+value should be provided in the \code{unk.ids} vector for each sample.}
 
 \item{main}{An overall title for the plot.}
 
@@ -76,6 +89,13 @@ nrt.cq <- c(32.76, 32.80, 31.51)
 ntc.cq <- c(36.08, 35.56, 37.62)
 
 qPCR.plot(std.conc, std.cq, unk.cq, nrt.cq, ntc.cq, main="TFX (FAM)")
+
+qPCR.plot(std.conc, std.cq, unk.cq, nrt.cq, ntc.cq, main="TFX (FAM)",
+          unk.ids = TRUE)
+
+qPCR.plot(std.conc, std.cq, unk.cq, nrt.cq, ntc.cq, main="TFX (FAM)",
+          unk.replicates = TRUE,
+          unk.ids = c("A","B","C","control"))
 
 # It's often convenient to scan in values copied from a spreadsheet, e.g.
 # std.conc <- scan()
