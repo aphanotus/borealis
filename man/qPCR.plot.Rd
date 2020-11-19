@@ -21,6 +21,7 @@ qPCR.plot(
   main = NULL,
   xlab = "log10 template / ul",
   ylab = "Cq",
+  plot.only = FALSE,
   ...
 )
 }
@@ -60,6 +61,10 @@ value should be provided in the \code{unk.ids} vector for each sample.}
 \item{xlab}{A title for the x axis.}
 
 \item{ylab}{A title for the y axis.}
+
+\item{plot.only}{A logical factor specifying whether to limit output to the plot.
+If \code{FALSE} (the default), then the function also returns tables of the input data
+and the inferred unknown concentrations as well as descriptive statistics from the standards.}
 }
 \description{
 This function takes raw real-time PCR data and produces a convenient plot and table,

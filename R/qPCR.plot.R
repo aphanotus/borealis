@@ -45,6 +45,9 @@
 #' @param main An overall title for the plot.
 #' @param xlab A title for the x axis.
 #' @param ylab A title for the y axis.
+#' @param plot.only A logical factor specifying whether to limit output to the plot.
+#'     If \code{FALSE} (the default), then the function also returns tables of the input data
+#'     and the inferred unknown concentrations as well as descriptive statistics from the standards.
 #'
 #' @export
 #'
@@ -83,6 +86,7 @@ qPCR.plot <- function(std.conc=NULL, std.cq=NULL, unk.cq=NULL, nrt.cq=NULL, ntc.
                       main = NULL,
                       xlab = 'log10 template / ul',
                       ylab = 'Cq',
+                      plot.only = FALSE,
                       ...)
 { # Begin the function
 
@@ -292,36 +296,46 @@ qPCR.plot <- function(std.conc=NULL, std.cq=NULL, unk.cq=NULL, nrt.cq=NULL, ntc.
          adj = c(0,1), cex=0.85, labels='Potential outliers', col = 'darkred')
   }
 
-  # Format output
-  output <- list(
-    stds = data.frame(
-      conc = std.conc,
-      cq = std.cq,
-      outlier = outliers
+  if (!plot.only) {
+    # Format output
+    output <- list(
+      stds = data.frame(
+        conc = std.conc,
+        cq = std.cq,
+        outlier = outliers
+      )
     )
-  )
 
-  output$outlier.method = outlier.method[1]
+    output$outlier.method = outlier.method[1]
 
-  if(!is.null(min.control.cq)) {
-    output$controls <- data.frame(
-      type = c(robust.rep("NTC",length(ntc.cq)),robust.rep("NRT",length(nrt.cq))),
-      cq   = c(ntc.cq,nrt.cq)
-    )
-  } else {
-    above.zero <- robust.rep(NA,length(unk.cq))
-  }
+    if(!is.null(min.control.cq)) {
+      output$controls <- data.frame(
+        type = c(robust.rep("NTC",length(ntc.cq)),robust.rep("NRT",length(nrt.cq))),
+        cq   = c(ntc.cq,nrt.cq)
+      )
+    } else {
+      above.zero <- robust.rep(NA,length(unk.cq))
+    }
 
-  if (!is.null(unk.cq)) {
-    output$unknowns <- data.frame(
-      cq = unk.cq,
-      conc = predicted.conc,
-      above.zero = above.zero
-    )
-  }
+    if (!is.null(unk.cq)) {
+      output$unknowns <- data.frame(
+        cq = unk.cq,
+        conc = predicted.conc
+      )
+      if (!is.null(unk.conc.ci)) {
+        output$unknowns$ci.lo <- unk.conc.ci$x0
+        output$unknowns$ci.hi <- unk.conc.ci$x1
+      }
+      output$unknowns$above.zero <- above.zero
+      if (!is.null(unk.ids)) {
+        rownames(output$unknowns) <- unk.ids
+      }
+    }
 
-  output$diagnostics = label.table[,1:2]
+    output$diagnostics = label.table[,1:2]
 
-  return(output)
-}
+    return(output)
+  } # End  if (!plot.only)
+
+} # End function
 
