@@ -18,6 +18,8 @@ qPCR.plot(
   unk.replicates = FALSE,
   error.bars = TRUE,
   unk.ids = NULL,
+  unk.loading = 1,
+  unk.loading.on.plot = FALSE,
   main = NULL,
   xlab = "log10 template / ul",
   ylab = "Cq",
@@ -56,6 +58,17 @@ Alternative, if set to \code{TRUE}, then \code{unk.cq} values will be numbered i
 If \code{unk.replicates} is \code{TRUE} or set to a numeric, then one only one
 value should be provided in the \code{unk.ids} vector for each sample.}
 
+\item{unk.loading}{A single numeric value or a vector with one value for each unknown sample.
+(If there are technical replicates for unknowns, provide one value for each replicate group.)
+If the plate contains unknowns with different loading volumes or concentrations, this
+argument can be used to adjust the calculation of starting template concentrations in the
+unknowns to a per-unit value.
+This is applied to the concentrations calculated in the output table.
+To apply the argument to the plot too, set \code{unk.loading.on.plot = TRUE}}
+
+\item{unk.loading.on.plot}{A logical factor specifying whether to apply the \code{unk.loading}
+to the unknown values as they appear on the plot.}
+
 \item{main}{An overall title for the plot.}
 
 \item{xlab}{A title for the x axis.}
@@ -76,17 +89,17 @@ to be log10 of template molecules per microliter) and Cq values measured by the
 real-time PCR instrument. A linear regression provides intercept and slope, from which
 PCR efficiency is calculated. The correlation coefficient is also displayed.
 Potential outlier values in the standard Cq values are highlighted on the plot in red.
-These are flagged as technical replicates more than 1.5 cycles from the median.
-efficiency values outside the range of 1.8 to 2.2 (90% - 110%) are also highlighted,
+Efficiency values outside the range of 1.8 to 2.2 (90% - 110%) are also highlighted,
 as are correlation coefficients (R^2) less than 0.9.
-
-If they are provided, the minimum Cq values for negative controls (NRT and NTC) are
-plotted as horizontal lines (gray and blue, respectively).
 
 If Cq values are provided for unknown samples, they are plotted on the line and the
 corresponding starting concentrations are provided in the output table.
 
-Any additional arguments are passed to \code{plot}.
+If they are provided, the minimum Cq values for negative controls (NRT and NTC) are
+plotted as horizontal lines (gray and blue, respectively) and used to call unknowns
+as reliably above zero.
+
+Any additional arguments are passed to \code{graphics::plot}.
 }
 \examples{
 std.conc <- c(rep(6,3),rep(5,3),rep(4,3),rep(3,3))
@@ -104,6 +117,12 @@ qPCR.plot(std.conc, std.cq, unk.cq, nrt.cq, ntc.cq, main="TFX (FAM)",
 
 qPCR.plot(std.conc, std.cq, unk.cq, nrt.cq, ntc.cq, main="TFX (FAM)",
           unk.replicates = TRUE,
+          unk.ids = c("A","B","C","control"))
+
+qPCR.plot(std.conc, std.cq, unk.cq, nrt.cq, ntc.cq, main="TFX (FAM)",
+          unk.replicates = TRUE,
+          unk.loading = c(0.5,1,2,2),
+          unk.loading.on.plot = TRUE,
           unk.ids = c("A","B","C","control"))
 
 # It's often convenient to scan in values copied from a spreadsheet, e.g.

@@ -8,17 +8,17 @@
 #' real-time PCR instrument. A linear regression provides intercept and slope, from which
 #' PCR efficiency is calculated. The correlation coefficient is also displayed.
 #' Potential outlier values in the standard Cq values are highlighted on the plot in red.
-#' These are flagged as technical replicates more than 1.5 cycles from the median.
-#' efficiency values outside the range of 1.8 to 2.2 (90% - 110%) are also highlighted,
+#' Efficiency values outside the range of 1.8 to 2.2 (90% - 110%) are also highlighted,
 #' as are correlation coefficients (R^2) less than 0.9.
-#'
-#' If they are provided, the minimum Cq values for negative controls (NRT and NTC) are
-#' plotted as horizontal lines (gray and blue, respectively).
 #'
 #' If Cq values are provided for unknown samples, they are plotted on the line and the
 #' corresponding starting concentrations are provided in the output table.
 #'
-#' Any additional arguments are passed to \code{plot}.
+#' If they are provided, the minimum Cq values for negative controls (NRT and NTC) are
+#' plotted as horizontal lines (gray and blue, respectively) and used to call unknowns
+#' as reliably above zero.
+#'
+#' Any additional arguments are passed to \code{graphics::plot}.
 #'
 #' @source   Dave Angelini \email{david.r.angelini@@gmail.com} [aut, cre]
 #'
@@ -42,6 +42,15 @@
 #'     Alternative, if set to \code{TRUE}, then \code{unk.cq} values will be numbered in order.
 #'     If \code{unk.replicates} is \code{TRUE} or set to a numeric, then one only one
 #'     value should be provided in the \code{unk.ids} vector for each sample.
+#' @param unk.loading A single numeric value or a vector with one value for each unknown sample.
+#'     (If there are technical replicates for unknowns, provide one value for each replicate group.)
+#'     If the plate contains unknowns with different loading volumes or concentrations, this
+#'     argument can be used to adjust the calculation of starting template concentrations in the
+#'     unknowns to a per-unit value.
+#'     This is applied to the concentrations calculated in the output table.
+#'     To apply the argument to the plot too, set \code{unk.loading.on.plot = TRUE}
+#' @param unk.loading.on.plot A logical factor specifying whether to apply the \code{unk.loading}
+#'     to the unknown values as they appear on the plot.
 #' @param main An overall title for the plot.
 #' @param xlab A title for the x axis.
 #' @param ylab A title for the y axis.
@@ -69,6 +78,12 @@
 #'           unk.replicates = TRUE,
 #'           unk.ids = c("A","B","C","control"))
 #'
+#' qPCR.plot(std.conc, std.cq, unk.cq, nrt.cq, ntc.cq, main="TFX (FAM)",
+#'           unk.replicates = TRUE,
+#'           unk.loading = c(0.5,1,2,2),
+#'           unk.loading.on.plot = TRUE,
+#'           unk.ids = c("A","B","C","control"))
+#'
 #' # It's often convenient to scan in values copied from a spreadsheet, e.g.
 #' # std.conc <- scan()
 #'
@@ -83,6 +98,8 @@ qPCR.plot <- function(std.conc=NULL, std.cq=NULL, unk.cq=NULL, nrt.cq=NULL, ntc.
                       unk.replicates = FALSE,
                       error.bars = TRUE,
                       unk.ids = NULL,
+                      unk.loading = 1,
+                      unk.loading.on.plot = FALSE,
                       main = NULL,
                       xlab = 'log10 template / ul',
                       ylab = 'Cq',
@@ -133,7 +150,9 @@ qPCR.plot <- function(std.conc=NULL, std.cq=NULL, unk.cq=NULL, nrt.cq=NULL, ntc.
   }
 
   # Predict values for unknowns
-  if (!is.null(unk.cq)) { predicted.conc <- (unk.cq - model$coefficients[1]) / model$coefficients[2] }
+  if (!is.null(unk.cq)) {
+    predicted.conc <- (unk.cq - model$coefficients[1]) / model$coefficients[2]
+  }
 
   # Title
   title.text <- ifelse(DataProvided,ifelse(is.null(main),'',main),'Simulated Data')
@@ -258,6 +277,9 @@ qPCR.plot <- function(std.conc=NULL, std.cq=NULL, unk.cq=NULL, nrt.cq=NULL, ntc.
     # Predict concentrations for unknown Cq values
     predicted.conc <- (unk.cq - model$coefficients[1]) / model$coefficients[2]
     above.zero <- robust.rep(TRUE,length(unk.cq))
+    if (unk.loading.on.plot) {
+      predicted.conc <- predicted.conc - log10(unk.loading)
+    }
     if (!is.null(min.control.cq)) {
       above.zero <- (unk.cq < min.control.cq)
       points(x = predicted.conc[!above.zero], y = unk.cq[!above.zero], pch=8, col="midnightblue")
@@ -267,6 +289,10 @@ qPCR.plot <- function(std.conc=NULL, std.cq=NULL, unk.cq=NULL, nrt.cq=NULL, ntc.
     # Add error bars
     if (error.bars & !(is.null(unk.conc.ci))) {
       unk.cq.range$x0 <- predicted.conc
+      if (unk.loading.on.plot) {
+        unk.conc.ci$x0 <- unk.conc.ci$x0 - log10(unk.loading)
+        unk.conc.ci$x1 <- unk.conc.ci$x1 - log10(unk.loading)
+      }
       with(unk.cq.range, segments(x0=x0, y0=y0, y1=y1, col = "gray50") )
       with(unk.conc.ci, segments(x0=x0, x1=x1, y0=y0, col = "gray50") )
     }
@@ -284,7 +310,7 @@ qPCR.plot <- function(std.conc=NULL, std.cq=NULL, unk.cq=NULL, nrt.cq=NULL, ntc.
         }
       }
       text(x = predicted.conc, y = unk.cq, labels = unk.ids,
-           pos = 4, cex = 0.85, col = "grey25")
+           pos = 4, cex = 0.85, col = "grey25", font = 2)
     }
 
   } # End  if (!is.null(unk.cq))
@@ -320,11 +346,11 @@ qPCR.plot <- function(std.conc=NULL, std.cq=NULL, unk.cq=NULL, nrt.cq=NULL, ntc.
     if (!is.null(unk.cq)) {
       output$unknowns <- data.frame(
         cq = unk.cq,
-        conc = predicted.conc
+        conc = predicted.conc - log10(unk.loading)
       )
       if (!is.null(unk.conc.ci)) {
-        output$unknowns$ci.lo <- unk.conc.ci$x0
-        output$unknowns$ci.hi <- unk.conc.ci$x1
+        output$unknowns$ci.lo <- unk.conc.ci$x0 - log10(unk.loading)
+        output$unknowns$ci.hi <- unk.conc.ci$x1 - log10(unk.loading)
       }
       output$unknowns$above.zero <- above.zero
       if (!is.null(unk.ids)) {
@@ -332,7 +358,9 @@ qPCR.plot <- function(std.conc=NULL, std.cq=NULL, unk.cq=NULL, nrt.cq=NULL, ntc.
       }
     }
 
-    output$diagnostics = label.table[,1:2]
+    output$unk.loading <- unk.loading
+
+    output$stats = as.data.frame(label.table[,1:2])
 
     return(output)
   } # End  if (!plot.only)
