@@ -105,7 +105,5 @@ landmark.plot(x, specimen.number = 1:4, links = mantis.lines)
 
 }
 \references{
-Adams and M.L. Collyer and A. Kaliontzopoulou. 2020. Geomorph: Software for geometric morphometric analyses. R package version 3.2.1. D.C. (\href{https://cran.r-project.org/package=geomorph}{Link})
-
 Adams, D. C. 1999. Methods for shape analysis of landmark data from articulated structures. \emph{Evolutionary Ecology Research}. 1:959-970.
 }

@@ -39,7 +39,6 @@
 #'
 #' @source   Dave Angelini \email{david.r.angelini@@gmail.com} [aut, cre]
 #'
-#' @references Adams and M.L. Collyer and A. Kaliontzopoulou. 2020. Geomorph: Software for geometric morphometric analyses. R package version 3.2.1. D.C. (\href{https://cran.r-project.org/package=geomorph}{Link})
 #' @references Adams, D. C. 1999. Methods for shape analysis of landmark data from articulated structures. \emph{Evolutionary Ecology Research}. 1:959-970.
 #'
 #' @export
@@ -92,11 +91,6 @@ align.angle <- function (
   show.plot = TRUE
 )
 { # Begin the function
-
-  # Don't bother running anything if geomorph isn't installed!
-  if (!require("geomorph")) {
-    stop("Please run  `install.packages('geomorph')`")
-  }
 
   # Initialize
   shapes <- NULL
