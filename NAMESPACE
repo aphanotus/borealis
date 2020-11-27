@@ -3,6 +3,7 @@
 S3method(AIC,adonis)
 export(add.provenance)
 export(align.angle)
+export(align.extension)
 export(align.procrustes)
 export(align.reflect)
 export(centroid.scaled.distances)
