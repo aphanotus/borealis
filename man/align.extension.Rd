@@ -60,6 +60,29 @@ X and Y locations of the landmark. The function will pass extra arguments
 to \code{\link[borealis]{landmark.plot}}, including \code{links}.
 }
 \examples{
+# Load the dataset
+data("Jadera", package = "borealis")
 
+# Define connecting lines
+{
+  x <- 1:9
+  jhae.lines <- matrix(c(x[-length(x)], x[length(x)], x[-1], x[1]), ncol = 2)
+  x <- c(10,11,17,16,15,12,13,14)
+  jhae.lines <- rbind(jhae.lines, matrix(c(x[-length(x)], x[length(x)], x[-1], x[1]), ncol = 2) )
+  x <- c(17,18,15,16)
+  jhae.lines <- rbind(jhae.lines, matrix(c(x[-length(x)], x[length(x)], x[-1], x[1]), ncol = 2) )
+  x <- c(19,21,22,20,26,25,32:34,31,35:39,29,40:42)
+  jhae.lines <- rbind(jhae.lines, matrix(c(x[-length(x)], x[length(x)], x[-1], x[1]), ncol = 2) )
+  x <- c(19,23, 23,24, 23,28, 28,29, 19,24, 24,27, 27,28, 19,25, 27,30)
+  jhae.lines <- rbind(jhae.lines, matrix(x, ncol = 2, byrow = TRUE) )
+  x <- c(1,3, 7,9, 14,16, 16,18)
+  jhae.lines <- rbind(jhae.lines, matrix(x, ncol = 2, byrow = TRUE) )
+}
+
+landmark.plot(Jadera, specimen.number = 1:4, axes = TRUE, links = jhae.lines)
+
+j2 <- align.extension(Jadera, pts.1 = 1:9, pts.2 = 10:18)
+
+landmark.plot(j2, specimen.number = 1:4, axes = TRUE, links = jhae.lines)
 
 }

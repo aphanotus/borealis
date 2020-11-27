@@ -39,7 +39,30 @@
 #' @export
 #'
 #' @examples
+#' # Load the dataset
+#' data("Jadera", package = "borealis")
 #'
+#' # Define connecting lines
+#' {
+#'   x <- 1:9
+#'   jhae.lines <- matrix(c(x[-length(x)], x[length(x)], x[-1], x[1]), ncol = 2)
+#'   x <- c(10,11,17,16,15,12,13,14)
+#'   jhae.lines <- rbind(jhae.lines, matrix(c(x[-length(x)], x[length(x)], x[-1], x[1]), ncol = 2) )
+#'   x <- c(17,18,15,16)
+#'   jhae.lines <- rbind(jhae.lines, matrix(c(x[-length(x)], x[length(x)], x[-1], x[1]), ncol = 2) )
+#'   x <- c(19,21,22,20,26,25,32:34,31,35:39,29,40:42)
+#'   jhae.lines <- rbind(jhae.lines, matrix(c(x[-length(x)], x[length(x)], x[-1], x[1]), ncol = 2) )
+#'   x <- c(19,23, 23,24, 23,28, 28,29, 19,24, 24,27, 27,28, 19,25, 27,30)
+#'   jhae.lines <- rbind(jhae.lines, matrix(x, ncol = 2, byrow = TRUE) )
+#'   x <- c(1,3, 7,9, 14,16, 16,18)
+#'   jhae.lines <- rbind(jhae.lines, matrix(x, ncol = 2, byrow = TRUE) )
+#' }
+#'
+#' landmark.plot(Jadera, specimen.number = 1:4, axes = TRUE, links = jhae.lines)
+#'
+#' j2 <- align.extension(Jadera, pts.1 = 1:9, pts.2 = 10:18)
+#'
+#' landmark.plot(j2, specimen.number = 1:4, axes = TRUE, links = jhae.lines)
 #'
 
 align.extension <- function (
@@ -124,41 +147,41 @@ align.extension <- function (
   x <- apply(shapes, 3, function(m) { na.omit(unlist(centroid.scaled.distances(m))) })
   var.centroid.scaled.distances1 <- apply(x, 1, var)
 
-  translate.substructure <- function (m, pts.1, pts.2, ref.x, ref.y ) {
-    # initial distances
+  translate.substructure <- function (m, pts.1, pts.2, ref.dist ) {
     if (length(pts.1)==1) { p1 <- m[pts.1,] }
     else { p1 <- apply(m[pts.1,], 2, mean) }
     if (length(pts.2)==1) { p2 <- m[pts.2,] }
     else { p2 <- apply(m[pts.2,], 2, mean) }
-    adj.x <- ref.x - (p1[1] - p2[1])
-    adj.y <- ref.y - (p1[2] - p2[2])
-    # Adjust the group1 points
-    m[pts.1,1] <- m[pts.1,1] - adj.x
-    m[pts.1,2] <- m[pts.1,2] - adj.y
+    dist.i <- borealis::distance(p1,p2)
+    CS <- sqrt(sum( (m[,1]-mean(m[,1]))^2 + (m[,2]-mean(m[,2]))^2 ) )
+    multiplier <- ((ref.dist * CS) / dist.i)
+    dist.x <- p2[1] - p1[1]
+    dist.y <- p2[2] - p1[2]
+    adj.x <- dist.x - (dist.x * multiplier)
+    adj.y <- dist.y - (dist.y * multiplier)
+    m[pts.1,1] <- m[pts.1,1] + adj.x
+    m[pts.1,2] <- m[pts.1,2] + adj.y
     return(m)
   } # end   translate.substructure function
 
   # Find reference distance
   if (reference.specimen=="all") { reference.specimen <- 1:(dim(shapes)[3]) }
-  reference.dist.x <- vector()
-  reference.dist.y <- vector()
+  reference.distance <- vector()
   for (i in reference.specimen) {
     if (length(pts.1)==1) { p1 <- shapes[pts.1,,i] }
     else { p1 <- apply(shapes[pts.1,,i], 2, mean) }
     if (length(pts.2)==1) { p2 <- shapes[pts.2,,i] }
     else { p2 <- apply(shapes[pts.2,,i], 2, mean) }
-    # reference.distance <- c(reference.distance, distance(p1,p2))
-    reference.dist.x <- c(reference.dist.x, p1[1] - p2[1])
-    reference.dist.y <- c(reference.dist.y, p1[2] - p2[2])
+    CS <- sqrt(sum( (shapes[,1,i]-mean(shapes[,1,i]))^2 + (shapes[,2,i]-mean(shapes[,2,i]))^2 ) )
+    reference.distance <- c(reference.distance, (borealis::distance(p1,p2) / CS))
   }
-  reference.dist.x <- mean(reference.dist.x)
-  reference.dist.y <- mean(reference.dist.y)
+  reference.distance <- mean(reference.distance)
 
   # #########################################
   # MAIN LOOP
   # #########################################
   for (i in 1:(dim(shapes)[3])) {
-    shapes[,,i] <- translate.substructure(shapes[,,i], pts.1, pts.2, reference.dist.x, reference.dist.y )
+    shapes[,,i] <- translate.substructure(shapes[,,i], pts.1, pts.2, reference.distance )
   }
   # End of MAIN LOOP
 
