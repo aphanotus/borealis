@@ -36,7 +36,7 @@ centroid.scaled.distances <- function(m, scale = TRUE, symmetrical = FALSE)
   }
   if (!symmetrical) { df[upper.tri(df, diag = TRUE)] <- NA }
   if (scale) {
-    CS <- sqrt(sum( (m[1,]-mean(m[1,]))^2 + (m[2,]-mean(m[2,]))^2 ) )
+    CS <- sqrt(sum( (m[,1]-mean(m[,1]))^2 + (m[,2]-mean(m[,2]))^2 ) )
     df <- df / CS
   }
   return(df)
