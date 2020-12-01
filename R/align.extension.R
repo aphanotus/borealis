@@ -21,15 +21,17 @@
 #' @param pts.2 A vector or single value specifying the angle point of the second subset.
 #'     This could be the entire set of points of an articulated structure to be rotated.
 #'     If \code{pts.2 = NULL}, then all points other than \code{pts.1} and \code{art.pt} are used.
-#' @param distance An optional value specifying the additional amount by which the rotation should be augmented (in radians).
-#'     It might be essential to use a negative angle if centroids from multiple points are used for angle points.  It should be
-#'     clear if this is the case, upon plotting results.
 #' @param reference.specimen A number or numeric vector specifying which specimens should be taken as the reference for the angle
 #'     defined by \code{pts.1}, \code{art.pt}, and \code{pts.2} or provided in \code{angle}.
 #'     The default is \code{"all"}, which uses the mean angle of all specimens.
 #' @param show.plot A logical argument specifying whether to display a plot
 #'     comparing the distributions of variance in landmark distances,
 #'     corrected for centroid size, before and after alignment to the fixed angle.
+#' @param threshold A percentage value in the iterative improvement in centroid
+#'     size-scaled landmark distances to serve as the threshold for completion.
+#' @param max.iter A numeric value to limit the number of iterations.
+#' @param verbose A logical argument specifying whether to display metrics each
+#'     during each iteration.
 #'
 #' @return Returns a list with \code{coords}, \code{provenance}, and
 #'    any other potential list elements from the input.
@@ -69,9 +71,11 @@ align.extension <- function (
   A,
   pts.1,
   pts.2 = NULL,
-  distance = 0,
   reference.specimen = "all",
-  show.plot = TRUE
+  show.plot = TRUE,
+  threshold = 0.1,
+  max.iter = 100,
+  verbose = TRUE
 )
 { # Begin the function
 
@@ -164,34 +168,49 @@ align.extension <- function (
     return(m)
   } # end   translate.substructure function
 
-  # Find reference distance
-  if (reference.specimen=="all") { reference.specimen <- 1:(dim(shapes)[3]) }
-  reference.distance <- vector()
-  for (i in reference.specimen) {
-    if (length(pts.1)==1) { p1 <- shapes[pts.1,,i] }
-    else { p1 <- apply(shapes[pts.1,,i], 2, mean) }
-    if (length(pts.2)==1) { p2 <- shapes[pts.2,,i] }
-    else { p2 <- apply(shapes[pts.2,,i], 2, mean) }
-    CS <- sqrt(sum( (shapes[,1,i]-mean(shapes[,1,i]))^2 + (shapes[,2,i]-mean(shapes[,2,i]))^2 ) )
-    reference.distance <- c(reference.distance, (borealis::distance(p1,p2) / CS))
-  }
-  reference.distance <- mean(reference.distance)
-
   # #########################################
   # MAIN LOOP
   # #########################################
-  for (i in 1:(dim(shapes)[3])) {
-    shapes[,,i] <- translate.substructure(shapes[,,i], pts.1, pts.2, reference.distance )
-  }
-  # End of MAIN LOOP
+  continue.loop <-  TRUE
+  iterations <- 0
+  var.centroid.scaled.distances2 <- var.centroid.scaled.distances1
 
-  # Compare variance
-  x <- apply(shapes, 3, function(m) { na.omit(unlist(centroid.scaled.distances(m))) })
-  var.centroid.scaled.distances2 <- apply(x, 1, var)
-  percent.improvement <- signif(((sum(var.centroid.scaled.distances1) - sum(var.centroid.scaled.distances2)) / sum(var.centroid.scaled.distances1))*100,3)
+  while (continue.loop) {
+
+    # Find reference distance
+    if (reference.specimen[[1]]=="all") { reference.specimen <- 1:(dim(shapes)[3]) }
+    reference.distance <- vector()
+    for (i in reference.specimen) {
+      if (length(pts.1)==1) { p1 <- shapes[pts.1,,i] }
+      else { p1 <- apply(shapes[pts.1,,i], 2, mean) }
+      if (length(pts.2)==1) { p2 <- shapes[pts.2,,i] }
+      else { p2 <- apply(shapes[pts.2,,i], 2, mean) }
+      CS <- sqrt(sum( (shapes[,1,i]-mean(shapes[,1,i]))^2 + (shapes[,2,i]-mean(shapes[,2,i]))^2 ) )
+      reference.distance <- c(reference.distance, (borealis::distance(p1,p2) / CS))
+    }
+    reference.distance <- mean(reference.distance)
+
+    for (i in 1:(dim(shapes)[3])) {
+      shapes[,,i] <- translate.substructure(shapes[,,i], pts.1, pts.2, reference.distance )
+    }
+
+    # Compare variance
+    x <- apply(shapes, 3, function(m) { na.omit(unlist(centroid.scaled.distances(m))) })
+    var.centroid.scaled.distances.i.minus1 <- var.centroid.scaled.distances2
+    var.centroid.scaled.distances2 <- apply(x, 1, var)
+    percent.improvement <- signif(((sum(var.centroid.scaled.distances1) - sum(var.centroid.scaled.distances2)) / sum(var.centroid.scaled.distances1))*100,3)
+    percent.improvement.i <- signif(((sum(var.centroid.scaled.distances.i.minus1) - sum(var.centroid.scaled.distances2)) / sum(var.centroid.scaled.distances.i.minus1))*100,3)
+
+    iterations <- iterations + 1
+    if ((percent.improvement.i < threshold) | (iterations >= max.iter)) {
+      continue.loop <- FALSE
+    }
+
+    if (verbose) { message(paste0("Iteration ",iterations,"\tReduction in scaled distances:\t",percent.improvement.i,"%")) }
+  } # End of MAIN LOOP
 
   if (percent.improvement > 0) {
-    s1 <- paste0("Extension alignment reduced variance in centroid size-scaled landmark distances by ",percent.improvement,"%.\n")
+    s1 <- paste0("Extension alignment (",iterations," iterations) reduced variance in centroid size-scaled landmark distances by ",percent.improvement,"%.\n")
   } else {
     percent.improvement <- -1*percent.improvement
     s1 <- paste0("Extension alignment increased variance in centroid size-scaled landmark distances by ",percent.improvement,"%.\n")
@@ -215,7 +234,7 @@ align.extension <- function (
     options(warn = 0)
     par(mfrow=c(1,1))
   }
-  message(s1)
+  if (verbose) { message(s1) }
 
   # Prep the output
   output$coords <- shapes
@@ -228,6 +247,7 @@ align.extension <- function (
     paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::align.extension` on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n"),
     paste0("- pts.1: ",paste0(pts.1, collapse = ", "),"\n"),
     paste0("- pts.2: ",paste0(pts.2, collapse = ", "),"\n"),
+    paste0("- threshold: ",threshold,"\n"),
     ifelse(is.null(percent.improvement),"\n",paste0(s1,"\n"))
   )
 

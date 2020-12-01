@@ -11,9 +11,11 @@ align.extension(
   A,
   pts.1,
   pts.2 = NULL,
-  distance = 0,
   reference.specimen = "all",
-  show.plot = TRUE
+  show.plot = TRUE,
+  threshold = 0.1,
+  max.iter = 100,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -27,10 +29,6 @@ identifies a specific landmark to use.}
 This could be the entire set of points of an articulated structure to be rotated.
 If \code{pts.2 = NULL}, then all points other than \code{pts.1} and \code{art.pt} are used.}
 
-\item{distance}{An optional value specifying the additional amount by which the rotation should be augmented (in radians).
-It might be essential to use a negative angle if centroids from multiple points are used for angle points.  It should be
-clear if this is the case, upon plotting results.}
-
 \item{reference.specimen}{A number or numeric vector specifying which specimens should be taken as the reference for the angle
 defined by \code{pts.1}, \code{art.pt}, and \code{pts.2} or provided in \code{angle}.
 The default is \code{"all"}, which uses the mean angle of all specimens.}
@@ -38,6 +36,14 @@ The default is \code{"all"}, which uses the mean angle of all specimens.}
 \item{show.plot}{A logical argument specifying whether to display a plot
 comparing the distributions of variance in landmark distances,
 corrected for centroid size, before and after alignment to the fixed angle.}
+
+\item{threshold}{A percentage value in the iterative improvement in centroid
+size-scaled landmark distances to serve as the threshold for completion.}
+
+\item{max.iter}{A numeric value to limit the number of iterations.}
+
+\item{verbose}{A logical argument specifying whether to display metrics each
+during each iteration.}
 }
 \value{
 Returns a list with \code{coords}, \code{provenance}, and
