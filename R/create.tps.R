@@ -213,7 +213,7 @@ create.tps <- function (
     # Nested loop for each landmark
     for (j in 1:landmark.number) {
       x <- landmark.number*(i-1) + j
-      cat(paste0(raw$x[x],' ',raw$y[x],'\n'))
+      cat(paste0(as.numeric(raw$x[x]),' ',as.numeric(raw$y[x]),'\n'))
     } # End nested loop for each landmark
 
     x <- landmark.number*(i-1) + 1
