@@ -154,7 +154,7 @@ align.angle <- function (
       }
     }
   }
-  if (!((reference.specimen[1] == "all") | is.numeric(reference.specimen))) {
+  if (!((reference.specimen[[1]] == "all") | is.numeric(reference.specimen))) {
     reference.specimen <- "all"
     warning("`reference.specimen` is invalid. Using `'all'`. See `?align.angle` for usage.\n")
   } else {
@@ -232,7 +232,7 @@ align.angle <- function (
   }
 
   # Find reference angle
-  if (reference.specimen=="all") { reference.specimen <- 1:(dim(shapes)[3]) }
+  if (reference.specimen[[1]] == "all") { reference.specimen <- 1:(dim(shapes)[3]) }
   reference.angle <- vector()
   for (i in reference.specimen) {
     if (length(art.pt)==1) { p0 <- shapes[art.pt,,i] }
