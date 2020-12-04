@@ -154,7 +154,7 @@ align.angle <- function (
       }
     }
   }
-  if (!((reference.specimen == "all") | is.numeric(reference.specimen))) {
+  if (!((reference.specimen[1] == "all") | is.numeric(reference.specimen))) {
     reference.specimen <- "all"
     warning("`reference.specimen` is invalid. Using `'all'`. See `?align.angle` for usage.\n")
   } else {

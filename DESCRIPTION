@@ -1,7 +1,7 @@
 Package: borealis
 Type: Package
 Title: Tools for Integrative Biology 
-Version: 2020.12.01
+Version: 2020.12.04
 Authors@R: person("Dave", "Angelini", email = "david.r.angelini@gmail.com",
                   role = c("aut", "cre"))
 Description: An R package for common activities in an integrative biology lab. 
@@ -10,7 +10,7 @@ Description: An R package for common activities in an integrative biology lab.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Imports:
     geomorph,
     grDevices
