@@ -14,14 +14,14 @@
 #' specimen and pivot point result in sensible alignments.
 #'
 #' @param A A 3-dimensional array containing XY shape coordinates for multiple specimens, or a list containing such as an array and data provenance.
-#' @param art.pt A number specifying which landmark is the articulation point between the two landmark subsets.
-#' @param angle.pts.1 A vector or single value specifying the angle point of one subset.  If more that one value
+#' @param art.pt A number or numeric vector specifying the landmark that define the articulation point between the two landmark subsets.
+#' @param angle.pts.1 A number or numeric vector of landmarks specifying the angle point of one subset.  If more that one value
 #'     is provided, the centroid of the landmarks described by the vector will be used; a single value
 #'     identifies a specific landmark to use.
-#' @param angle.pts.2 A vector or single value specifying the angle point of the second subset.
+#' @param angle.pts.2 A number or numeric vector of landmarks specifying the angle point of the second subset.
 #'     This could be the entire set of points of an articulated structure to be rotated.
 #'     If \code{angle.pts.2 = NULL}, then all points other than \code{angle.pts.1} and \code{art.pt} are used.
-#' @param rot.pts A vector containing numbers specifying which landmarks are in the subset to be rotated.
+#' @param rot.pts A vector containing numbers specifying which landmarks to rotate.
 #'     If \code{NULL}, it is assumed that the points to be rotated are the same as those in \code{angle.pts.2}.
 #' @param angle An optional value specifying the additional amount by which the rotation should be augmented (in radians).
 #'     It might be essential to use a negative angle if centroids from multiple points are used for angle points.  It should be

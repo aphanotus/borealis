@@ -22,17 +22,17 @@ align.angle(
 \arguments{
 \item{A}{A 3-dimensional array containing XY shape coordinates for multiple specimens, or a list containing such as an array and data provenance.}
 
-\item{art.pt}{A number specifying which landmark is the articulation point between the two landmark subsets.}
+\item{art.pt}{A number or numeric vector specifying the landmark that define the articulation point between the two landmark subsets.}
 
-\item{angle.pts.1}{A vector or single value specifying the angle point of one subset.  If more that one value
+\item{angle.pts.1}{A number or numeric vector of landmarks specifying the angle point of one subset.  If more that one value
 is provided, the centroid of the landmarks described by the vector will be used; a single value
 identifies a specific landmark to use.}
 
-\item{angle.pts.2}{A vector or single value specifying the angle point of the second subset.
+\item{angle.pts.2}{A number or numeric vector of landmarks specifying the angle point of the second subset.
 This could be the entire set of points of an articulated structure to be rotated.
 If \code{angle.pts.2 = NULL}, then all points other than \code{angle.pts.1} and \code{art.pt} are used.}
 
-\item{rot.pts}{A vector containing numbers specifying which landmarks are in the subset to be rotated.
+\item{rot.pts}{A vector containing numbers specifying which landmarks to rotate.
 If \code{NULL}, it is assumed that the points to be rotated are the same as those in \code{angle.pts.2}.}
 
 \item{angle}{An optional value specifying the additional amount by which the rotation should be augmented (in radians).
