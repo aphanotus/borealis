@@ -32,7 +32,7 @@ vignette("gmm-template", package="borealis")
 
 #### Other functions 
 
-##### AIC.adonis
+##### adonis.aic
 
 A simple function to calculate generalized [AIC](https://en.wikipedia.org/wiki/Akaike_information_criterion) for models created by [`vegan::adonis`](https://www.rdocumentation.org/packages/vegan/versions/2.4-2/topics/adonis).
 

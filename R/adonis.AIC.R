@@ -5,7 +5,7 @@
 #' @export
 #'
 
-adonis.AIC <- function (fit) {
+adonis.aic <- function (fit) {
   # Generalized AIC = 2k + n [Ln(2(pi) RSS/n)+1]
   k <- ncol(fit$model.matrix)
   n <- nrow(fit$model.matrix)
