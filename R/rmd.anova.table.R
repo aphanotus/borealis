@@ -30,12 +30,12 @@
 #' mantis.cs.model <- procD.lm(coords ~ log10(Csize), data = mantis.gpa$gdf, print.progress = FALSE)
 #' mantis.model <- procD.lm(coords ~ log10(Csize) + sex, data = mantis.gpa$gdf, print.progress = FALSE)
 #'
-#' anova.rmd.table(mantis.model)
+#' rmd.anova.table(mantis.model)
 #'
-#' anova.rmd.table(mantis.cs.model, mantis.model)
+#' rmd.anova.table(mantis.cs.model, mantis.model)
 #'
 
-anova.rmd.table <- function (m1, m2 = NULL, digits = 3, ...)
+rmd.anova.table <- function (m1, m2 = NULL, digits = 3, ...)
 { # Begin the function
 
   # Load packages
@@ -43,11 +43,11 @@ anova.rmd.table <- function (m1, m2 = NULL, digits = 3, ...)
 
   # Vet the input
   if (!grepl("lm",class(m1)[1])) {
-    stop("Error: Input is not a recognized type. (See the help entry: `?anova.rmd.table`.)\n")
+    stop("Error: Input is not a recognized type. (See the help entry: `?rmd.anova.table`.)\n")
   }
   if (!is.null(m2)) {
     if (!grepl("lm",class(m2)[1])) {
-      stop("Error: Input is not a recognized type. (See the help entry: `?anova.rmd.table`.)\n")
+      stop("Error: Input is not a recognized type. (See the help entry: `?rmd.anova.table`.)\n")
     }
   }
 
