@@ -13,6 +13,7 @@ align.procrustes(
   show.plot.gpa = TRUE,
   outlier.analysis = FALSE,
   display.outliers = 4,
+  output.gdf = TRUE,
   ...
 )
 }
@@ -28,6 +29,10 @@ Alternatively, a numeric vector can be provided indicating the index positions o
 A character vector of specimen names can also be provided, indicating the specimens to remove.}
 
 \item{display.outliers}{The number of outlier shapes to display in the interactive outlier analysis.}
+
+\item{output.gdf}{A logical value specifying whether to return output with
+a list structure that includes an element, \code{gdf}, containing a
+\code{geomorph.data.frame} of shape coordinates and metadata (the default).}
 }
 \value{
 Returns a list with Procrustes-aligned coordinates in \code{coords}, centroid size in \code{Csize}.
@@ -53,7 +58,9 @@ plot(fw.gpa$gpagen)
 
 fw.gpa <- align.procrustes(Bombus.forewings, outlier.analysis = TRUE)
 fw.gpa <- align.procrustes(Bombus.forewings, outlier.analysis = 57)
-fw.gpa <- align.procrustes(Bombus.forewings, outlier.analysis = c("FJ190828-002","DRA190718-001"))
+fw.gpa <- align.procrustes(Bombus.forewings,
+                           outlier.analysis = c("FJ190828-002","DRA190718-001"),
+                           print.progress = FALSE )
 
 names(fw.gpa$provenance)
 cat(fw.gpa$provenance$align.procrustes)

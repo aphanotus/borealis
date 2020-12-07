@@ -23,6 +23,9 @@
 #'     Alternatively, a numeric vector can be provided indicating the index positions of specimens to remove.
 #'     A character vector of specimen names can also be provided, indicating the specimens to remove.
 #' @param display.outliers The number of outlier shapes to display in the interactive outlier analysis.
+#' @param output.gdf A logical value specifying whether to return output with
+#'     a list structure that includes an element, \code{gdf}, containing a
+#'     \code{geomorph.data.frame} of shape coordinates and metadata (the default).
 #'
 #' @export
 #'
@@ -36,7 +39,9 @@
 #'
 #' fw.gpa <- align.procrustes(Bombus.forewings, outlier.analysis = TRUE)
 #' fw.gpa <- align.procrustes(Bombus.forewings, outlier.analysis = 57)
-#' fw.gpa <- align.procrustes(Bombus.forewings, outlier.analysis = c("FJ190828-002","DRA190718-001"))
+#' fw.gpa <- align.procrustes(Bombus.forewings,
+#'                            outlier.analysis = c("FJ190828-002","DRA190718-001"),
+#'                            print.progress = FALSE )
 #'
 #' names(fw.gpa$provenance)
 #' cat(fw.gpa$provenance$align.procrustes)
@@ -48,6 +53,7 @@ align.procrustes <- function (
   show.plot.gpa = TRUE,
   outlier.analysis = FALSE,
   display.outliers = 4,
+  output.gdf = TRUE,
   ...
 )
 {
@@ -236,6 +242,10 @@ align.procrustes <- function (
     if (any(grepl("metadata",names(output)))) {
       output$metadata <- output$metadata[-which(output$metadata[,1] %in% names.of.outliers.removed),]
     }
+  }
+
+  if(output.gdf) {
+    output <- listed.gdf(output)
   }
 
   return(output)
