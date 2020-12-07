@@ -54,7 +54,12 @@ listed.gdf <- function (x)
 
   gpa <- NULL
   if (!any(grepl("gpagen",names(x)))) {
-    stop("Error: Input is not a recognized type. (See the help entry: '?listed.gdf'.)")
+    if (any(grepl("gdf",names(x)))) {
+      warning("Input already contains a `gdf` element. (See the help entry: '?listed.gdf'.)")
+      return(x)
+    } else {
+      stop("Error: Input is not a recognized type. (See the help entry: '?listed.gdf'.)")
+    }
   } else {
     gpa <- x$gpagen
   }
