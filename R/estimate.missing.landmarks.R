@@ -34,6 +34,9 @@
 estimate.missing.landmarks <- function ( A, na.value = NA, verbose = TRUE, ... )
 { # Begin the function
 
+  # Load packages
+  if (!require(geomorph)) { stop("Package missing. First, try running `install.packages('geomorph')`")}
+
   # Initialize
   shapes <- NULL
   output <- NULL
