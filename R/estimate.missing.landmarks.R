@@ -106,6 +106,13 @@ estimate.missing.landmarks <- function ( A, verbose = TRUE, ... )
                 paste0("- ",na.specimens[i],": ",na.landmarks[i],"\n"))
   }
 
+  if (verbose) {
+    cat("Landmarks estimated\n")
+    for (i in 1:length(na.specimens)) {
+      cat(paste0("- ",na.specimens[i],": ",na.landmarks[i],"\n"))
+    }
+  }
+
   output$provenance$estimate.missing.landmarks <- s
 
   return(output)
