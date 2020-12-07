@@ -7,10 +7,12 @@
 Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
 }
 \usage{
-estimate.missing.landmarks(A, verbose = TRUE, ...)
+estimate.missing.landmarks(A, na.value = NA, verbose = TRUE, ...)
 }
 \arguments{
 \item{A}{A 3-dimensional array containing XY shape coordinates for multiple specimens, or a list containing such as an array and data provenance.}
+
+\item{na.value}{A numeric value to treat as missing data, (\code{NA}).}
 
 \item{verbose}{A logical argument specifying whether to display metrics each
 during each iteration.}

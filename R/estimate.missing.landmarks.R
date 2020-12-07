@@ -7,6 +7,7 @@
 #' Additional arguments are passed to \code{geomorph::estimate.missing}.
 #'
 #' @param A A 3-dimensional array containing XY shape coordinates for multiple specimens, or a list containing such as an array and data provenance.
+#' @param na.value A numeric value to treat as missing data, (\code{NA}).
 #' @param verbose A logical argument specifying whether to display metrics each
 #'     during each iteration.
 #'
@@ -30,7 +31,7 @@
 #' landmark.plot(j2, specimen.number = 1:4, axes = TRUE)
 #'
 
-estimate.missing.landmarks <- function ( A, verbose = TRUE, ... )
+estimate.missing.landmarks <- function ( A, na.value = NA, verbose = TRUE, ... )
 { # Begin the function
 
   # Initialize
@@ -64,6 +65,10 @@ estimate.missing.landmarks <- function ( A, verbose = TRUE, ... )
     stop("No missing landmarks are present. (See the help entry: `?estimate.missing.landmarks`.)\n")
   }
   # End preliminary vetting of the input and arguments
+
+  if (!is.na(na.value)) {
+    shapes[(shapes == na.value)] <- NA
+  }
 
   # Find a list of specimens and their missing landmarks
   # missing.values <- data.frame(matrix(c(NA,NA), ncol = 2, dimnames = list(NULL,c("specimen","lm"))))
