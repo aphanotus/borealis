@@ -44,7 +44,7 @@ gg.scaling.plot(
 
 \item{convex.hulls}{A logical factor specifying whether to plot convex hulls around groups.}
 
-\item{viridis.color.option}{The color pallette to use from the \code{viridis} package.}
+\item{viridis.color.option}{The color palette to use from the \code{viridis} package.}
 
 \item{color}{The color of points and hulls in each group.}
 
@@ -73,8 +73,8 @@ gg.scaling.plot(
 \item{isometry.line.color}{The color of isomnetry line.}
 }
 \description{
-Make pretty plots of the relationship between two variables, taylored for use in examinng
-allometric scaling relationships.
+Make pretty plots of the relationship between two variables, tailored for use
+in examining allometric scaling relationships.
 }
 \examples{
 data(plethodon, package = "geomorph")

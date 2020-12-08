@@ -1,7 +1,7 @@
 #' Scaling plots in the ggplot style
 #'
-#' Make pretty plots of the relationship between two variables, taylored for use in examinng
-#' allometric scaling relationships.
+#' Make pretty plots of the relationship between two variables, tailored for use
+#' in examining allometric scaling relationships.
 #'
 #' @source   Dave Angelini \email{david.r.angelini@@gmail.com} [aut, cre]
 #'
@@ -10,7 +10,7 @@
 #' @param group A factor to group samples.
 #' @param group.title An optional title for the group legend.
 #' @param convex.hulls A logical factor specifying whether to plot convex hulls around groups.
-#' @param viridis.color.option The color pallette to use from the \code{viridis} package.
+#' @param viridis.color.option The color palette to use from the \code{viridis} package.
 #' @param color The color of points and hulls in each group.
 #' @param pt.size The size of individual points.
 #' @param pt.alpha The opacity of individual points.
