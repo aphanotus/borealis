@@ -24,7 +24,17 @@
 #' pairs(ChickWeight)
 #'
 
-pairs <- function(x, cor.method = "pearson", trendline = TRUE, loess = FALSE, span = 2/3, line.col = "darkred", gap = 0.5, ...) {
+pairs <- function(x,
+                  cor.method = "pearson",
+                  trendline = TRUE,
+                  loess = FALSE,
+                  span = 2/3,
+                  line.col = "darkred",
+                  gap = 0.5,
+                  ...)
+{ #  Begin function
+
+  x <- as.data.frame(x)
 
   panel.cor <- function(x, y) {
     usr <- par("usr")
@@ -59,5 +69,5 @@ pairs <- function(x, cor.method = "pearson", trendline = TRUE, loess = FALSE, sp
     graphics::pairs(x[,i], upper.panel = panel.cor, gap = gap, ...)
   }
 
-}
+} # End function
 
