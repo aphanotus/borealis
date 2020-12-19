@@ -37,12 +37,19 @@ pairs <- function(x,
   x <- as.data.frame(x)
 
   panel.cor <- function(x, y) {
+    x <- x[!is.na(x)]
+    y <- y[!is.na(y)]
     usr <- par("usr")
     on.exit(par(usr))
     par(usr = c(0, 1, 0, 1))
     r <- abs(cor(x, y, method = cor.method))
+    if (cor.test(x, y, method = cor.method)$p.value < 0.05) {
+      txt.color <- "darkred"
+    } else {
+      txt.color <- "black"
+    }
     txt <- format(c(r, 0.123456789), digits = 2)[1]
-    text(0.5, 0.5, txt, cex = 0.75/strwidth(txt) * r)
+    text(0.5, 0.5, txt, cex = 0.75/strwidth(txt) * r, col = txt.color)
   }
   panel.smooth <- function(x, y) {
     graphics::panel.smooth(x, y, lwd = 3, span = span, col.smooth = line.col)
