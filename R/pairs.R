@@ -37,8 +37,9 @@ pairs <- function(x,
   x <- as.data.frame(x)
 
   panel.cor <- function(x, y) {
-    x <- x[!is.na(x)]
-    y <- y[!is.na(y)]
+    na.positions <- (is.na(x) | is.na(y))
+    x <- x[!na.positions]
+    y <- y[!na.positions]
     usr <- par("usr")
     on.exit(par(usr))
     par(usr = c(0, 1, 0, 1))
