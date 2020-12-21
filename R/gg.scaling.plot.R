@@ -87,6 +87,7 @@ gg.scaling.plot <- function(
   # Sub functions
   slope <- function(y,x) { lm(y~x)$coefficients[2] }
   slope.p <- function(y,x) { tmp <- summary(lm(y~x)); if (!is.na(tmp$coefficients[1,4])) { tmp$coefficients[2,4] } else { 1 } }
+  slope.ci <- function(y,x) { c(confint(lm(y~x), parm = "x")) }
 
   df <- data.frame(
     x = x,
@@ -98,8 +99,12 @@ gg.scaling.plot <- function(
 
   slope.info <- df %>%
     group_by(group) %>%
-    summarise(slope=signif(slope(y, x),3),
+    summarise(n = n(),
+              slope=signif(slope(y, x),3),
               slope.p=signif(slope.p(y, x),3),
+              ci.lo = signif(slope.ci(y, x)[1],3),
+              ci.hi = signif(slope.ci(y, x)[2],3),
+              spans.zero = dplyr::between(0,ci.lo,ci.hi),
               x = mean(x),
               y = mean(y),
               .groups = "drop")
@@ -186,7 +191,10 @@ gg.scaling.plot <- function(
   sigstar <- function (x) {symnum(x, cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1), symbols = c("***", "** ", "*  ", ".  ", "   "), na = '   ') }
 
   slope.info$sig <- sigstar(slope.info$slope.p)
-  slope.info <- as.data.frame(slope.info[,-c(4,5)])
+  slope.info <- slope.info %>%
+    select(group, n, slope, p=slope.p, sig, ci.lo, ci.hi, spans.zero ) %>%
+    arrange(desc(slope)) %>%
+    as.data.frame()
 
   output <- list(
     slopes = slope.info,
