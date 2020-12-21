@@ -30,6 +30,7 @@ gg.scaling.plot(
   include.legend = FALSE,
   isometry.line = FALSE,
   isometry.line.color = "gray35",
+  verbose = TRUE,
   ...
 )
 }
@@ -54,7 +55,7 @@ gg.scaling.plot(
 
 \item{hull.alpha}{The opacity of the convex hulls.}
 
-\item{save.as}{An optional filename to export the plot.}
+\item{save.as}{An optional file name to export the plot.}
 
 \item{height}{The height of the exported plot.}
 
@@ -64,13 +65,15 @@ gg.scaling.plot(
 
 \item{label.groups}{A logical factor specifying whether to label groups.}
 
-\item{groups.trendlines}{A logical factor specifying whether to include trendlines for each group.}
+\item{groups.trendlines}{A logical factor specifying whether to include trend lines for each group.}
 
 \item{include.legend}{A logical factor specifying whether to include a legend.}
 
 \item{isometry.line}{A logical factor specifying whether to include a slope illustrating slope of 1.}
 
-\item{isometry.line.color}{The color of isomnetry line.}
+\item{isometry.line.color}{The color of isometry line.}
+
+\item{verbose}{A logical factor specifying whether to output a table of slopes.}
 }
 \description{
 Make pretty plots of the relationship between two variables, tailored for use

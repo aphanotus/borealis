@@ -15,15 +15,16 @@
 #' @param pt.size The size of individual points.
 #' @param pt.alpha The opacity of individual points.
 #' @param hull.alpha The opacity of the convex hulls.
-#' @param save.as An optional filename to export the plot.
+#' @param save.as An optional file name to export the plot.
 #' @param height The height of the exported plot.
 #' @param width The width of the exported plot.
 #' @param fixed.aspect A logical factor specifying whether to enforce an equal aspect ratio.
 #' @param label.groups A logical factor specifying whether to label groups.
-#' @param groups.trendlines A logical factor specifying whether to include trendlines for each group.
+#' @param groups.trendlines A logical factor specifying whether to include trend lines for each group.
 #' @param include.legend A logical factor specifying whether to include a legend.
 #' @param isometry.line A logical factor specifying whether to include a slope illustrating slope of 1.
-#' @param isometry.line.color The color of isomnetry line.
+#' @param isometry.line.color The color of isometry line.
+#' @param verbose A logical factor specifying whether to output a table of slopes.
 #'
 #' @export
 #'
@@ -75,6 +76,7 @@ gg.scaling.plot <- function(
   include.legend = FALSE,
   isometry.line = FALSE,
   isometry.line.color = "gray35",
+  verbose = TRUE,
   ...
 )
 {
@@ -178,6 +180,10 @@ gg.scaling.plot <- function(
       save.as <- paste0(save.as,'.jpg')
     }
     ggsave(filename = save.as, plot = base.plot, height = height, width = width, ...)
+  }
+
+  if (verbose) {
+    print(slope.info[,1:2])
   }
 
   return(base.plot)
