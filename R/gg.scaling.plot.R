@@ -101,7 +101,8 @@ gg.scaling.plot <- function(
     summarise(slope=signif(slope(y, x),3),
               slope.p=signif(slope.p(y, x),3),
               x = mean(x),
-              y = mean(y) )
+              y = mean(y),
+              .groups = "drop")
 
   # Check the color options
   if (is.null(color)) {
@@ -182,10 +183,20 @@ gg.scaling.plot <- function(
     ggsave(filename = save.as, plot = base.plot, height = height, width = width, ...)
   }
 
-  if (verbose) {
-    print(slope.info[,1:2])
-  }
+  sigstar <- function (x) {symnum(x, cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1), symbols = c("***", "** ", "*  ", ".  ", "   "), na = '   ') }
 
-  return(base.plot)
+  slope.info$sig <- sigstar(slope.info$slope.p)
+  slope.info <- as.data.frame(slope.info[,-c(4,5)])
+
+  output <- list(
+    slopes = slope.info,
+    plot = base.plot
+  )
+
+  if (verbose) {
+    return(output)
+  } else {
+    return(base.plot)
+  }
 
 } # End of function
