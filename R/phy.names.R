@@ -1,21 +1,16 @@
 #' Add information to the names in a phylip alignment file
 #'
-#' Requires a phylip (\code{phy}) file and a \code{csv} file with two columns.
-#' The first column in the \code{csv} must match the existing names in the
-#' \code{phy} alignment. The order of entries does not need to match, but each
-#' name must be unique and the names must occur in both files. If no argument is
-#' provided to \code{output.filename} then the output will over-write the input
-#' in \code{input.phy}.
-#'
 #' @source   Dave Angelini \email{david.r.angelini@@gmail.com} [aut, cre]
 #'
 #' @param input.phy A phylip-format file containing an alignment with ID names
 #'     to update.
-#' @param input.csv A comma-separated values file. This file must include a header
-#'     row, but the column names are not used. The first column must include the
-#'     existing ID names in the phylip alignment. The second column should contain
-#'     information to be added to the alignment ID names.
-#' @param output.filename The file name to export.
+#' @param input.csv A comma-separated values file with exactly two columns.
+#'     This file must include a header row, but the column names are not used.
+#'     The first column must include the existing ID names in the phylip alignment.
+#'     The second column should contain information to be added to the alignment ID names.
+#' @param output.filename The file name to export. If no argument is
+#'     provided to \code{output.filename} then the output will over-write the input
+#'     in \code{input.phy}.
 #' @param separator A character string to separate the terms used in the names.
 #'     This string should not be a space, since the phylip format uses spaces to
 #'     distinguish names from sequence data.
@@ -81,14 +76,32 @@ phy.names <- function (
     new.info[,2] <- apply(str_split_fixed(new.info[,2],separator,3)[,1:2], 1, paste0, collapse=separator)
   }
 
-  new.info$id <- paste0(new.info[,2],separator,new.info[,1])
-
-  # Sort by the ID name column
-  new.info <- new.info[order(new.info[,1]),]
+  if (prepend) {
+    new.info$id <- paste0(new.info[,2],separator,new.info[,1])
+  } else {
+    new.info$id <- paste0(new.info[,1],separator,new.info[,2])
+  }
 
   phy.header <- read.delim(input.phy, header = FALSE, sep = "\n")[1,]
   alignment <- read.phylip(input.phy, clean_name = FALSE)
   original.order <- order(alignment$seq.name)
+
+  # Remove any rows from new.info that duplicate ID names
+  x <- which(!duplicated(new.info[,1]))
+  new.info <- new.info[x,]
+
+  # Remove rows from new.info if the ID doesn't appear in the alignment
+  x <- which(new.info[,1] %in% alignment$seq.name)
+  new.info <- new.info[x,]
+
+  # Any ID names in the alignment that aren't in the CSV?
+  if (any(!(alignment$seq.name %in% new.info[,1]))) {
+    x <- which(!(alignment$seq.name %in% new.info[,1]))
+    stop(paste(alignment$seq.name[x],"does not appear in",input.csv))
+  }
+
+  # Sort by the ID name column
+  new.info <- new.info[order(new.info[,1]),]
 
   # Sort by the name column
   alignment <- alignment[order(alignment$seq.name),]

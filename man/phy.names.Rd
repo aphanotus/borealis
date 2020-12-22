@@ -20,12 +20,14 @@ phy.names(
 \item{input.phy}{A phylip-format file containing an alignment with ID names
 to update.}
 
-\item{input.csv}{A comma-separated values file. This file must include a header
-row, but the column names are not used. The first column must include the
-existing ID names in the phylip alignment. The second column should contain
-information to be added to the alignment ID names.}
+\item{input.csv}{A comma-separated values file with exactly two columns.
+This file must include a header row, but the column names are not used.
+The first column must include the existing ID names in the phylip alignment.
+The second column should contain information to be added to the alignment ID names.}
 
-\item{output.filename}{The file name to export.}
+\item{output.filename}{The file name to export. If no argument is
+provided to \code{output.filename} then the output will over-write the input
+in \code{input.phy}.}
 
 \item{separator}{A character string to separate the terms used in the names.
 This string should not be a space, since the phylip format uses spaces to
@@ -40,10 +42,5 @@ a strict genus-specific epithet format (e.g. \emph{Homo sapiens neanderthalensis
 would become \code{Homo_sapiens}).}
 }
 \description{
-Requires a phylip (\code{phy}) file and a \code{csv} file with two columns.
-The first column in the \code{csv} must match the existing names in the
-\code{phy} alignment. The order of entries does not need to match, but each
-name must be unique and the names must occur in both files. If no argument is
-provided to \code{output.filename} then the output will over-write the input
-in \code{input.phy}.
+Add information to the names in a phylip alignment file
 }
