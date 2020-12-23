@@ -97,7 +97,7 @@ phy.names <- function (
   # Any ID names in the alignment that aren't in the CSV?
   if (any(!(alignment$seq.name %in% new.info[,1]))) {
     x <- which(!(alignment$seq.name %in% new.info[,1]))
-    stop(paste(alignment$seq.name[x],"does not appear in",input.csv))
+    stop(paste(paste(alignment$seq.name[x], collapse = ", "),"does not appear in",input.csv,"\n"))
   }
 
   # Sort by the ID name column
