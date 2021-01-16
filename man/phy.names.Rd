@@ -8,9 +8,9 @@ Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
 }
 \usage{
 phy.names(
-  input.phy = NULL,
-  input.csv = NULL,
-  output.filename = NULL,
+  input.phy,
+  input.csv,
+  output.filename,
   separator = "_",
   prepend = TRUE,
   strict.species.names = TRUE

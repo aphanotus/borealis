@@ -25,9 +25,9 @@
 #'
 
 phy.names <- function (
-  input.phy = NULL,
-  input.csv = NULL,
-  output.filename = NULL,
+  input.phy,
+  input.csv,
+  output.filename,
   separator = "_",
   prepend = TRUE,
   strict.species.names = TRUE
@@ -39,17 +39,17 @@ phy.names <- function (
   if (!require(magrittr)) { stop("Package missing. First, try running `install.packages('magrittr')`")}
 
   # Determine the input file names
-  if (is.null(input.phy)) { input.phy <- file.choose() }
+  if (missing(input.phy)) { input.phy <- file.choose() }
   if (!grepl('.phy$',input.phy)) {
     warning(paste("The file indicated by `input.phy`",input.phy,"must be phylip format - Proceeding anyway..."))
   }
-  if (is.null(input.csv)) { input.csv <- file.choose() }
+  if (missing(input.csv)) { input.csv <- file.choose() }
   if (!grepl('.csv$',input.csv)) {
     warning(paste("The file indicated by `input.csv`",input.csv,"must be CSV format - Proceeding anyway..."))
   }
 
   # Default output file name
-  if (is.null(output.filename)) {
+  if (missing(output.filename)) {
     if (grepl('.phy$',input.phy)) { output.filename <- input.phy }
     else {
       output.filename <- paste0(input.phy,".phy")
