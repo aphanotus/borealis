@@ -77,6 +77,9 @@ subset.gmm <- function (A, specimens = NULL, landmarks = NULL)
         original.landmark.number <- dim(A$coords)[1]
       }
     }
+    if (any(names(output) == "landmark.number")) {
+      output$landmark.number <- length(landmarks)
+    }
     new.provenance <- paste0(
       new.provenance,
       paste0("### Landmark subset\n\n"),
@@ -171,7 +174,9 @@ subset.gmm <- function (A, specimens = NULL, landmarks = NULL)
                paste(names(subsetable.elements),collapse = "``, `"),"`.\n\n")
       )
     } # End # Other vector/factor elements of the data structure
-
+    if (any(names(output) == "specimen.number")) {
+      output$specimen.number <- length(specimens)
+    }
   } # End Subset specimens
 
   # Output
