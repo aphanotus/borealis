@@ -84,11 +84,14 @@ phy.names <- function (
 
   phy.header <- read.delim(input.phy, header = FALSE, sep = "\n")[1,]
   alignment <- read.phylip(input.phy, clean_name = FALSE)
-  original.order <- order(alignment$seq.name)
 
   # Remove any rows from new.info that duplicate ID names
   x <- which(!duplicated(new.info[,1]))
   new.info <- new.info[x,]
+
+  # Remove any rows from the alignment that duplicate ID names
+  x <- which(!duplicated(alignment$seq.name))
+  alignment <- alignment[x,]
 
   # Remove rows from new.info if the ID doesn't appear in the alignment
   x <- which(new.info[,1] %in% alignment$seq.name)
@@ -104,8 +107,10 @@ phy.names <- function (
   new.info <- new.info[order(new.info[,1]),]
 
   # Sort by the name column
+  original.order <- order(alignment$seq.name)
   alignment <- alignment[order(alignment$seq.name),]
 
+  # Copy the new ID names
   alignment$seq.name <- new.info$id
 
   # Return to the original alignment sequence order
@@ -113,9 +118,14 @@ phy.names <- function (
     arrange(original.order) %>%
     as.data.frame()
 
+  # Adjust header in case sequences have been removed for redundancy
+  phy.header <- paste0(" ", dim(alignment)[1]," ",str_split_fixed(phy.header," ",3)[3])
+
   # Write out the new phylip file
   write(phy.header, output.filename)
   write(paste0(alignment$seq.name," ",alignment$seq.text),
         output.filename, append = TRUE)
+
+  cat(paste0(output.filename," written with ",dim(alignment)[1]," sequences.\n" ))
 
 } # End of function
