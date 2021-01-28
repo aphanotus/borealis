@@ -1,13 +1,12 @@
-# borealis
+# borealis: an R package for reproducible geometric morphometric analysis
 
-**Tools for reproducible geometric morphometric analysis**
+![](https://i.imgur.com/B7JnAK9.jpg)    
 
-This R package  provides tools for 2D geometric morphometric (GMM) analysis with automatic recording of data provenance and data processing steps. Functions were developed for use by beginning R users. Includes several tutorial vignettes and sample datasets.
+This R package provides tools for 2D geometric morphometric (GMM) analysis with integrated recording of data provenance and data processing steps. Functions have been developed for use by beginning R users in a teaching context. Includes tutorial vignettes and sample datasets.
     
 [GMM workflow template](https://www.bugsinourbackyard.org/wp-content/uploads/2020/10/gmm-template.html)
 
 [GMM tutorial](https://www.bugsinourbackyard.org/wp-content/uploads/2020/10/gmm-tutorial.html)
-
 
 ## Installation
 
@@ -18,9 +17,7 @@ devtools::install_github("aphanotus/borealis")
 library(borealis)
 ```
 
-## Functions
-
-### Morphometrics
+## Morphometrics
 
 One of the goals of this package is to provide a system to record [data provenance](https://en.wikipedia.org/wiki/Data_lineage#Data_provenance) in the objects
 produced through a morphometry workflow. Most of the important GMM steps employ functions from the R package [geomorph](https://cran.r-project.org/web/packages/geomorph/index.html).
@@ -32,7 +29,7 @@ vignette("gmm-tutorial", package="borealis")
 vignette("gmm-template", package="borealis")
 ```
 
-#### Other functions 
+## Other functions 
 
 ##### adonis.aic
 
