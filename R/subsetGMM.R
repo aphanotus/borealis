@@ -15,32 +15,30 @@
 #'
 #' @examples
 #' data(plethodon, package = "geomorph")
-#' x <- subsetGMM(plethodon, landmarks = 1:9, specimens = 1:3)
+#' x <- subsetgmm(plethodon, landmarks = 1:9, specimens = 1:3)
 #' landmark.plot(x, specimen.number = 1:4)
 #' x$site
 #'
 
-subsetGMM <- function (A, specimens = NULL, landmarks = NULL)
+subsetgmm <- function (A, specimens = NULL, landmarks = NULL)
 {
-  .Deprecated("subset.gmm")
-
   # Vet the shape data
   if (!(class(A)[1] %in% c("geomorph.data.frame","list"))) {
-    stop("Error: Input is not a recognized type. (See the help entry: `?subsetGMM`.)")
+    stop("Error: Input is not a recognized type. (See the help entry: `?subsetgmm`.)")
   }
   if (any(grepl("land",names(A))) & !any(grepl("coords",names(A)))) {
     A$coords <- A$land
     A <- A[which(names(A)!="land")]
   }
   if (!any(names(A) %in% c("coords","gpagen","gdf"))) {
-    stop("Error: Input is not a recognized type. (See the help entry: `?subsetGMM`.)")
+    stop("Error: Input is not a recognized type. (See the help entry: `?subsetgmm`.)")
   }
 
   # Initialize output
   output <- A
   new.provenance <- paste0(
     paste0("## Data subset\n\n"),
-    paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::subsetGMM` on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n")
+    paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::subsetgmm` on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n")
   )
 
   # Subset landmarks
@@ -62,7 +60,7 @@ subsetGMM <- function (A, specimens = NULL, landmarks = NULL)
     }
   } else {
     if (!is.numeric(landmarks) | length(landmarks)<1) {
-      stop("Error: `landmarks` is not a recognized type. (See the help entry: `?subsetGMM`.)")
+      stop("Error: `landmarks` is not a recognized type. (See the help entry: `?subsetgmm`.)")
     }
     if (any(names(output) == "gpagen")) {
       output$gpagen$coords <- output$gpagen$coords[landmarks,,]
@@ -79,6 +77,9 @@ subsetGMM <- function (A, specimens = NULL, landmarks = NULL)
         original.landmark.number <- dim(A$coords)[1]
       }
     }
+    if (any(names(output) == "landmark.number")) {
+      output$landmark.number <- length(landmarks)
+    }
     new.provenance <- paste0(
       new.provenance,
       paste0("### Landmark subset\n\n"),
@@ -89,7 +90,7 @@ subsetGMM <- function (A, specimens = NULL, landmarks = NULL)
   # Subset specimens
   if (!is.null(specimens) ) {
     if (!(is.numeric(specimens) | is.logical(specimens)) | length(specimens)<1) {
-      stop("Error: `specimens` is not a recognized type. (See the help entry: `?subsetGMM`.)")
+      stop("Error: `specimens` is not a recognized type. (See the help entry: `?subsetgmm`.)")
     }
     if(is.logical(specimens)) {
       specimens <- which(specimens)
@@ -173,11 +174,13 @@ subsetGMM <- function (A, specimens = NULL, landmarks = NULL)
                paste(names(subsetable.elements),collapse = "``, `"),"`.\n\n")
       )
     } # End # Other vector/factor elements of the data structure
-
+    if (any(names(output) == "specimen.number")) {
+      output$specimen.number <- length(specimens)
+    }
   } # End Subset specimens
 
   # Output
-  output$provenance$subsetGMM <- new.provenance
+  output$provenance$subsetgmm <- new.provenance
   return(output)
 
 } # End of function
