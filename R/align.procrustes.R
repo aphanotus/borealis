@@ -229,9 +229,13 @@ align.procrustes <- function (
 
   # Prep the output
   output$coords <- GPA$coords
+  output$censensus <- mshape(GPA$coords)
   output$Csize <- GPA$Csize
   output$gpagen <- GPA
   # output$gpagen <- output$gpagen[-c(1:2)]
+  if (exists("outliers")) {
+    output$outliers <- outliers
+  }
   if (!is.null(provenance) & !any(grepl("provenance",names(output)))) {
     output$provenance <- provenance
   }
