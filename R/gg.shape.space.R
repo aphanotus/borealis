@@ -22,6 +22,7 @@
 #' @param label.groups A logical factor specifying whether to label groups.
 #' @param labels An optional character vector of point labels.
 #' @param include.legend A logical factor specifying whether to include a legend.
+#' @param fixed.aspect A logical factor specifying whether to use a fixed aspect ratio.
 #' @param xlim Set x scale limits
 #' @param ylim Set y scale limits
 #' @param color The color of points and hulls in each group.
@@ -113,6 +114,7 @@ gg.shape.space <- function (
   label.groups = TRUE,
   labels = NULL,
   include.legend = FALSE,
+  fixed.aspect = FALSE,
   xlim = NULL,
   ylim = NULL,
   color = NULL,
@@ -220,7 +222,12 @@ gg.shape.space <- function (
     base.plot <- base.plot + ggtitle(main.title)
   }
 
-  # Set scale limits
+  # Fixed aspect?
+  if (fixed.aspect) {
+    base.plot <- base.plot + coord_fixed()
+  }
+
+    # Set scale limits
   if (!is.null(xlim)) { base.plot <- base.plot + xlim(xlim) }
   if (!is.null(ylim)) { base.plot <- base.plot + ylim(ylim) }
 

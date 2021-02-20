@@ -18,6 +18,7 @@ gg.shape.space(
   label.groups = TRUE,
   labels = NULL,
   include.legend = FALSE,
+  fixed.aspect = FALSE,
   xlim = NULL,
   ylim = NULL,
   color = NULL,
@@ -65,6 +66,8 @@ gg.shape.space(
 \item{labels}{An optional character vector of point labels.}
 
 \item{include.legend}{A logical factor specifying whether to include a legend.}
+
+\item{fixed.aspect}{A logical factor specifying whether to use a fixed aspect ratio.}
 
 \item{xlim}{Set x scale limits}
 
