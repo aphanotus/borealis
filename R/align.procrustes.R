@@ -162,7 +162,7 @@ align.procrustes <- function (
     h <- ceiling(sqrt(display.outliers))
     w <- ifelse( ( h^2 - display.outliers) >= h, h-1, h )
 
-    # readline(prompt="Press any key to continue.")
+    readline(prompt="Press any key to continue.")
 
     continue.loop <- TRUE
     ###################
