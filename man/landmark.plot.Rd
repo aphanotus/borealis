@@ -37,7 +37,9 @@ If so, the function uses \code{method = "TPS"} and the reference is set to the c
 
 \item{landmark.numbers}{A logical factor specifying whether landmarks should appear as numbers (if TRUE) or as dots.}
 
-\item{links}{A matrix with two columns indicating landmarks to connect by lines. Or \code{"chull"} can be used to draw a convex hull.}
+\item{links}{A matrix with two columns indicating landmarks to connect by lines.
+Alternatively, enter \code{"chull"} to draw a convex hull
+or \code{"ordinal"} to link landmarks in numerical order.}
 
 \item{panels}{A vector with exactly two integers specifying the number of rows and columns of specimens to plot.
 If the number of panels exceeds the number of values entered in \code{specimen.number} then the next consecutive specimens will be shown,

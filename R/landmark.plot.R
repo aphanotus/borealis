@@ -11,7 +11,9 @@
 #' @param def.grids A logical factor specifying whether to plot deformation grids (thin plate splines) using \code{geomorph::plotRefToTarget}.
 #'     If so, the function uses \code{method = "TPS"} and the reference is set to the censusus shape for the entire the coordinate array.
 #' @param landmark.numbers A logical factor specifying whether landmarks should appear as numbers (if TRUE) or as dots.
-#' @param links A matrix with two columns indicating landmarks to connect by lines. Or \code{"chull"} can be used to draw a convex hull.
+#' @param links A matrix with two columns indicating landmarks to connect by lines.
+#'     Alternatively, enter \code{"chull"} to draw a convex hull
+#'     or \code{"ordinal"} to link landmarks in numerical order.
 #' @param panels A vector with exactly two integers specifying the number of rows and columns of specimens to plot.
 #'     If the number of panels exceeds the number of values entered in \code{specimen.number} then the next consecutive specimens will be shown,
 #'     starting from specimen 1 if no value is provided for \code{specimen.number}.
@@ -140,7 +142,7 @@ landmark.plot <- function (A,
       if (is.null(x)) { main.title <- specimen.number }
       else { main.title <- x }
     } else {
-      if ((class(A)[1] == "matrix") & (dim(A)[2] == 2)) {
+      if (any(class(A) == "matrix") & (dim(A)[2] == 2)) {
         landmarks <- A
         if (def.grids) { consensus <- A }
         main.title <- ''
@@ -151,7 +153,7 @@ landmark.plot <- function (A,
   }
 
   # Make sure even if there's just one specimen, landmarks is an array
-  if ((class(landmarks)[1] == "matrix")) {
+  if (any(class(A) == "matrix")) {
     landmarks <- array(rep(unlist(landmarks),2), dim = c(dim(landmarks),2))
   }
 
@@ -162,8 +164,9 @@ landmark.plot <- function (A,
   if (any(is.na(landmarks))) {
     stop("Error: Coordinate data contains NA values. (See the help entry: `?landmark.plot`.)")
   }
+  allowed.links.terms <- c("chull","ordinal")
   if (!is.null(links)) {
-    if (((max(links) > dim(landmarks)[1]) | (min(links) < 1)) & (links[[1]] != "chull"))  {
+    if (((max(links) > dim(landmarks)[1]) | (min(links) < 1)) & !(links[[1]] %in% allowed.links.terms))  {
       warning("Warning: Provided links are out of bounds. (See the help entry: `?landmark.plot`.)")
       links <- NULL
     }
@@ -181,9 +184,15 @@ landmark.plot <- function (A,
           links <- grDevices::chull(landmarks[,,i])
           links <- matrix(c(links,links[-1],links[1]), ncol=2, byrow = FALSE)
         } else {
-          if (dim(links)[2] != 2) {
-            warning("Warning: Links must be a matrix with two columns of landmark numbers. (See the help entry: `?landmark.plot`.)")
-            links <- NULL
+          if (links[[1]] == "ordinal") {
+            links <- 1:(dim(landmarks)[1])
+            links <- matrix(c(links,links[-1],links[1]), ncol=2, byrow = FALSE)
+            links <- links[-c(dim(landmarks)[1]),]
+          } else {
+            if (dim(links)[2] != 2) {
+              warning("Warning: Links must be a matrix with two columns of landmark numbers. (See the help entry: `?landmark.plot`.)")
+              links <- NULL
+            }
           }
         }
       } # End  if (!is.null(links))
@@ -224,11 +233,20 @@ landmark.plot <- function (A,
             segments(landmarks[links[j,1],1,i], landmarks[links[j,1],2,i], landmarks[links[j,2],1,i], landmarks[links[j,2],2,i], col = line.color )
           }
         } else {
-          if (dim(links)[2] != 2) {
-            warning("Warning: Links must be a matrix with two columns of landmark numbers. (See the help entry: `?landmark.plot`.)")
-          } else {
+          if (links[[1]] == "ordinal") {
+            links <- 1:(dim(landmarks)[1])
+            links <- matrix(c(links,links[-1],links[1]), ncol=2, byrow = FALSE)
+            links <- links[-c(dim(landmarks)[1]),]
             for (j in 1:(dim(links)[1])) {
               segments(landmarks[links[j,1],1,i], landmarks[links[j,1],2,i], landmarks[links[j,2],1,i], landmarks[links[j,2],2,i], col = line.color )
+            }
+          } else {
+            if (dim(links)[2] != 2) {
+              warning("Warning: Links must be a matrix with two columns of landmark numbers. (See the help entry: `?landmark.plot`.)")
+            } else {
+              for (j in 1:(dim(links)[1])) {
+                segments(landmarks[links[j,1],1,i], landmarks[links[j,1],2,i], landmarks[links[j,2],1,i], landmarks[links[j,2],2,i], col = line.color )
+              }
             }
           }
         }
