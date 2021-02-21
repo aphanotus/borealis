@@ -46,19 +46,19 @@
 #'
 
 landmark.plot <- function (A,
-                           specimen.number,
+                           specimen.number = NULL,
                            square = TRUE,
                            axes = FALSE,
                            def.grids = FALSE,
                            landmark.numbers = TRUE,
-                           links,
+                           links = NULL,
                            panels = c(1,1),
                            text.color = "darkred",
                            line.color = "darkgray",
                            ...)
 {
   no.specimen.numbers.given <- TRUE
-  if (missing(specimen.number)) { specimen.number <- 1 }
+  if (is.null(specimen.number)) { specimen.number <- 1 }
   else { no.specimen.numbers.given <- FALSE }
 
   # Fail safes
@@ -165,7 +165,7 @@ landmark.plot <- function (A,
     stop("Error: Coordinate data contains NA values. (See the help entry: `?landmark.plot`.)")
   }
   allowed.links.terms <- c("chull","ordinal")
-  if (!missing(links)) {
+  if (!is.null(links)) {
     if (((max(links) > dim(landmarks)[1]) | (min(links) < 1)) & !(links[[1]] %in% allowed.links.terms))  {
       warning("Warning: Provided links are out of bounds. (See the help entry: `?landmark.plot`.)")
       links <- NULL
@@ -179,7 +179,7 @@ landmark.plot <- function (A,
   for (i in 1:length(specimen.number)) {
 
     if (def.grids) {
-      if (!missing(links)) {
+      if (!is.null(links)) {
         if (links[[1]] == "chull") {
           links <- grDevices::chull(landmarks[,,i])
           links <- matrix(c(links,links[-1],links[1]), ncol=2, byrow = FALSE)
@@ -195,7 +195,7 @@ landmark.plot <- function (A,
             }
           }
         }
-      } # End  if (!missing(links))
+      } # End  if (!is.null(links))
 
       GP <- gridPar(
         txt.col = text.color,
@@ -225,7 +225,7 @@ landmark.plot <- function (A,
         ylab <- ''
       }
       plot(landmarks[,,i], type='n', axes = axes, asp = square, xlab = xlab, ylab = ylab, main = main.title[i], ...)
-      if (!missing(links)) {
+      if (!is.null(links)) {
         if (links[[1]] == "chull") {
           links <- grDevices::chull(landmarks[,,i])
           links <- matrix(c(links,links[-1],links[1]), ncol=2, byrow = FALSE)
@@ -250,7 +250,7 @@ landmark.plot <- function (A,
             }
           }
         }
-      } # End  if (!missing(links))
+      } # End  if (!is.null(links))
 
       # Landmark labels
       if (landmark.numbers) {

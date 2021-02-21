@@ -9,12 +9,12 @@ Dave Angelini \email{david.r.angelini@gmail.com} [aut, cre]
 \usage{
 landmark.plot(
   A,
-  specimen.number,
+  specimen.number = NULL,
   square = TRUE,
   axes = FALSE,
   def.grids = FALSE,
   landmark.numbers = TRUE,
-  links,
+  links = NULL,
   panels = c(1, 1),
   text.color = "darkred",
   line.color = "darkgray",
