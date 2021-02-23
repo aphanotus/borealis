@@ -90,7 +90,7 @@ listed.gdf <- function (x)
   # Add new provenance
   s <- paste0(
     paste0("## Geomorph data frame conversion\n\n"),
-    paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::listed.gdf` on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n"),
+    paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::listed.gdf` version ",packageVersion("borealis")," on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n"),
     paste0("Current data structure:\n"),
     paste0("- gdf\n  - "),
     paste0(paste0(names(output$gdf), collapse = "\n  - "),"\n- "),

@@ -202,7 +202,7 @@ read.tps <- function (
   # Add current data provenance
   s <- paste0(
     paste0("## TPS data import\n\n"),
-    paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::read.tps` on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n")
+    paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::read.tps` version ",packageVersion("borealis")," on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n")
   )
   if (extract.id.metadata) {
     s <- paste0(s, paste0("Metadata were extracted from specimen ID lines for the following factors:\n- ",paste0(id.factors, collapse = '\n- '),"\n\n"), collapse = "")

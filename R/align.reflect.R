@@ -171,7 +171,7 @@ align.reflect <- function(
   }
   s <- paste0(
     paste0("## Reflection alignment\n\n"),
-    paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::align.reflect` on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n"),
+    paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::align.reflect` version ",packageVersion("borealis")," on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n"),
     paste0("- top.pt = ",top.pt,"\n"),
     paste0("- bottom.pt = ",bottom.pt,"\n"),
     paste0("- left.pt = ",left.pt,"\n"),

@@ -106,7 +106,7 @@ estimate.missing.landmarks <- function ( A, na.value = NA, verbose = TRUE, ... )
 
   s <- paste0(
     paste0("## Estimate missing landmarks\n\n"),
-    paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::estimate.missing.landmarks` on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n"),
+    paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::estimate.missing.landmarks` version ",packageVersion("borealis")," on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n"),
     paste0("### Landmarks estimated\n\n")
   )
 

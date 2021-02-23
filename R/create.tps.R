@@ -188,7 +188,7 @@ create.tps <- function (
   # File header
   if (include.header) {
     cat("# ## TPS file creation \n# \n")
-    cat(paste0("# Created by user `",(Sys.getenv("LOGNAME")),"` with `borealis::create.tps` on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n# \n"))
+    cat(paste0("# Created by user `",(Sys.getenv("LOGNAME")),"` with `borealis::create.tps` version ",packageVersion("borealis")," on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n# \n"))
     cat("# Input file: ",input.filename,"\n# \n")
     cat(paste0("# The dataset is ",landmark.number," x 2 x ",specimen.number," (*p* landmarks x *k* dimensions x *n* specimens)\n# \n"))
     if (length(id.factors)>0) {

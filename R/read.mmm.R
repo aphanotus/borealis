@@ -321,7 +321,7 @@ read.mmm <- function (
   # Create provenance entry
   provenance <- paste0(
     paste0("## Multivariate morphometric data import\n\n"),
-    paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::read.mmm` on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n"),
+    paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::read.mmm` version ",packageVersion("borealis")," on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n"),
     paste0("Input file: ",input.filename,"\n\n"),
     paste0("Measurements: ",measurement.number,"\n\n"),
     paste0("Specimens:    ",specimen.number,"\n\n")

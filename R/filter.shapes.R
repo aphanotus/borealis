@@ -63,7 +63,7 @@ filter.shapes <- function (x, index, index.description = NULL)
   # Add new provenance
   s <- paste0(
     paste0("## Filter\n\n"),
-    paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::filter.shapes` on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n")
+    paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::filter.shapes` version ",packageVersion("borealis")," on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n")
   )
   if (!is.null(index.description)) { s <- paste0(s, paste0("Filter description: ",paste0(index.description, collapse = " "),"\n\n") ) }
   if (!is.null(index.name)) { s <- paste0(s, paste0("Filter index: ",paste0(index.name, collapse = ", "),"\n\n") ) }

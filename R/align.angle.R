@@ -307,7 +307,7 @@ align.angle <- function (
 
   s <- paste0(
     paste0("## Angular alignment\n\n"),
-    paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::align.angle` on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n"),
+    paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::align.angle` version ",packageVersion("borealis")," on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n"),
     paste0("- angle.pts.1: ",paste0(angle.pts.1, collapse = ", "),"\n"),
     paste0("- angle.pts.2: ",paste0(angle.pts.2, collapse = ", "),"\n"),
     paste0("- pivot point: ",paste0(art.pt, collapse = ", "),"\n"),

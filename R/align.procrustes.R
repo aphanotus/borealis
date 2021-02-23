@@ -97,7 +97,7 @@ align.procrustes <- function (
   GPA <- gpagen(shape.data, curves = curves, ...)
   new.prov.details <- paste0(
     paste0("## Generalized Procrustes analysis\n\n"),
-    paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::align.procrustes` on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n")
+    paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::align.procrustes` version ",packageVersion("borealis")," on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n")
   )
 
   if(!is.null(curves)) {

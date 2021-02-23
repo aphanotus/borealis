@@ -244,7 +244,7 @@ align.extension <- function (
 
   s <- paste0(
     paste0("## Extension alignment\n\n"),
-    paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::align.extension` on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n"),
+    paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::align.extension` version ",packageVersion("borealis")," on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n"),
     paste0("- pts.1: ",paste0(pts.1, collapse = ", "),"\n"),
     paste0("- pts.2: ",paste0(pts.2, collapse = ", "),"\n"),
     paste0("- threshold: ",threshold,"\n"),
