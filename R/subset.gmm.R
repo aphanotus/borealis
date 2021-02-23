@@ -22,6 +22,8 @@
 
 subset.gmm <- function (A, specimens = NULL, landmarks = NULL)
 {
+  .Deprecated("subsetgmm")
+
   # Vet the shape data
   if (!(class(A)[1] %in% c("geomorph.data.frame","list"))) {
     stop("Error: Input is not a recognized type. (See the help entry: `?subset.gmm`.)")
