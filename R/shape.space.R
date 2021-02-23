@@ -61,49 +61,49 @@
 #' PCA <- gm.prcomp(Y.gpa$coords)
 #'
 #' # Morphospace plots
-#' gg.shape.space(PCA, group = plethodon$species, group.title = 'species')
-#' gg.shape.space(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE)
-#' gg.shape.space(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE,
+#' shape.space(PCA, group = plethodon$species, group.title = 'species')
+#' shape.space(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE)
+#' shape.space(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE,
 #'           axis1 = 1, axis2 = 3)
-#' gg.shape.space(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE,
+#' shape.space(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE,
 #'           viridis.color.option = 'plasma')
-#' gg.shape.space(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE,
+#' shape.space(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE,
 #'           color = c("royalblue","gray40"))
 #'
 #' # Labeling points
-#' gg.shape.space(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE,
+#' shape.space(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE,
 #'           labels = plethodon$site,
 #'           group.label.size = 8, point.label.size = 2,
 #'           color = c("royalblue","gray40"))
 #'
 #' # Plots with example shapes
-#' gg.shape.space(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE,
+#' shape.space(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE,
 #'           backtransform.examples = TRUE,
 #'           ref.shape = Y.gpa$consensus)
 #'
 #' # Custom links on the example shapes
 #' pletho.links <- matrix(c(4,5,5,6,6,7,7,8,8,9,9,10,10,11,2,4,12,2,3,5),
 #'                        ncol = 2, byrow = TRUE)
-#' gg.shape.space(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE,
+#' shape.space(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE,
 #'           backtransform.examples = TRUE,
 #'           ref.shape = Y.gpa$consensus,
 #'           bt.links = pletho.links)
 #'
 #' # No links on the example shapes
-#' gg.shape.space(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE,
+#' shape.space(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE,
 #'           backtransform.examples = TRUE,
 #'           ref.shape = Y.gpa$consensus,
 #'           bt.links = "none")
 #'
 #' # Example shapes displaysed as thin-plate spline (TPS) warp grids
-#' gg.shape.space(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE,
+#' shape.space(PCA, group = plethodon$species, group.title = 'species', convex.hulls = TRUE,
 #'           backtransform.examples = TRUE,
 #'           ref.shape = Y.gpa$consensus,
 #'           shape.method = "TPS",
 #'           lm.labels = FALSE)
 #'
 
-gg.shape.space <- function (
+shape.space <- function (
   x,
   axis1 = 1,
   axis2 = 2,
@@ -141,7 +141,6 @@ gg.shape.space <- function (
   group.label.size = 2.5,
   point.label.size = 2.5
 ) {
-  .Deprecated("shape.space")
 
   # Compatibility with umap::umap output
   if (any(grepl("umap",class(x)))) {

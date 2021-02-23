@@ -80,8 +80,6 @@ scaling.plot <- function(
   ...
 )
 {
-  .Deprecated("scaling.plot")
-
   if (!require(ggplot2)) { stop("Package missing. First, try running `install.packages('ggplot2')`")}
   if (!require(magrittr)) { stop("Package missing. First, try running `install.packages('magrittr')`")}
   if (!require(dplyr)) { stop("Package missing. First, try running `install.packages('dplyr')`")}
