@@ -97,22 +97,18 @@ align.bilat <- function (
     intercept <- m$coefficients[1]
     slope <- m$coefficients[2]
     # Reflect the landmarks in the second column of landmark.pairs
-    for (j in landmark.pairs[,2]) {
-      d <- (shapes[j,1,i] + (shapes[j,2,i] - intercept)*slope)/(1 + slope^2)
-      # x4 = 2*d - x1
-      # y4 = 2*d*m - y1 + 2*c
-      shapes[j,1,i] <- 2*d - shapes[j,1,i]
-      shapes[j,2,i] <- 2*d*slope - shapes[j,2,i] + 2*intercept
-      if (show.plot) { text(shapes[j,1,i],shapes[j,2,i], j, col="gray35") }
-    }
-    # Average the paired landmarks, over-writing the landmarks in column 1
     for (j in 1:(dim(landmark.pairs)[1])) {
+      if (show.plot) { text(shapes[landmark.pairs[j,2],1,i],shapes[landmark.pairs[j,2],2,i], landmark.pairs[j,2], col="gray35") }
+      d <- (shapes[landmark.pairs[j,2],1,i] + (shapes[landmark.pairs[j,2],2,i] - intercept)*slope)/(1 + slope^2)
+      shapes[landmark.pairs[j,2],1,i] <- 2*d - shapes[landmark.pairs[j,2],1,i]
+      shapes[landmark.pairs[j,2],2,i] <- 2*d*slope - shapes[landmark.pairs[j,2],2,i] + 2*intercept
+      if (show.plot) { text(shapes[landmark.pairs[j,2],1,i],shapes[landmark.pairs[j,2],2,i], landmark.pairs[j,2], col="darkred") }
       # Collect distances
       distance.matrix[i,j] <- borealis::distance(shapes[landmark.pairs[j,1],,i],shapes[landmark.pairs[j,2],,i])
-      # Find the averages
+      # Average the paired landmarks, over-writing the landmarks in column 1
       shapes[landmark.pairs[j,1],1,i] <- mean(shapes[landmark.pairs[j,],1,i])
       shapes[landmark.pairs[j,1],2,i] <- mean(shapes[landmark.pairs[j,],2,i])
-      if (show.plot) { text(shapes[j,1,i],shapes[j,2,i], landmark.pairs[j,1] , font = 2) }
+      if (show.plot) { text(shapes[landmark.pairs[j,1],1,i],shapes[landmark.pairs[j,1],2,i], landmark.pairs[j,1], col="darkred", font = 2) }
     }
     show.plot <- FALSE
   } # End of MAIN LOOP
@@ -130,14 +126,16 @@ align.bilat <- function (
   landmark.pairs.txt <- apply(landmark.pairs,1, function(x){paste0(x,collapse = "-")})
 
   # Identify extremely asymmetrical specimens
-  spec.asym <- apply(distance.matrix,1,sum)
+  centroid.size <- function(m) { sqrt(sum( (m[,1]-mean(m[,1]))^2 + (m[,2]-mean(m[,2]))^2 ) ) }
+  CS <- apply(shapes, 3, centroid.size)
+  spec.asym <- apply(distance.matrix,1,sum) / CS
   outliers <- which(spec.asym > summary(spec.asym)[5]+1.5*IQR(spec.asym))
   if (length(outliers) > 0) {
     outliers <- outliers[order(spec.asym[outliers], decreasing = TRUE)]
     s <- dimnames(shapes)[3][[1]]
     outlier.txt <- paste0(
-      "Outlier specimens with greater than 1.5 IQR more than the 3rd quartile\n- ",
-      paste0(s[outliers],collapse = "\n- "),"\n"
+      "Outlier specimens (>3rd quartile + 1.5*IQR)\n- ",
+      paste0(s[outliers]," (",signif(spec.asym[outliers],6),")",collapse = "\n- "),"\n"
     )
     s[outliers]
   } else {
@@ -148,14 +146,15 @@ align.bilat <- function (
     cat("Median discrepencies between symetrical landmarks\n")
     cat(paste0(" - landmarks ",landmark.pairs.txt,": ", signif(apply(distance.matrix,2,median),6), collapse = "\n"),
         paste0("\n\n") )
-    cat("Summary of the sum of landmark discrepencies for all specimens\n")
+    cat("Sum of paired landmark discrepencies, scaled to specimen centroid size\n")
+    cat("Summary from all specimens:\n")
     print(summary(spec.asym))
     cat("\n")
     cat(outlier.txt)
   }
 
   if (!is.null(outlier.txt)) {
-    outlier.txt <- paste0("### ",outlier.txt,"\n")
+    outlier.txt <- paste0("#### ",outlier.txt,"\n")
   } else {
     outlier.txt <- ""
   }
@@ -164,16 +163,17 @@ align.bilat <- function (
 
   s <- paste0(
     paste0("## Bilateral alignment\n\n"),
-    paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::align.bilat` on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n"),
+    paste0("Performed by user `",(Sys.getenv("LOGNAME")),"` with `borealis::align.bilat` version ",packageVersion("borealis")," on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n\n"),
     paste0("- pt1: ",paste0(pt1, collapse = ", "),"\n"),
     paste0("- pt2: ",paste0(pt2, collapse = ", "),"\n"),
-    paste0("- landmark pairs: ",paste0(landmark.pairs.txt, collapse = ", "),"\n"),
+    paste0("- landmark pairs: ",paste0(landmark.pairs.txt, collapse = ", "),"\n\n"),
     paste0("### Median discrepencies between symetrical landmarks\n"),
     paste0("- landmarks ",landmark.pairs.txt,": ", signif(apply(distance.matrix,2,median),6), collapse = "\n"),
     "\n\n",
-    paste0("### Summary of the sum of landmark discrepencies for all specimens\n"),
-    paste0("- ", names(spec.asym),": ",signif(spec.asym,6), collape = "\n"),
-    "\n",
+    paste0("### Sum of paired landmark discrepencies, scaled to specimen centroid size\n\n"),
+    paste0("#### Summary from all specimens:\n"),
+    paste0(paste0("- ", names(spec.asym),": ",signif(spec.asym,6)), collapse = "\n"),
+    "\n\n",
     paste0(outlier.txt)
   )
 
