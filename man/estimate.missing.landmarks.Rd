@@ -12,7 +12,10 @@ estimate.missing.landmarks(A, na.value = NA, verbose = TRUE, ...)
 \arguments{
 \item{A}{A 3-dimensional array containing XY shape coordinates for multiple specimens, or a list containing such as an array and data provenance.}
 
-\item{na.value}{A numeric value to treat as missing data, (\code{NA}).}
+\item{na.value}{A numeric value to treat as missing data, (\code{NA}).
+For example, tpsDig2 (starting with version 2.18) records missing landmarks as
+coordinate values of -1.0. Setting \code{na.value = -1} will provide
+compatibility with these data.}
 
 \item{verbose}{A logical argument specifying whether to display metrics each
 during each iteration.}
@@ -42,4 +45,7 @@ landmark.plot(j2, specimen.number = 1:4, axes = TRUE)
 }
 \references{
 Adams and M.L. Collyer and A. Kaliontzopoulou. 2020. Geomorph: Software for geometric morphometric analyses. R package version 3.2.1. D.C. (\href{https://cran.r-project.org/package=geomorph}{Link})
+
+Rohlf, FJ. 2015. The tps series of software. \emph{Hystrix} 26, 9–12.
+(\href{https://doi.org/10.4404/hystrix-26.1-11264}{Link})
 }

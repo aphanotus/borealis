@@ -8,6 +8,9 @@
 #'
 #' @param A A 3-dimensional array containing XY shape coordinates for multiple specimens, or a list containing such as an array and data provenance.
 #' @param na.value A numeric value to treat as missing data, (\code{NA}).
+#'     For example, tpsDig2 (starting with version 2.18) records missing landmarks as
+#'     coordinate values of -1.0. Setting \code{na.value = -1} will provide
+#'     compatibility with these data.
 #' @param verbose A logical argument specifying whether to display metrics each
 #'     during each iteration.
 #'
@@ -17,6 +20,8 @@
 #' @source   Dave Angelini \email{david.r.angelini@@gmail.com} [aut, cre]
 #'
 #' @references Adams and M.L. Collyer and A. Kaliontzopoulou. 2020. Geomorph: Software for geometric morphometric analyses. R package version 3.2.1. D.C. (\href{https://cran.r-project.org/package=geomorph}{Link})
+#' @references  Rohlf, FJ. 2015. The tps series of software. \emph{Hystrix} 26, 9–12.
+#' (\href{https://doi.org/10.4404/hystrix-26.1-11264}{Link})
 #'
 #' @export
 #'
