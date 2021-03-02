@@ -9,7 +9,7 @@
 #' There must be a column giving specimen IDs, using a name like "ID" or "specimen_IDs"
 #' Any other columns are optional and may be used to encode metadata.
 #' Columns named by \code{id.factors} will be added to the \code{ID=} line
-#' in the resulting \code{tps} file, seperated by the character string in the \code{separator} parameter.
+#' in the resulting \code{tps} file, separated by the character string in the \code{separator} parameter.
 #'
 #' If \code{include.scale = TRUE}, then you must
 #' have a column headed "scale" to be included as a \code{SCALE=} line for each specimen in
@@ -42,6 +42,8 @@
 #'
 #' @references  Rohlf, FJ. 2015. The tps series of software. \emph{Hystrix} 26, 9–12.
 #' (\href{https://doi.org/10.4404/hystrix-26.1-11264}{Link})
+#' @references  Klingenberg, CP. 2011. MorphoJ: an integrated software package for geometric morphometrics.. \emph{Molecular Ecology Resources} 11, 353-357.
+#' (\href{https://morphometrics.uk/MorphoJ_page.html}{Link})
 #'
 #' @param input.filename The file name to import.
 #' @param output.filename The file name to export.
@@ -51,7 +53,10 @@
 #'     includes a column with scale values.
 #' @param invert.scale A logical value indicating whether to invert the scale value.
 #' @param export.metadata A logical value indicating whether or not metadata should be
-#'     exported to a seperate file.
+#'     exported to a separate file.
+#' @param include.header A logical value indicating whether to include a header in the
+#'     TPS file containing data provenance. Setting the value to \code{FALSE} will
+#'     produce a TPS file suitable for (\href{https://morphometrics.uk/MorphoJ_page.html}{MorphoJ}).
 #'
 #' @export
 #'
