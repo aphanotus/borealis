@@ -1,6 +1,6 @@
 #' Convert landmark data from xlsx or csv to tps format
 #'
-#' Reformats X and Y coordinate positions from a spreadsheet into the \code{tps} ("thin-plate spline")
+#' Reformats X and Y coordinate positions from a \code{csv} or \code{xlsx} spreadsheet into the \code{tps} ("thin-plate spline")
 #' file format defined by Rohlf (2015).
 #'
 #' The first row of the input file must provide column names.
@@ -20,9 +20,11 @@
 #' Typically this is appropriate when scale is recorded as unit distance (e.g. mm) per pixel.
 #' However, if scale is recorded in pixels per unit distance (e.g. pixels/mm)
 #' it will be appropriate to first invert the scaling factor before importing coordinate data.
+#' Replicate scale measurements for each specimen can be included in the scale column and will be averaged (mean).
+#' (The number of scale measurements must not exceed the number of landmarks.)
 #'
 #' Each row must include X and Y coordinates for landmarks, in order.
-#' Each specimen should appear with a  consequtive block of rows, with landmarks in the same order.
+#' Each specimen should appear with a consecutive block of rows, with landmarks in the same order.
 #' The number of landmarks must be consistent for all specimens. Specimen metadata must appear on the
 #' first row for each specimen. (That is, on the row for landmark 1.)
 #'
@@ -56,7 +58,7 @@
 #'     exported to a separate file.
 #' @param include.header A logical value indicating whether to include a header in the
 #'     TPS file containing data provenance. Setting the value to \code{FALSE} will
-#'     produce a TPS file suitable for (\href{https://morphometrics.uk/MorphoJ_page.html}{MorphoJ}).
+#'     produce a TPS file suitable for \href{https://morphometrics.uk/MorphoJ_page.html}{MorphoJ}.
 #'
 #' @export
 #'
@@ -228,7 +230,7 @@ create.tps <- function (
     }
     cat(paste0('ID=',id.text,'\n'))
     if (include.scale) {
-      scale.value <- raw[x,scale.col]
+      scale.value <- mean(raw[(1:landmark.number) + landmark.number*(i-1),scale.col], na.rm = TRUE)
       if (invert.scale) { scale.value <- 1 / as.numeric(scale.value) }
       if (!is.na(scale.value) & is.numeric(scale.value)) {
         cat(paste0('SCALE=',scale.value,'\n'))
