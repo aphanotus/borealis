@@ -125,7 +125,7 @@ create.tps <- function (
 
   # Get the number of specimens and landmarks
   if (is.null(specimen.number)) {
-    acceptable.ID.column.names <- c("id","ids","specimen","specimen id","specimen.id","specimen_id","specimen.ids","specimen_ids","sample","sample id","sample.id","sample_id","sample.ids","sample_ids","id number","id.number","id_number")
+    acceptable.ID.column.names <- c("id","ids","specimen","specimenid","specimen id","specimen.id","specimen_id","specimen.ids","specimen_ids","sample","sampleid","sample id","sample.id","sample_id","sample.ids","sample_ids","id number","id.number","id_number")
     ID.col <- which(names(raw) %in% acceptable.ID.column.names)
     if (!(length(ID.col)==1)) {
       stop(paste("The input file",input.filename,"must have one column with specimen IDs using one of the following headings:",paste(acceptable.ID.column.names, collapse = ', ')))
