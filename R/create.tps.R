@@ -1,6 +1,6 @@
 #' Convert landmark data from xlsx or csv to tps format
 #'
-#' Reformats X and Y coordinate positions from a \code{csv} or \code{xlsx} spreadsheet into the \code{tps} ("thin-plate spline")
+#' Reformats coordinate positions from a \code{csv} or \code{xlsx} spreadsheet into the \code{tps} ("thin-plate spline")
 #' file format defined by Rohlf (2015).
 #'
 #' The first row of the input file must provide column names.
@@ -10,6 +10,9 @@
 #' Any other columns are optional and may be used to encode metadata.
 #' Columns named by \code{id.factors} will be added to the \code{ID=} line
 #' in the resulting \code{tps} file, separated by the character string in the \code{separator} parameter.
+#' \code{create.tps} is also compatible with 3D data (recognized by a column named "z").
+#' However other \code{borealis} functions, including \code{read.tps} are not currently prepared to
+#' handle 3D coordinates.
 #'
 #' If \code{include.scale = TRUE}, then you must
 #' have a column headed "scale" to be included as a \code{SCALE=} line for each specimen in
@@ -181,6 +184,9 @@ create.tps <- function (
     }
   }
 
+  # Check for 3D data
+  IS3D <- any(colnames(raw)=="z")
+
   # The data are okay to proceed
 
   if (is.null(output.filename)) {
@@ -197,7 +203,9 @@ create.tps <- function (
     cat("# ## TPS file creation \n# \n")
     cat(paste0("# Created by user `",(Sys.getenv("LOGNAME")),"` with `borealis::create.tps` version ",packageVersion("borealis")," on ",format(Sys.time(), "%A, %d %B %Y, %X"),"\n# \n"))
     cat("# Input file: ",input.filename,"\n# \n")
-    cat(paste0("# The dataset is ",landmark.number," x 2 x ",specimen.number," (*p* landmarks x *k* dimensions x *n* specimens)\n# \n"))
+    cat(paste0("# The dataset is ",landmark.number," x "))
+    if (IS3D) { cat("3") } else { cat("2") }
+    cat(paste0(" x ",specimen.number," (*p* landmarks x *k* dimensions x *n* specimens)\n# \n"))
     if (length(id.factors)>0) {
       id.factors <- tolower(id.factors)
       cat(paste0("# Metadata are encoded in specimen ID lines from the following factors:\n# - ",paste0(id.factors, collapse = '\n# - '),"\n# \n"))
@@ -215,12 +223,17 @@ create.tps <- function (
 
   # Loop for each specimen
   for (i in 1:specimen.number) {
-    cat(paste0('LM=',landmark.number,'\n'))
+
+    # Landmark notation
+    if (IS3D) { cat(paste0('LM3=',landmark.number,'\n')) }
+    else { cat(paste0('LM=',landmark.number,'\n')) }
 
     # Nested loop for each landmark
     for (j in 1:landmark.number) {
       x <- landmark.number*(i-1) + j
-      cat(paste0(as.numeric(raw$x[x]),' ',as.numeric(raw$y[x]),'\n'))
+      cat(paste0(as.numeric(raw$x[x]),' ',as.numeric(raw$y[x])))
+      if (IS3D) { cat(paste0(' ',as.numeric(raw$z[x]))) }
+      cat('\n')
     } # End nested loop for each landmark
 
     x <- landmark.number*(i-1) + 1
@@ -244,7 +257,7 @@ create.tps <- function (
 
   if (export.metadata) {
     x <- seq(1,dim(raw)[1],landmark.number)
-    y <- names(raw)[!grepl("^[xy]$",names(raw))]
+    y <- names(raw)[!grepl("^[xyz]$",names(raw))]
     write.csv(raw[x,y], file = paste0(output.filename,'.metadata.csv'),
               quote = FALSE, row.names = FALSE )
   }
