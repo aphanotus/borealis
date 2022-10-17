@@ -25,6 +25,8 @@
 #'
 #' @examples
 #'
+#' This function is still under development!
+#'
 
 align.bilat <- function (
   A,

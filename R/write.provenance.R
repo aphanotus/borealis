@@ -16,6 +16,12 @@
 #'
 #' @examples
 #'
+#' write.provenance(
+#'   shapes.gpa,
+#'   output.filename = "shapes.provenance.md",
+#'   title = "Shapes data provenance"
+#' )
+#'
 
 write.provenance <- function (x, output.filename = NULL, title = NULL )
 {

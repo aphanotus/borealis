@@ -173,6 +173,7 @@ landmark.plot <- function (A,
   }
   allowed.links.terms <- c("chull","ordinal")
   if (!is.null(links)) {
+    links <- as.matrix(links)
     if (((max(links) > dim(landmarks)[1]) | (min(links) < 1)) & !(links[[1]] %in% allowed.links.terms))  {
       warning("Warning: Provided links are out of bounds. (See the help entry: `?landmark.plot`.)")
       links <- NULL

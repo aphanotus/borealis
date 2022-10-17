@@ -229,7 +229,7 @@ align.procrustes <- function (
 
   # Prep the output
   output$coords <- GPA$coords
-  output$censensus <- mshape(GPA$coords)
+  output$consensus <- mshape(GPA$coords)
   output$Csize <- GPA$Csize
   output$gpagen <- GPA
   # output$gpagen <- output$gpagen[-c(1:2)]

@@ -25,4 +25,10 @@ addition of \code{provenance.YYMMDD.md}, where \code{YYMMDD} is the date.
 }
 \examples{
 
+write.provenance(
+  shapes.gpa,
+  output.filename = "shapes.provenance.md",
+  title = "Shapes data provenance"
+)
+
 }
