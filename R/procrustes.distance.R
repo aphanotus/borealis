@@ -21,7 +21,8 @@
 procrustes.distance <- function(s1,s2) {
 
   # Vet the input
-  if (dim(s1)!=dim(s2)) {
+  if (dim(s1)[1]!=dim(s2)[1] | dim(s1)[2]!=dim(s2)[2] |
+      length(dim(s1))!=2 | length(dim(s2))!=2) {
     stop("Error: The two shapes have different dimensions. (See the help entry: `?procrustes.distance`.)\n")
   }
 
