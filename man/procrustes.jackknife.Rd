@@ -41,6 +41,7 @@ determine the distribution of pairwise Procrustes distances between all shapes.
 \examples{
 
 procrustes.jackknife(Bombus.forewings)
+procrustes.jackknife(Bombus.forewings, links = "chull")
 
 
 }

@@ -22,6 +22,7 @@
 #' @examples
 #'
 #' procrustes.jackknife(Bombus.forewings)
+#' procrustes.jackknife(Bombus.forewings, links = "chull")
 #'
 #'
 
@@ -79,7 +80,7 @@ procrustes.jackknife <- function (
         links <- NULL
       }
       if (links[[1]] == "chull") {
-        links <- grDevices::chull(shape.data[,,i])
+        links <- grDevices::chull(GPA$consensus)
         links <- matrix(c(links,links[-1],links[1]), ncol=2, byrow = FALSE)
       } else {
         if (links[[1]] == "ordinal") {
