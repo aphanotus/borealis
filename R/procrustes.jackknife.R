@@ -147,8 +147,7 @@ procrustes.jackknife <- function (
     df$jk95 <- procD.jk.q95
 
     plot.jk <- ggplot(df, aes(x=X, y=Y, color=jk50)) +
-      theme_classic() +
-      coord_fixed()
+      theme_classic()
 
     if (!is.null(links)) {
       plot.jk <- plot.jk +
@@ -158,7 +157,8 @@ procrustes.jackknife <- function (
     plot.jk <- plot.jk +
       geom_point(size=10) +
       scale_color_viridis("ProcD JK", option = "magma") +
-      geom_text(aes(label=signif(jk50,3)), color = "gray90", size = 2)
+      geom_text(aes(label=signif(jk50,3)), color = "gray90", size = 2) +
+      coord_fixed()
 
     print(plot.jk)
   } # if (show.plot)
