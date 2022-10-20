@@ -10,10 +10,11 @@
 #' @param links A matrix with two columns indicating landmarks to connect by lines.
 #' @param verbose A logical argument specifying whether to display the function's progress.
 #'
-#' @return The median, 5% and 95% quantiles are reported as a data frame. Relatively lower values will be indicative
-#'     of landmarks vary more than others. Exercise caution in the interpretation of these results.
+#' @return The median, 0.05 and 0.95 quantiles are returned as a data frame.
+#'     Relatively lower values will be indicative of landmarks vary more than others.
+#'     Exercise caution in the interpretation of these results.
 #'     Variation may be biologically meaningful or may suggest systematic error in the placement of
-#'     the landmark.
+#'     the landmarks.
 #'
 #' @source   Dave Angelini \email{david.r.angelini@@gmail.com} [aut, cre]
 #'
@@ -23,7 +24,6 @@
 #'
 #' procrustes.jackknife(Bombus.forewings)
 #' procrustes.jackknife(Bombus.forewings, links = "chull")
-#'
 #'
 
 procrustes.jackknife <- function (

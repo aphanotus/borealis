@@ -29,10 +29,11 @@ of the median Procrustes distances, dropping each landmark.}
 \item{verbose}{A logical argument specifying whether to display the function's progress.}
 }
 \value{
-The median, 5% and 95% quantiles are reported as a data frame. Relatively lower values will be indicative
-    of landmarks vary more than others. Exercise caution in the interpretation of these results.
+The median, 0.05 and 0.95 quantiles are returned as a data frame.
+    Relatively lower values will be indicative of landmarks vary more than others.
+    Exercise caution in the interpretation of these results.
     Variation may be biologically meaningful or may suggest systematic error in the placement of
-    the landmark.
+    the landmarks.
 }
 \description{
 The function will remove each landmark in turn and conduct generalized Procrustes analysis, then
@@ -42,6 +43,5 @@ determine the distribution of pairwise Procrustes distances between all shapes.
 
 procrustes.jackknife(Bombus.forewings)
 procrustes.jackknife(Bombus.forewings, links = "chull")
-
 
 }
