@@ -145,6 +145,7 @@ procrustes.jackknife <- function (
     df$jk50 <- procD.jk.median
     df$jk05 <- procD.jk.q05
     df$jk95 <- procD.jk.q95
+    df$landmark <- output$landmark
 
     plot.jk <- ggplot(df, aes(x=X, y=Y, color=jk50)) +
       theme_classic()
@@ -156,8 +157,11 @@ procrustes.jackknife <- function (
 
     plot.jk <- plot.jk +
       geom_point(size=10) +
-      scale_color_viridis("ProcD JK", option = "magma") +
-      geom_text(aes(label=signif(jk50,3)), color = "gray90", size = 2) +
+      scale_color_viridis(
+        "median\nProcrustes\ndistance\nfollowing\nremoval",
+        option = "magma") +
+      geom_text(aes(label=paste0("#",landmark,"\n",signif(jk50,3))),
+                color = "gray90", size = 2, hjust = 0.5, vjust = 0.5) +
       coord_fixed()
 
     print(plot.jk)
