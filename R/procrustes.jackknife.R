@@ -35,10 +35,10 @@ procrustes.jackknife <- function (
   ...
 )
 {
-  # Don't bother running anything if geomorph isn't installed!
-  if (!require(geomorph)) {
-    stop("Please run  install.packages('geomorph'). ")
-  }
+  # Load packages
+  if (!require("geomorph")) { stop("Package missing. First, try running `install.packages('geomorph')`")}
+  if (!require("ggplot2")) { stop("Package missing. First, try running `install.packages('ggplot2')`")}
+  if (!require("viridis")) { stop("Package missing. First, try running `install.packages('viridis')`")}
 
   shape.data <- NULL
 

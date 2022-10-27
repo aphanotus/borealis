@@ -1,8 +1,8 @@
 Package: borealis
 Type: Package
 Title: Tools for reproducible geometric morphometric analysis 
-Version: 2022.10.20
-Packaged: 2022-10-20
+Version: 2022.10.27
+Packaged: 2022-10-27
 Authors@R: person("Dave", "Angelini", email = "david.r.angelini@gmail.com",
                   role = c("aut", "cre"))
 Description: Tools for 2D geometric morphometric analysis with automatic recording 
